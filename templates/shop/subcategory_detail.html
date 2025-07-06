@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ subcategory.name }} - {{ category.name }} - My E-commerce Site
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar for Categories and Filters -->
+    <div class="col-lg-3 mb-4">
+        <div class="filter-section mb-4">
+            <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filters</h5>
+            <div class="mb-4">
+                <h6>Categories</h6>
+                <div class="list-group list-group-flush category-list">
+                    <a href="{% url 'store:home' %}" class="list-group-item" data-category-slug="">
+                        <i class="fas fa-th-large"></i> All Products
+                    </a>
+                    {% for cat in categories %} {# Assuming 'categories' from view context, or you might need to fetch all top-level categories here #}
+                        <a href="{% url 'store:category_detail' slug=cat.slug %}"
+                           class="list-group-item {% if category and category.slug == cat.slug %}active{% endif %}"
+                           data-category-slug="{{ cat.slug }}">
+                            <i class="fas fa-folder"></i> {{ cat.name }}
+                        </a>
+                        {% if category and category.slug == cat.slug %}
+                            {% for subcat in subcategories %} {# subcategories are children of the current category #}
+                                <a href="{% url 'store:subcategory_detail' category_slug=cat.slug slug=subcat.slug %}"
+                                   class="list-group-item ps-4 {% if subcategory and subcategory.slug == subcat.slug %}active{% endif %}"
+                                   data-subcategory-slug="{{ subcat.slug }}">
+                                    <i class="fas fa-angle-right"></i> {{ subcat.name }}
+                                </a>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <form id="filter-form">
+                <input type="hidden" name="category_slug" value="{{ category.slug|default:'' }}">
+                <input type="hidden" name="subcategory_slug" value="{{ subcategory.slug|default:'' }}">
+
+                <div class="mb-3">
+                    <h6>Fit Type</h6>
+                    {% for fit_type in fit_types %}
+                    <div class="form-check">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="fit_type" value="{{ fit_type.slug }}" id="fitType{{ fit_type.slug }}" {% if fit_type.slug == current_filters.fit_type %}checked{% endif %}>
+                        <label class="form-check-label" for="fitType{{ fit_type.slug }}">
+                            {{ fit_type.name }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <h6>Brand</h6>
+                    {% for brand in brands %}
+                    <div class="form-check">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="brand" value="{{ brand.slug }}" id="brand{{ brand.slug }}" {% if brand.slug == current_filters.brand %}checked{% endif %}>
+                        <label class="form-check-label" for="brand{{ brand.slug }}">
+                            {{ brand.name }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <h6>Color</h6>
+                    {% for color in colors %}
+                    <div class="form-check">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="color" value="{{ color.name }}" id="color{{ color.name }}" {% if color.name == current_filters.color %}checked{% endif %}>
+                        <label class="form-check-label" for="color{{ color.name }}">
+                            <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ color.hex_code }}; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; margin-right: 5px;"></span>
+                            {{ color.name }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <h6>Size</h6>
+                    {% for size in sizes %}
+                    <div class="form-check">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="size" value="{{ size.name }}" id="size{{ size.name }}" {% if size.name == current_filters.size %}checked{% endif %}>
+                        <label class="form-check-label" for="size{{ size.name }}">
+                            {{ size.name }} ({{ size.get_size_type_display }})
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <h6>Price Range</h6>
+                    <div class="d-flex mb-2">
+                        <input type="number" class="form-control me-2" name="min_price" placeholder="Min" value="{{ current_filters.min_price|default:'' }}">
+                        <input type="number" class="form-control" name="max_price" placeholder="Max" value="{{ current_filters.max_price|default:'' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Apply Price</button>
+                </div>
+
+                <div class="mb-3">
+                    <h6>Sort By</h6>
+                    <select class="form-select" name="sort">
+                        <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                        <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price (Low to High)</option>
+                        <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>Price (High to Low)</option>
+                        <option value="newest" {% if current_filters.sort == 'newest' %}selected{% endif %}>Newest</option>
+                        <option value="popular" {% if current_filters.sort == 'popular' %}selected{% endif %}>Popular</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <h6>Flags</h6>
+                    <div class="form-check">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="is_best_seller" value="true" id="isBestseller" {% if current_filters.is_best_seller %}checked{% endif %}>
+                        <label class="form-check-label" for="isBestseller">
+                            <i class="fas fa-star text-warning me-1"></i> Best Seller
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="is_new_arrival" value="true" id="isNewArrival" {% if current_filters.is_new_arrival %}checked{% endif %}>
+                        <label class="form-check-label" for="isNewArrival">
+                            <i class="fas fa-tag text-info me-1"></i> New Arrival
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="is_on_sale" value="true" id="onSale" {% if current_filters.is_on_sale %}checked{% endif %}>
+                        <label class="form-check-label" for="onSale">
+                            <i class="fas fa-fire text-danger me-1"></i> On Sale
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Listing Area -->
+    <div class="col-lg-9">
+        <h2 class="mb-4">
+            {{ subcategory.name }} Products in {{ category.name }}
+        </h2>
+
+        <div id="product-list-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for product in products %}
+                <div class="col">
+                    <div class="card product-card h-100">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="No Image">
+                            {% endif %}
+                        {% endwith %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <div class="d-flex align-items-baseline mb-2">
+                                <span class="price">${{ product.get_price }}</span>
+                                {% if product.is_on_sale and product.sale_price %}
+                                    <span class="old-price">${{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {% if product.is_best_seller %}
+                                    <span class="badge badge-bestseller"><i class="fas fa-star"></i> Best Seller</span>
+                                {% endif %}
+                                {% if product.is_new_arrival %}
+                                    <span class="badge badge-new-arrival"><i class="fas fa-tag"></i> New Arrival</span>
+                                {% endif %}
+                                {% if product.is_on_sale %}
+                                    <span class="badge badge-on-sale"><i class="fas fa-fire"></i> On Sale</span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">View Details <i class="fas fa-chevron-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info" role="alert">
+                        No products found in this subcategory or with the selected filters.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    {% endif %}
+
+                    {% for i in products.paginator.page_range %}
+                        {% if products.number == i %}
+                            <li class="page-item active" aria-current="page"><span class="page-link">{{ i }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Function to update URL parameters and reload page
+        function updateUrlAndReload() {
+            const currentUrl = new URL(window.location.href);
+            const params = new URLSearchParams(currentUrl.search);
+
+            // Clear existing filter parameters to avoid duplication
+            params.delete('fit_type');
+            params.delete('brand');
+            params.delete('color');
+            params.delete('size');
+            params.delete('min_price');
+            params.delete('max_price');
+            params.delete('sort');
+            params.delete('is_best_seller');
+            params.delete('is_new_arrival');
+            params.delete('is_on_sale');
+            params.delete('page'); // Reset page on filter change
+
+            // Add selected filters from checkboxes and select
+            $('#filter-form').find('input[type="checkbox"]:checked, select').each(function() {
+                const name = $(this).attr('name');
+                const value = $(this).val();
+                if (name && value) {
+                    params.append(name, value);
+                }
+            });
+
+            // Add price range inputs
+            const minPrice = $('input[name="min_price"]').val();
+            const maxPrice = $('input[name="max_price"]').val();
+            if (minPrice) params.set('min_price', minPrice);
+            if (maxPrice) params.set('max_price', maxPrice);
+
+            // Reconstruct the URL
+            currentUrl.search = params.toString();
+            window.location.href = currentUrl.toString();
+        }
+
+        // Event listeners for filter changes
+        $('#filter-form input[type="checkbox"], #filter-form select').on('change', function() {
+            updateUrlAndReload();
+        });
+
+        // Event listener for price range apply button
+        $('#filter-form button[type="submit"]').on('click', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            updateUrlAndReload();
+        });
+    });
+</script>

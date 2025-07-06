@@ -1,0 +1,46 @@
+/* static/css/style.css */
+
+/* Add any custom styles here that are not covered by Bootstrap or the inline styles in base.html */
+
+/* Example: Adjusting container padding for smaller screens */
+@media (max-width: 767.98px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .product-detail-swiper .swiper-slide img {
+        height: 300px; /* Smaller height for mobile */
+    }
+}
+
+/* Further refinements for product cards */
+.product-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.product-card .card-body .btn {
+    align-self: flex-start; /* Align button to the start */
+}
+
+/* Ensure filter section is sticky on larger screens if desired */
+/*
+@media (min-width: 992px) {
+    .filter-section {
+        position: sticky;
+        top: 20px;
+    }
+}
+*/
+
+.nav-item .badge {
+    position: absolute;
+    top: 5px; /* Adjust as needed for vertical alignment */
+    right: 5px; /* Adjust as needed for horizontal alignment */
+    padding: 0.35em 0.6em;
+    border-radius: 50%; /* Makes it round */
+    font-size: 0.7em;
+    background-color: #dc3545; /* Red for emphasis, adjust color as desired */
+    color: white;
+    transform: translate(50%, -50%); /* Adjust position relative to its parent */
+}
