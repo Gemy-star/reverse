@@ -22,11 +22,12 @@ from django.conf.urls.i18n import i18n_patterns
 from django.urls import path, include
 
 urlpatterns = [
-    path('i18n/', include('django.conf.urls.i18n')),  # Required for set_language
+    path('i18n/', include('django.conf.urls.i18n')),  # For language switching
 ]
 
 urlpatterns += i18n_patterns(
-    path('', include('shop.urls')),  # your main app
+    path('', include('shop.urls')),  # Your main app
+    path('admin/', include('admin.urls')),  # Add trailing slash!
 )
 
 if settings.DEBUG:
