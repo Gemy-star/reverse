@@ -8,8 +8,13 @@ django = "*"
 pillow = "*"
 django-crispy-forms = "*"
 crispy-bootstrap5 = "*"
+django-silk = "*"
+gunicorn = "*"
+mysqlclient = "*"
+python-dotenv = "*"
 
 [dev-packages]
+django-silk = "*"
 
 [requires]
 python_version = "3.11"
