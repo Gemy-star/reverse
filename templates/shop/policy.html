@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %} {% trans "Terms & Privacy" %} - Reverse {% endblock %}
+{% block content %}
+<div class="container my-4">
+    <div class="row ">
+        <h1 class="mb-4 text-center"><i class="fas fa-user-shield me-2"></i>{% trans "Privacy Policy" %}</h1>
+
+        <section class="mb-5">
+            <h3>{% trans "1. Information We Collect" %}</h3>
+            <p>{% trans "We collect information you provide during registration, purchases, or customer service interactions, including your name, email, address, and payment details." %}</p>
+        </section>
+
+        <section class="mb-5">
+            <h3>{% trans "2. How We Use Information" %}</h3>
+            <p>{% trans "Your data is used to process orders, improve your shopping experience, send updates, and protect against fraud." %}</p>
+        </section>
+
+        <section class="mb-5">
+            <h3>{% trans "3. Data Security" %}</h3>
+            <p>{% trans "We implement appropriate technical and organizational measures to protect your personal data." %}</p>
+        </section>
+
+        <section class="mb-5">
+            <h3>{% trans "4. Third-Party Sharing" %}</h3>
+            <p>{% trans "We do not sell or rent your personal data. Some data may be shared with payment processors or shipping partners as necessary to complete your order." %}</p>
+        </section>
+
+        <section class="mb-5">
+            <h3>{% trans "5. Your Rights" %}</h3>
+            <p>{% trans "You have the right to access, correct, or delete your personal data. Contact us at privacy@reverse.com for assistance." %}</p>
+        </section>
+
+        <section class="mb-5">
+            <h3>{% trans "6. Cookies" %}</h3>
+            <p>{% trans "We use cookies to personalize content, analyze traffic, and improve our services. By using the site, you consent to our cookie policy." %}</p>
+        </section>
+
+        <section class="mb-5">
+            <h3>{% trans "7. Contact Information" %}</h3>
+            <p>{% trans "For questions or concerns regarding these policies, email us at support@reverse.com." %}</p>
+        </section>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'shop:home' %}" class="btn btn-primary">
+                <i class="fas fa-home me-1"></i>{% trans "Back to Home" %}
+            </a>
+        </div>
+    </div>
+    </div>
+{% endblock content %}
