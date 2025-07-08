@@ -1,4 +1,3 @@
-{% block content %}
 {% extends 'base.html' %}
 {% load static i18n %}
 
@@ -6,7 +5,7 @@
     {% if category %}{{ category.name }}{% else %}{% trans "All Products" %}{% endif %} - {% trans "Reverse" %}
 {% endblock %}
 
-
+{% block content %}
 <div class="container my-4">
     <div class="row">
         <!-- Sidebar for Categories and Filters -->
@@ -219,8 +218,7 @@
         </div>
     </div>
 </div>
-
-{% endblock %}
+{% endblock content %}
 
 {% block js %}
 <script>

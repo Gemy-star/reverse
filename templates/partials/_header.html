@@ -25,10 +25,10 @@
                     </ul>
                 </li>
                 <li class="nav-item position-relative">
-                    <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i> {% trans "Cart" %} <span class="badge" id="cart-count">0</span></a>
+                    <a class="nav-link" href="{% url 'shop:cart_detail' %}"><i class="fas fa-shopping-cart"></i> {% trans "Cart" %} <span class="badge" id="cart-count">0</span></a>
                 </li>
                 <li class="nav-item position-relative">
-                    <a class="nav-link" href="#"><i class="fas fa-heart"></i> {% trans "Wishlist" %} <span class="badge" id="wishlist-count">0</span></a>
+                    <a class="nav-link" href="{% url 'shop:wishlist_detail' %}"><i class="fas fa-heart"></i> {% trans "Wishlist" %} <span class="badge" id="wishlist-count">0</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'shop:account' %}"><i class="fas fa-user"></i> {% trans "Account" %}</a>

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -41,7 +42,11 @@ INSTALLED_APPS = [
     'shop.apps.ShopConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+    'constance',
+    'constance.backends.database',
 ]
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 MIDDLEWARE = [
@@ -138,3 +143,53 @@ MEDIA_ROOT = BASE_DIR / 'media' # Store uploaded media files in the 'media' dire
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CONSTANCE_CONFIG = {
+    # Company Info
+    'COMPANY_NAME': (
+        'Reverse',
+        'Company name'
+    ),
+    'COMPANY_DESCRIPTION': (
+        'Reverse is a modern e-commerce platform offering premium products and a seamless shopping experience.',
+        'Company description'
+    ),
+    'EMAIL_ADDRESS': (
+        'support@example.com',
+        'Contact email address'
+    ),
+    'WHATSAPP_NUMBER': (
+        '+201234567890',
+        'WhatsApp number with country code'
+    ),
+
+    # Social Media Links
+    'FACEBOOK_URL': (
+        'https://facebook.com/yourpage',
+        'Facebook URL'
+    ),
+    'TWITTER_URL': (
+        'https://twitter.com/yourprofile',
+        'Twitter URL'
+    ),
+    'INSTAGRAM_URL': (
+        'https://instagram.com/yourprofile',
+        'Instagram URL'
+    ),
+    'LINKEDIN_URL': (
+        'https://linkedin.com/company/yourcompany',
+        'LinkedIn URL'
+    ),
+}
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    'Company Information': ('COMPANY_NAME', 'COMPANY_DESCRIPTION', 'EMAIL_ADDRESS', 'WHATSAPP_NUMBER'),
+    'Social Media Links': ('FACEBOOK_URL', 'TWITTER_URL', 'INSTAGRAM_URL', 'LINKEDIN_URL'),
+}
+
+
+
+# Where to redirect users who are not logged in
+LOGIN_URL = reverse_lazy('shop:account')  
+# Where to redirect users after successful login
+LOGIN_REDIRECT_URL = reverse_lazy('shop:home') 
