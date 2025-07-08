@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.views.generic import TemplateView
 
 app_name = 'shop'
 
@@ -22,5 +23,5 @@ urlpatterns = [
     path('wishlist/', views.wishlist_detail, name='wishlist_detail'),
     path('wishlist/add/', views.add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:item_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
-
+    path('terms/', TemplateView.as_view(template_name="shop/terms_and_policy.html"), name="terms"),
 ]
