@@ -339,7 +339,7 @@ msgstr "سياسة الخصوصية"
 
 #: .\templates\shop\policy.html:13
 msgid "1. Information We Collect"
-msgstr ""
+msgstr "1. المعلومات التي نجمعها"
 
 #: .\templates\shop\policy.html:14
 msgid ""
@@ -347,70 +347,73 @@ msgid ""
 "customer service interactions, including your name, email, address, and "
 "payment details."
 msgstr ""
+"نقوم بجمع المعلومات التي تقدمها أثناء التسجيل أو الشراء أو التفاعل مع خدمة العملاء، بما في ذلك اسمك وبريدك الإلكتروني وعنوانك وتفاصيل الدفع الخاصة بك."
 
 #: .\templates\shop\policy.html:18
-#, fuzzy
-#| msgid "4. Product Information"
 msgid "2. How We Use Information"
-msgstr "4. معلومات المنتجات"
+msgstr "2. كيفية استخدام المعلومات"
 
 #: .\templates\shop\policy.html:19
 msgid ""
 "Your data is used to process orders, improve your shopping experience, send "
 "updates, and protect against fraud."
 msgstr ""
+"تُستخدم بياناتك لمعالجة الطلبات، وتحسين تجربة التسوق، وإرسال التحديثات، والحماية من الاحتيال."
 
 #: .\templates\shop\policy.html:23
 msgid "3. Data Security"
-msgstr ""
+msgstr "3. أمان البيانات"
 
 #: .\templates\shop\policy.html:24
 msgid ""
 "We implement appropriate technical and organizational measures to protect "
 "your personal data."
 msgstr ""
+"نقوم بتنفيذ تدابير تقنية وتنظيمية مناسبة لحماية بياناتك الشخصية."
 
 #: .\templates\shop\policy.html:28
 msgid "4. Third-Party Sharing"
-msgstr ""
+msgstr "4. مشاركة البيانات مع أطراف ثالثة"
 
 #: .\templates\shop\policy.html:29
 msgid ""
 "We do not sell or rent your personal data. Some data may be shared with "
 "payment processors or shipping partners as necessary to complete your order."
 msgstr ""
+"لا نقوم ببيع أو تأجير بياناتك الشخصية. قد يتم مشاركة بعض البيانات مع مزودي خدمات الدفع أو شركاء الشحن حسب الحاجة لإتمام طلبك."
 
 #: .\templates\shop\policy.html:33
 msgid "5. Your Rights"
-msgstr ""
+msgstr "5. حقوقك"
 
 #: .\templates\shop\policy.html:34
 msgid ""
 "You have the right to access, correct, or delete your personal data. Contact "
 "us at privacy@reverse.com for assistance."
 msgstr ""
+"لديك الحق في الوصول إلى بياناتك الشخصية أو تصحيحها أو حذفها. تواصل معنا عبر privacy@reverse.com للحصول على المساعدة."
 
 #: .\templates\shop\policy.html:38
 msgid "6. Cookies"
-msgstr ""
+msgstr "6. ملفات تعريف الارتباط (الكوكيز)"
 
 #: .\templates\shop\policy.html:39
 msgid ""
 "We use cookies to personalize content, analyze traffic, and improve our "
 "services. By using the site, you consent to our cookie policy."
 msgstr ""
+"نستخدم ملفات تعريف الارتباط لتخصيص المحتوى، وتحليل حركة المرور، وتحسين خدماتنا. باستخدامك للموقع، فإنك توافق على سياسة الكوكيز الخاصة بنا."
 
 #: .\templates\shop\policy.html:43
-#, fuzzy
-#| msgid "4. Product Information"
 msgid "7. Contact Information"
-msgstr "4. معلومات المنتجات"
+msgstr "7. معلومات التواصل"
 
 #: .\templates\shop\policy.html:44
 msgid ""
 "For questions or concerns regarding these policies, email us at "
 "support@reverse.com."
 msgstr ""
+"لأي أسئلة أو استفسارات بخصوص هذه السياسات، يرجى مراسلتنا عبر البريد الإلكتروني: support@reverse.com."
 
 #: .\templates\shop\policy.html:49 .\templates\shop\terms.html:43
 msgid "Back to Home"
