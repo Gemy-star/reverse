@@ -17,7 +17,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME', 'reversedb'),
-        'USER': os.getenv('DB_USER', 'root'),
+        'USER': os.getenv('DB_USER', 'reverse'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'Gemy@2803150'),
         'HOST': os.getenv('DB_HOST', '127.0.0.1'),
         'PORT': os.getenv('DB_PORT', '3306'),
