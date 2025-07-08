@@ -1,202 +1,218 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Home - Reverse{% endblock %}
+{% block title %}{% trans "Home - Reverse" %}{% endblock %}
 
 {% block content %}
-<div class="container">
     <!-- Hero Section -->
-    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
-        <div class="container-fluid py-5 text-center">
-            <h1 class="display-5 fw-bold">Discover Your Style</h1>
-            <p class="col-md-8 mx-auto fs-4">Explore our latest collections and find the perfect products for you.</p>
-            <a href="{% url 'shop:category_detail' slug='all' %}" class="btn btn-primary btn-lg rounded-pill">Shop Now <i class="fas fa-arrow-right ms-2"></i></a>
+    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm intro">
+        <div class="container-fluid py-5 text-start">
+            <h1 class="display-5 fw-bold">{% trans "Discover Your Style" %}</h1>
+            <p class="col-md-8 justify-content-start fs-4">{% trans "Explore our latest collections and find the perfect products for you." %}</p>
+            <a href="{% url 'shop:category_detail' slug='all' %}" class="btn btn-primary btn-lg rounded-pill">
+                {% trans "Shop Now" %} <i class="fas fa-arrow-right ms-2"></i>
+            </a>
         </div>
     </div>
 
-    <!-- Categories Section -->
-    <h2 class="mb-4 text-center">Shop By Category</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
-        {% for cat in categories %}
-            <div class="col">
-                <div class="card h-100 text-center shadow-sm rounded-3">
-                    {% if cat.image %}
-                        <img src="{{ cat.image.url }}" class="card-img-top rounded-top" alt="{{ cat.name }}" style="height: 180px; object-fit: cover;">
-                    {% else %}
-                        <img src="https://placehold.co/400x180/e0e0e0/555555?text={{ cat.name }}" class="card-img-top rounded-top" alt="{{ cat.name }}">
-                    {% endif %}
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <h5 class="card-title">{{ cat.name }}</h5>
-                        <a href="{% url 'shop:category_detail' slug=cat.slug %}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto">View Products</a>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No categories available.</p>
-            </div>
-        {% endfor %}
-    </div>
+    <div class="container my-4">
+    <div class="container">
 
-    <!-- Featured Products Section -->
-    <h2 class="mb-4 text-center">Featured Products</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
-        {% for product in featured_products %}
-            <div class="col">
-                <div class="card product-card h-100">
-                    {% with main_image=product.get_main_image %}
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
+        <!-- Categories Section -->
+        <h2 class="mb-4 text-center">{% trans "Shop By Category" %}</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            {% for cat in categories %}
+                <div class="col">
+                    <div class="card h-100 text-center shadow-sm rounded-3">
+                        {% if cat.image %}
+                            <img src="{{ cat.image.url }}" class="card-img-top rounded-top" alt="{{ cat.name }}" style="height: 180px; object-fit: cover;">
                         {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="No Image">
+                            <img src="https://placehold.co/400x180/e0e0e0/555555?text={{ cat.name }}" class="card-img-top rounded-top" alt="{{ cat.name }}">
                         {% endif %}
-                    {% endwith %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex align-items-baseline mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price">${{ product.price }}</span>
-                            {% endif %}
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <h5 class="card-title">{{ cat.name }}</h5>
+                            <a href="{% url 'shop:category_detail' slug=cat.slug %}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto">
+                                {% trans "View Products" %}
+                            </a>
                         </div>
-                        <div class="mb-3">
-                            {% if product.is_featured %}
-                                <span class="badge badge-featured"><i class="fas fa-star"></i> Featured</span>
-                            {% endif %}
-                            {% if product.is_on_sale %}
-                                <span class="badge badge-on-sale"><i class="fas fa-fire"></i> On Sale</span>
-                            {% endif %}
-                        </div>
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">View Details <i class="fas fa-chevron-right ms-1"></i></a>
                     </div>
                 </div>
-            </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No featured products available.</p>
-            </div>
-        {% endfor %}
-    </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">{% trans "No categories available." %}</p>
+                </div>
+            {% endfor %}
+        </div>
 
-    <!-- New Arrivals Section -->
-    <h2 class="mb-4 text-center">New Arrivals</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
-        {% for product in new_arrivals %}
-            <div class="col">
-                <div class="card product-card h-100">
-                    {% with main_image=product.get_main_image %}
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="No Image">
-                        {% endif %}
-                    {% endwith %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex align-items-baseline mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price">${{ product.price }}</span>
+        <!-- Featured Products Section -->
+        <h2 class="mb-4 text-center">{% trans "Featured Products" %}</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            {% for product in featured_products %}
+                <div class="col">
+                    <div class="card product-card h-100">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
                             {% endif %}
+                        {% endwith %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <div class="d-flex align-items-baseline mb-2">
+                                <span class="price">${{ product.get_price }}</span>
+                                {% if product.is_on_sale and product.sale_price %}
+                                    <span class="old-price">${{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {% if product.is_featured %}
+                                    <span class="badge badge-featured"><i class="fas fa-star"></i> {% trans "Featured" %}</span>
+                                {% endif %}
+                                {% if product.is_on_sale %}
+                                    <span class="badge badge-on-sale"><i class="fas fa-fire"></i> {% trans "On Sale" %}</span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
                         </div>
-                        <div class="mb-3">
-                            {% if product.is_new_arrival %}
-                                <span class="badge badge-new-arrival"><i class="fas fa-tag"></i> New Arrival</span>
-                            {% endif %}
-                            {% if product.is_on_sale %}
-                                <span class="badge badge-on-sale"><i class="fas fa-fire"></i> On Sale</span>
-                            {% endif %}
-                        </div>
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">View Details <i class="fas fa-chevron-right ms-1"></i></a>
                     </div>
                 </div>
-            </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No new arrivals available.</p>
-            </div>
-        {% endfor %}
-    </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">{% trans "No featured products available." %}</p>
+                </div>
+            {% endfor %}
+        </div>
 
-    <!-- Best Sellers Section -->
-    <h2 class="mb-4 text-center">Best Sellers</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
-        {% for product in best_sellers %}
-            <div class="col">
-                <div class="card product-card h-100">
-                    {% with main_image=product.get_main_image %}
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="No Image">
-                        {% endif %}
-                    {% endwith %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex align-items-baseline mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price">${{ product.price }}</span>
+        <!-- New Arrivals Section -->
+        <h2 class="mb-4 text-center">{% trans "New Arrivals" %}</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            {% for product in new_arrivals %}
+                <div class="col">
+                    <div class="card product-card h-100">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
                             {% endif %}
+                        {% endwith %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <div class="d-flex align-items-baseline mb-2">
+                                <span class="price">${{ product.get_price }}</span>
+                                {% if product.is_on_sale and product.sale_price %}
+                                    <span class="old-price">${{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {% if product.is_new_arrival %}
+                                    <span class="badge badge-new-arrival"><i class="fas fa-tag"></i> {% trans "New Arrival" %}</span>
+                                {% endif %}
+                                {% if product.is_on_sale %}
+                                    <span class="badge badge-on-sale"><i class="fas fa-fire"></i> {% trans "On Sale" %}</span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
                         </div>
-                        <div class="mb-3">
-                            {% if product.is_best_seller %}
-                                <span class="badge badge-bestseller"><i class="fas fa-star"></i> Best Seller</span>
-                            {% endif %}
-                            {% if product.is_on_sale %}
-                                <span class="badge badge-on-sale"><i class="fas fa-fire"></i> On Sale</span>
-                            {% endif %}
-                        </div>
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">View Details <i class="fas fa-chevron-right ms-1"></i></a>
                     </div>
                 </div>
-            </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No best sellers available.</p>
-            </div>
-        {% endfor %}
-    </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">{% trans "No new arrivals available." %}</p>
+                </div>
+            {% endfor %}
+        </div>
 
-    <!-- On Sale Products Section -->
-    <h2 class="mb-4 text-center">On Sale!</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
-        {% for product in sale_products %}
-            <div class="col">
-                <div class="card product-card h-100">
-                    {% with main_image=product.get_main_image %}
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="No Image">
-                        {% endif %}
-                    {% endwith %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex align-items-baseline mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price">${{ product.price }}</span>
+        <!-- Best Sellers Section -->
+        <h2 class="mb-4 text-center">{% trans "Best Sellers" %}</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            {% for product in best_sellers %}
+                <div class="col">
+                    <div class="card product-card h-100">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
                             {% endif %}
+                        {% endwith %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <div class="d-flex align-items-baseline mb-2">
+                                <span class="price">${{ product.get_price }}</span>
+                                {% if product.is_on_sale and product.sale_price %}
+                                    <span class="old-price">${{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {% if product.is_best_seller %}
+                                    <span class="badge badge-bestseller"><i class="fas fa-star"></i> {% trans "Best Seller" %}</span>
+                                {% endif %}
+                                {% if product.is_on_sale %}
+                                    <span class="badge badge-on-sale"><i class="fas fa-fire"></i> {% trans "On Sale" %}</span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
                         </div>
-                        <div class="mb-3">
-                            {% if product.is_on_sale %}
-                                <span class="badge badge-on-sale"><i class="fas fa-fire"></i> On Sale!</span>
-                            {% endif %}
-                            {% if product.get_discount_percentage > 0 %}
-                                <span class="badge bg-success badge-flag">{{ product.get_discount_percentage }}% Off</span>
-                            {% endif %}
-                        </div>
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">View Details <i class="fas fa-chevron-right ms-1"></i></a>
                     </div>
                 </div>
-            </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No products currently on sale.</p>
-            </div>
-        {% endfor %}
-    </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">{% trans "No best sellers available." %}</p>
+                </div>
+            {% endfor %}
+        </div>
 
-</div>
+        <!-- On Sale Products Section -->
+        <h2 class="mb-4 text-center">{% trans "On Sale!" %}</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            {% for product in sale_products %}
+                <div class="col">
+                    <div class="card product-card h-100">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
+                            {% endif %}
+                        {% endwith %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <div class="d-flex align-items-baseline mb-2">
+                                <span class="price">${{ product.get_price }}</span>
+                                {% if product.is_on_sale and product.sale_price %}
+                                    <span class="old-price">${{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {% if product.is_on_sale %}
+                                    <span class="badge badge-on-sale"><i class="fas fa-fire"></i> {% trans "On Sale!" %}</span>
+                                {% endif %}
+                                {% if product.get_discount_percentage > 0 %}
+                                    <span class="badge bg-success badge-flag">{{ product.get_discount_percentage }}% {% trans "Off" %}</span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">{% trans "No products currently on sale." %}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    </div>
 {% endblock %}
+

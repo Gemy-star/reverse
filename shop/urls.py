@@ -13,4 +13,6 @@ urlpatterns = [
     path('api/add-to-cart/', views.add_to_cart, name='add_to_cart'), # New AJAX endpoint for cart
     path('api/add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'), # New AJAX endpoint for wishlist
     path('api/get-counts/', views.get_cart_and_wishlist_counts, name='get_cart_and_wishlist_counts'), # New AJAX endpoint for counts
+    path('account/', views.account_view, name='account'),
+
 ]

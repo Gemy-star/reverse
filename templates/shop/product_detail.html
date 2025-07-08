@@ -1,129 +1,128 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}{{ product.name }} - My E-commerce Site{% endblock %}
+{% block title %}{{ product.name }} - {% trans "Reverse" %}{% endblock %}
 
 {% block content %}
+<div class="container my-4">
 <div class="row">
-    <!-- Product Images (Swiper Carousel) -->
-    <div class="col-md-6 mb-4">
-        <div class="swiper product-detail-swiper mb-3">
-            <div class="swiper-wrapper">
-                {% for image in product_images %}
-                    <div class="swiper-slide">
-                        <img src="{{ image.image.url }}" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}Image{% endif %}">
-                    </div>
-                {% empty %}
-                    <div class="swiper-slide">
-                        <img src="https://placehold.co/600x500/e0e0e0/555555?text=No+Image" alt="No image available">
-                    </div>
-                {% endfor %}
-            </div>
-            <!-- Add Pagination -->
-            <div class="swiper-pagination"></div>
-            <!-- Add Navigation -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-        </div>
 
-        <!-- Thumbs Swiper for navigation -->
-        <div class="swiper product-detail-thumbs">
-            <div class="swiper-wrapper">
-                {% for image in product_images %}
-                    <div class="swiper-slide">
-                        <img src="{{ image.image.url }}" alt="Thumbnail of {{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}Image{% endif %}">
-                    </div>
-                {% endfor %}
-            </div>
+<!-- Product Images (Swiper Carousel) -->
+<div class="col-md-6 mb-4">
+    <div class="swiper product-detail-swiper mb-3">
+        <div class="swiper-wrapper">
+            {% for image in product_images %}
+                <div class="swiper-slide">
+                    <img src="{{ image.image.url }}" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}">
+                </div>
+            {% empty %}
+                <div class="swiper-slide">
+                    <img src="https://placehold.co/600x500/e0e0e0/555555?text=No+Image" alt="{% trans 'No image available' %}">
+                </div>
+            {% endfor %}
         </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
     </div>
 
-    <!-- Product Details -->
-    <div class="col-md-6">
-        <h1 class="mb-3">{{ product.name }}</h1>
-        <p class="lead">{{ product.short_description }}</p>
-        <p>{{ product.description }}</p>
-
-        <div class="d-flex align-items-baseline mb-3">
-            <span class="price fs-3 me-2" id="display-price">${{ product.get_price }}</span>
-            {% if product.is_on_sale and product.sale_price %}
-                <span class="old-price fs-5" id="display-old-price">${{ product.price }}</span>
-            {% endif %}
-        </div>
-
-        <div class="mb-4">
-            {% if product.is_best_seller %}
-                <span class="badge badge-bestseller badge-flag"><i class="fas fa-star me-1"></i> Best Seller</span>
-            {% endif %}
-            {% if product.is_new_arrival %}
-                <span class="badge badge-new-arrival badge-flag"><i class="fas fa-tag me-1"></i> New Arrival</span>
-            {% endif %}
-            {% if product.is_on_sale %}
-                <span class="badge badge-on-sale badge-flag"><i class="fas fa-fire me-1"></i> On Sale</span>
-            {% endif %}
-            {% if product.brand %}
-                <span class="badge bg-secondary badge-flag"><i class="fas fa-tag me-1"></i> {{ product.brand.name }}</span>
-            {% endif %}
-            {% if product.fit_type %}
-                <span class="badge bg-info badge-flag"><i class="fas fa-ruler-horizontal me-1"></i> {{ product.fit_type.name }} Fit</span>
-            {% endif %}
-        </div>
-
-        <!-- Color Selection -->
-        {% if available_colors %}
-            <div class="mb-4">
-                <h6>Available Colors:</h6>
-                <div class="d-flex flex-wrap color-buttons">
-                    {% for color in available_colors %}
-                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2 mb-2" data-color-id="{{ color.id }}" data-color-name="{{ color.name }}">
-                            <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ color.hex_code }}; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; margin-right: 5px;"></span>
-                            {{ color.name }}
-                        </button>
-                    {% endfor %}
+    <!-- Thumbnail Swiper -->
+    <div class="swiper product-detail-thumbs">
+        <div class="swiper-wrapper">
+            {% for image in product_images %}
+                <div class="swiper-slide">
+                    <img src="{{ image.image.url }}" alt="{% trans "Thumbnail of" %} {{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}">
                 </div>
-            </div>
-        {% endif %}
-
-        <!-- Size Selection -->
-        {% if available_sizes %}
-            <div class="mb-4">
-                <h6>Select Size:</h6>
-                <div class="size-buttons">
-                    {% for size in available_sizes %}
-                        <button type="button" class="btn btn-outline-primary rounded-pill" data-size-id="{{ size.id }}" data-size-name="{{ size.name }}">{{ size.name }}</button>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-
-        <div class="mb-4">
-            <p>SKU: <span id="display-sku">N/A</span></p>
-            <p>Stock: <span id="display-stock" class="fw-bold {% if product.is_in_stock %}text-success{% else %}text-danger{% endif %}">{{ product.stock_quantity }} in stock</span></p>
-        </div>
-
-        <!-- Quantity Input -->
-        <div class="mb-3">
-            <h6>Quantity:</h6>
-            <input type="number" id="quantity-input" class="form-control" value="1" min="1" style="width: 100px;">
-        </div>
-
-        <!-- Message Display Area -->
-        <div id="message-area" class="alert alert-dismissible fade show d-none" role="alert">
-            <span id="message-text"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <div class="d-grid gap-2">
-            <button class="btn btn-success btn-lg rounded-pill" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}><i class="fas fa-cart-plus me-2"></i> Add to Cart</button>
-            <button class="btn btn-outline-secondary btn-lg rounded-pill" id="add-to-wishlist-btn" data-product-id="{{ product.id }}"><i class="fas fa-heart me-2"></i> Add to Wishlist</button>
+            {% endfor %}
         </div>
     </div>
+</div>
+
+<!-- Product Details -->
+<div class="col-md-6">
+    <h1 class="mb-3">{{ product.name }}</h1>
+    <p class="lead">{{ product.short_description }}</p>
+    <p>{{ product.description }}</p>
+
+    <div class="d-flex align-items-baseline mb-3">
+        <span class="price fs-3 me-2" id="display-price">${{ product.get_price }}</span>
+        {% if product.is_on_sale and product.sale_price %}
+            <span class="old-price fs-5" id="display-old-price">${{ product.price }}</span>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+        {% if product.is_best_seller %}
+            <span class="badge badge-bestseller badge-flag"><i class="fas fa-star me-1"></i> {% trans "Best Seller" %}</span>
+        {% endif %}
+        {% if product.is_new_arrival %}
+            <span class="badge badge-new-arrival badge-flag"><i class="fas fa-tag me-1"></i> {% trans "New Arrival" %}</span>
+        {% endif %}
+        {% if product.is_on_sale %}
+            <span class="badge badge-on-sale badge-flag"><i class="fas fa-fire me-1"></i> {% trans "On Sale" %}</span>
+        {% endif %}
+        {% if product.brand %}
+            <span class="badge bg-secondary badge-flag"><i class="fas fa-tag me-1"></i> {{ product.brand.name }}</span>
+        {% endif %}
+        {% if product.fit_type %}
+            <span class="badge bg-info badge-flag"><i class="fas fa-ruler-horizontal me-1"></i> {{ product.fit_type.name }} {% trans "Fit" %}</span>
+        {% endif %}
+    </div>
+
+    {% if available_colors %}
+        <div class="mb-4">
+            <h6>{% trans "Available Colors:" %}</h6>
+            <div class="d-flex flex-wrap color-buttons">
+                {% for color in available_colors %}
+                    <button type="button" class="btn btn-outline-secondary rounded-pill me-2 mb-2" data-color-id="{{ color.id }}" data-color-name="{{ color.name }}">
+                        <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ color.hex_code }}; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; margin-right: 5px;"></span>
+                        {{ color.name }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if available_sizes %}
+        <div class="mb-4">
+            <h6>{% trans "Select Size:" %}</h6>
+            <div class="size-buttons">
+                {% for size in available_sizes %}
+                    <button type="button" class="btn btn-outline-primary rounded-pill" data-size-id="{{ size.id }}" data-size-name="{{ size.name }}">{{ size.name }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mb-4">
+        <p>{% trans "SKU" %}: <span id="display-sku">N/A</span></p>
+        <p>{% trans "Stock" %}: <span id="display-stock" class="fw-bold {% if product.is_in_stock %}text-success{% else %}text-danger{% endif %}">{{ product.stock_quantity }} {% trans "in stock" %}</span></p>
+    </div>
+
+    <!-- Quantity Input -->
+    <div class="mb-3">
+        <h6>{% trans "Quantity:" %}</h6>
+        <input type="number" id="quantity-input" class="form-control" value="1" min="1" style="width: 100px;">
+    </div>
+
+    <!-- Message Display Area -->
+    <div id="message-area" class="alert alert-dismissible fade show d-none" role="alert">
+        <span id="message-text"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
+    </div>
+
+    <div class="d-grid gap-2">
+        <button class="btn btn-success btn-lg rounded-pill" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}><i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}</button>
+        <button class="btn btn-outline-secondary btn-lg rounded-pill" id="add-to-wishlist-btn" data-product-id="{{ product.id }}"><i class="fas fa-heart me-2"></i> {% trans "Add to Wishlist" %}</button>
+    </div>
+</div>
 </div>
 
 <hr class="my-5">
 
 <!-- Related Products Section -->
-<h3 class="mb-4">Related Products</h3>
+<h3 class="mb-4">{% trans "Related Products" %}</h3>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
     {% for related_product in related_products %}
         <div class="col">
@@ -132,7 +131,7 @@
                     {% if main_image and main_image.image %}
                         <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ related_product.name }}">
                     {% else %}
-                        <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="No Image">
+                        <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
                     {% endif %}
                 {% endwith %}
                 <div class="card-body">
@@ -143,17 +142,17 @@
                             <span class="old-price">${{ related_product.price }}</span>
                         {% endif %}
                     </div>
-                    <a href="{{ related_product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">View Details <i class="fas fa-chevron-right ms-1"></i></a>
+                    <a href="{{ related_product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">{% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i></a>
                 </div>
             </div>
         </div>
     {% empty %}
         <div class="col-12">
-            <p class="text-muted">No related products found.</p>
+            <p class="text-muted">{% trans "No related products found." %}</p>
         </div>
     {% endfor %}
 </div>
-
+</div>
 <script>
     $(document).ready(function() {
         const productId = {{ product.id }};

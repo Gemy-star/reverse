@@ -1,38 +1,59 @@
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'shop:home' %}">
-                <i class="fas fa-store me-2"></i>Reverse
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'shop:home' %}">Home</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Categories
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {% for cat in categories %} {# Assuming 'categories' context is available from home view #}
-                                <li><a class="dropdown-item" href="{% url 'shop:category_detail' slug=cat.slug %}">{{ cat.name }}</a></li>
-                            {% endfor %}
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'shop:home' %}">All Products</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item position-relative"> {# Added position-relative here #}
-                        <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i> Cart <span class="badge" id="cart-count">0</span></a> {# Added span with id and badge class #}
-                    </li>
-                    <li class="nav-item position-relative"> {# Added position-relative here #}
-                        <a class="nav-link" href="#"><i class="fas fa-heart"></i> Wishlist <span class="badge" id="wishlist-count">0</span></a> {# Added span with id and badge class #}
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-user"></i> Account</a>
-                    </li>
-                </ul>
-            </div>
+{% load i18n %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'shop:home' %}">
+            <i class="fas fa-store me-2"></i>Reverse
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'shop:home' %}">{% trans "Home" %}</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% trans "Categories" %}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% for cat in categories %}
+                            <li><a class="dropdown-item" href="{% url 'shop:category_detail' slug=cat.slug %}">{{ cat.name }}</a></li>
+                        {% endfor %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'shop:home' %}">{% trans "All Products" %}</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item position-relative">
+                    <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i> {% trans "Cart" %} <span class="badge" id="cart-count">0</span></a>
+                </li>
+                <li class="nav-item position-relative">
+                    <a class="nav-link" href="#"><i class="fas fa-heart"></i> {% trans "Wishlist" %} <span class="badge" id="wishlist-count">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'shop:account' %}"><i class="fas fa-user"></i> {% trans "Account" %}</a>
+                </li>
+
+                <!-- 🌍 Language Switcher Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        🌐 {% trans "Language" %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                        <li>
+                            <form action="{% url 'set_language' %}" method="post" class="px-3">
+                                {% csrf_token %}
+                                <input name="next" type="hidden" value="{{ request.path }}">
+                                <select name="language" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+                                    <option value="ar" {% if LANGUAGE_CODE == 'ar' %}selected{% endif %}>العربية</option>
+                                    <!-- Add more languages here if needed -->
+                                </select>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>

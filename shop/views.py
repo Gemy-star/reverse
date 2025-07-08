@@ -1,14 +1,14 @@
 # shop/views.py
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404 , redirect
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Min, Max
-from django.views.generic import ListView, DetailView
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt # Use for simplicity, but in production use csrf_token in form/ajax
 from django.contrib.auth.decorators import login_required # For wishlist (requires logged-in user)
-
+from django.contrib.auth import authenticate, login
+from .forms import RegisterForm, LoginForm
 from .models import (
     Category, SubCategory, FitType, Brand, Color, Size,
     Product, ProductVariant, Cart, CartItem, Wishlist, WishlistItem
@@ -464,4 +464,29 @@ def get_cart_and_wishlist_counts(request):
     return JsonResponse({
         'cart_total_items': cart_total_items,
         'wishlist_total_items': wishlist_total_items
+    })
+
+
+def account_view(request):
+    login_form = LoginForm(request, data=request.POST or None)
+    register_form = RegisterForm(request.POST or None)
+
+    if 'login' in request.POST and login_form.is_valid():
+        user = authenticate(
+            request,
+            username=login_form.cleaned_data['username'],
+            password=login_form.cleaned_data['password']
+        )
+        if user:
+            login(request, user)
+            return redirect('home')  # or wherever
+
+    elif 'register' in request.POST and register_form.is_valid():
+        user = register_form.save()
+        login(request, user)
+        return redirect('home')
+
+    return render(request, 'shop/account.html', {
+        'login_form': login_form,
+        'register_form': register_form
     })

@@ -6,6 +6,13 @@ from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from django.conf import settings # Import settings to get AUTH_USER_MODEL
+from django.contrib.auth.models import AbstractUser
+
+
+class ReverseUser(AbstractUser):
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    is_customer = models.BooleanField(default=True)
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -296,11 +303,16 @@ class ProductVariant(models.Model):
 
 # --- Cart Models ---
 class Cart(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='cart')
     session_key = models.CharField(max_length=40, null=True, blank=True, unique=True) # For anonymous users
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    user = models.OneToOneField(
+        ReverseUser, 
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='cart'
+    )
     class Meta:
         verbose_name = "Shopping Cart"
         verbose_name_plural = "Shopping Carts"
@@ -337,7 +349,7 @@ class CartItem(models.Model):
 
 # --- Wishlist Models ---
 class Wishlist(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')
+    user = models.OneToOneField(ReverseUser, on_delete=models.CASCADE, related_name='wishlist')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
