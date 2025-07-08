@@ -4,11 +4,11 @@
     <div class="row">
       <!-- Intro Section -->
       <div class="col-md-4 mb-3">
-        <h5 class="text-uppercase fw-bold">{{ constance.COMPANY_NAME }}</h5>
-        <p class="text-white-50">{{ constance.COMPANY_DESCRIPTION }}</p>
+        <h5 class="text-uppercase fw-bold">{{ config.COMPANY_NAME }}</h5>
+        <p class="text-white-50">{{ config.COMPANY_DESCRIPTION }}</p>
         <p class="text-white-50">
-          <i class="fas fa-envelope me-2"></i> {{ constance.EMAIL_ADDRESS }}<br>
-          <i class="fab fa-whatsapp me-2"></i> <a href="https://wa.me/{{ constance.WHATSAPP_NUMBER|cut:'+' }}" class="text-white-50 text-decoration-none">{{ constance.WHATSAPP_NUMBER }}</a>
+          <i class="fas fa-envelope me-2"></i> {{ config.EMAIL_ADDRESS }}<br>
+          <i class="fab fa-whatsapp me-2"></i> <a href="https://wa.me/{{ config.WHATSAPP_NUMBER|cut:'+' }}" class="text-white-50 text-decoration-none">{{ config.WHATSAPP_NUMBER }}</a>
         </p>
       </div>
 
@@ -27,16 +27,16 @@
       <!-- Social Media -->
       <div class="col-md-4 mb-3">
         <h5 class="text-uppercase fw-bold">{% trans "Follow Us" %}</h5>
-        <a href="{{ constance.FACEBOOK_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
-        <a href="{{ constance.TWITTER_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-twitter fa-lg"></i></a>
-        <a href="{{ constance.INSTAGRAM_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
-        <a href="{{ constance.LINKEDIN_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="{{ config.FACEBOOK_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
+        <a href="{{ config.TWITTER_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-twitter fa-lg"></i></a>
+        <a href="{{ config.INSTAGRAM_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
+        <a href="{{ config.LINKEDIN_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-linkedin fa-lg"></i></a>
       </div>
     </div>
 
     <hr class="border-secondary">
     <div class="text-center mt-3">
-      <span class="text-white-50">&copy; {% now "Y" %} {{ constance.COMPANY_NAME }}. {% trans "All rights reserved." %}</span>
+      <span class="text-white-50">&copy; {% now "Y" %} {{ config.COMPANY_NAME }}. {% trans "All rights reserved." %}</span>
     </div>
   </div>
 </footer>
