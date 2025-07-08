@@ -1,0 +1,357 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-08 17:19+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+#: .\reverse\settings.py:121
+msgid "Arabic"
+msgstr "العربية"
+
+#: .\reverse\settings.py:122
+msgid "English"
+msgstr "الإنجليزية"
+
+#: .\templates\partials\_footer.html:8 .\templates\shop\category_detail.html:6
+#: .\templates\shop\product_detail.html:5
+msgid "Reverse"
+msgstr "ريڤيرس"
+
+#: .\templates\partials\_footer.html:10
+msgid ""
+"Reverse is a modern e-commerce platform offering premium products and a "
+"seamless shopping experience."
+msgstr "ريڤيرس هو منصة تجارة إلكترونية حديثة تقدم منتجات مميزة وتجربة تسوق سلسة."
+
+#: .\templates\partials\_footer.html:16
+msgid "Quick Links"
+msgstr "روابط سريعة"
+
+#: .\templates\partials\_footer.html:18 .\templates\partials\_header.html:13
+msgid "Home"
+msgstr "الرئيسية"
+
+#: .\templates\partials\_footer.html:19
+msgid "Shop"
+msgstr "المتجر"
+
+#: .\templates\partials\_footer.html:20 .\templates\partials\_header.html:28
+msgid "Cart"
+msgstr "عربة التسوق"
+
+#: .\templates\partials\_footer.html:21
+msgid "My Account"
+msgstr "حسابي"
+
+#: .\templates\partials\_footer.html:22
+msgid "Contact Us"
+msgstr "اتصل بنا"
+
+#: .\templates\partials\_footer.html:28
+msgid "Follow Us"
+msgstr "تابعنا"
+
+#: .\templates\partials\_footer.html:38
+msgid "Reverse. All rights reserved."
+msgstr "ريڤيرس. جميع الحقوق محفوظة."
+
+#: .\templates\partials\_header.html:7
+msgid "Toggle navigation"
+msgstr "تبديل التنقل"
+
+#: .\templates\partials\_header.html:17
+#: .\templates\shop\category_detail.html:17
+msgid "Categories"
+msgstr "التصنيفات"
+
+#: .\templates\partials\_header.html:24 .\templates\shop\category_detail.html:6
+#: .\templates\shop\category_detail.html:20
+#: .\templates\shop\category_detail.html:147
+msgid "All Products"
+msgstr "جميع المنتجات"
+
+#: .\templates\partials\_header.html:31
+msgid "Wishlist"
+msgstr "المفضلة"
+
+#: .\templates\partials\_header.html:34
+msgid "Account"
+msgstr "الحساب"
+
+#: .\templates\partials\_header.html:40
+msgid "Language"
+msgstr "اللغة"
+
+#: .\templates\shop\account.html:11
+msgid "Sign In"
+msgstr "تسجيل الدخول"
+
+#: .\templates\shop\account.html:14 .\templates\shop\account.html:33
+msgid "Register"
+msgstr "إنشاء حساب"
+
+#: .\templates\shop\account.html:24
+msgid "Login"
+msgstr "دخول"
+
+#: .\templates\shop\category_detail.html:15
+msgid "Filters"
+msgstr "تصفية"
+
+#: .\templates\shop\category_detail.html:46
+msgid "Fit Type"
+msgstr "نوع المقاس"
+
+#: .\templates\shop\category_detail.html:58
+msgid "Brand"
+msgstr "العلامة التجارية"
+
+#: .\templates\shop\category_detail.html:70
+msgid "Color"
+msgstr "اللون"
+
+#: .\templates\shop\category_detail.html:83
+msgid "Size"
+msgstr "المقاس"
+
+#: .\templates\shop\category_detail.html:95
+msgid "Price Range"
+msgstr "نطاق السعر"
+
+#: .\templates\shop\category_detail.html:97
+msgid "Min"
+msgstr "الحد الأدنى"
+
+#: .\templates\shop\category_detail.html:98
+msgid "Max"
+msgstr "الحد الأقصى"
+
+#: .\templates\shop\category_detail.html:100
+msgid "Apply Price"
+msgstr "تطبيق السعر"
+
+#: .\templates\shop\category_detail.html:104
+msgid "Sort By"
+msgstr "ترتيب حسب"
+
+#: .\templates\shop\category_detail.html:106
+msgid "Name (A-Z)"
+msgstr "الاسم (أ-ي)"
+
+#: .\templates\shop\category_detail.html:107
+msgid "Price (Low to High)"
+msgstr "السعر (من الأقل إلى الأعلى)"
+
+#: .\templates\shop\category_detail.html:108
+msgid "Price (High to Low)"
+msgstr "السعر (من الأعلى إلى الأقل)"
+
+#: .\templates\shop\category_detail.html:109
+msgid "Newest"
+msgstr "الأحدث"
+
+#: .\templates\shop\category_detail.html:110
+msgid "Popular"
+msgstr "الأكثر شهرة"
+
+#: .\templates\shop\category_detail.html:115
+msgid "Flags"
+msgstr "العلامات"
+
+#: .\templates\shop\category_detail.html:119
+#: .\templates\shop\category_detail.html:172 .\templates\shop\home.html:155
+#: .\templates\shop\product_detail.html:57
+msgid "Best Seller"
+msgstr "الأكثر مبيعاً"
+
+#: .\templates\shop\category_detail.html:125
+#: .\templates\shop\category_detail.html:175 .\templates\shop\home.html:113
+#: .\templates\shop\product_detail.html:60
+msgid "New Arrival"
+msgstr "وصل حديثاً"
+
+#: .\templates\shop\category_detail.html:131
+#: .\templates\shop\category_detail.html:178 .\templates\shop\home.html:74
+#: .\templates\shop\home.html:116 .\templates\shop\home.html:158
+#: .\templates\shop\product_detail.html:63
+msgid "On Sale"
+msgstr "تخفيض"
+#: .\templates\shop\category_detail.html:143
+#: .\templates\shop\category_detail.html:145
+msgid "Products"
+msgstr "المنتجات"
+
+#: .\templates\shop\category_detail.html:159 .\templates\shop\home.html:58
+#: .\templates\shop\home.html:100 .\templates\shop\home.html:142
+#: .\templates\shop\home.html:184 .\templates\shop\product_detail.html:134
+msgid "No Image"
+msgstr "لا توجد صورة"
+
+#: .\templates\shop\category_detail.html:182 .\templates\shop\home.html:78
+#: .\templates\shop\home.html:120 .\templates\shop\home.html:162
+#: .\templates\shop\home.html:204 .\templates\shop\product_detail.html:145
+msgid "View Details"
+msgstr "عرض التفاصيل"
+
+#: .\templates\shop\category_detail.html:190
+msgid "No products found in this category or with the selected filters."
+msgstr "لم يتم العثور على منتجات في هذه الفئة أو باستخدام الفلاتر المحددة."
+
+#: .\templates\shop\category_detail.html:197
+msgid "Page navigation"
+msgstr "تصفح الصفحات"
+
+#: .\templates\shop\category_detail.html:201
+#: .\templates\shop\category_detail.html:204
+msgid "Previous"
+msgstr "السابق"
+
+#: .\templates\shop\category_detail.html:219
+#: .\templates\shop\category_detail.html:222
+msgid "Next"
+msgstr "التالي"
+
+#: .\templates\shop\home.html:5
+msgid "Home - Reverse"
+msgstr "الرئيسية - ريفيرس"
+
+#: .\templates\shop\home.html:11
+msgid "Discover Your Style"
+msgstr "اكتشف أسلوبك"
+
+#: .\templates\shop\home.html:12
+msgid "Explore our latest collections and find the perfect products for you."
+msgstr "استكشف أحدث مجموعاتنا وابحث عن المنتجات المثالية لك."
+
+#: .\templates\shop\home.html:14
+msgid "Shop Now"
+msgstr "تسوق الآن"
+
+#: .\templates\shop\home.html:23
+msgid "Shop By Category"
+msgstr "تسوق حسب الفئة"
+
+#: .\templates\shop\home.html:36
+msgid "View Products"
+msgstr "عرض المنتجات"
+
+#: .\templates\shop\home.html:43
+msgid "No categories available."
+msgstr "لا توجد فئات متاحة."
+
+#: .\templates\shop\home.html:49
+msgid "Featured Products"
+msgstr "منتجات مميزة"
+
+#: .\templates\shop\home.html:71
+msgid "Featured"
+msgstr "مميز"
+
+#: .\templates\shop\home.html:85
+msgid "No featured products available."
+msgstr "لا توجد منتجات مميزة متاحة."
+
+#: .\templates\shop\home.html:91
+msgid "New Arrivals"
+msgstr "وصل حديثاً"
+
+#: .\templates\shop\home.html:127
+msgid "No new arrivals available."
+msgstr "لا توجد منتجات جديدة متاحة."
+
+#: .\templates\shop\home.html:133
+msgid "Best Sellers"
+msgstr "الأكثر مبيعاً"
+
+#: .\templates\shop\home.html:169
+msgid "No best sellers available."
+msgstr "لا توجد منتجات مبيعاً متوفرة."
+
+#: .\templates\shop\home.html:175 .\templates\shop\home.html:197
+msgid "On Sale!"
+msgstr "تخفيضات!"
+
+#: .\templates\shop\home.html:200
+msgid "Off"
+msgstr "خصم"
+
+#: .\templates\shop\home.html:211
+msgid "No products currently on sale."
+msgstr "لا توجد منتجات مخفضة حالياً."
+
+#: .\templates\shop\product_detail.html:17
+#: .\templates\shop\product_detail.html:35
+msgid "Image"
+msgstr "صورة"
+
+#: .\templates\shop\product_detail.html:21
+msgid "No image available"
+msgstr "لا توجد صورة متاحة"
+
+#: .\templates\shop\product_detail.html:35
+msgid "Thumbnail of"
+msgstr "صورة مصغرة لـ"
+
+#: .\templates\shop\product_detail.html:69
+msgid "Fit"
+msgstr "الملاءمة"
+
+#: .\templates\shop\product_detail.html:75
+msgid "Available Colors:"
+msgstr "الألوان المتوفرة:"
+
+#: .\templates\shop\product_detail.html:89
+msgid "Select Size:"
+msgstr "اختر المقاس:"
+
+#: .\templates\shop\product_detail.html:99
+msgid "SKU"
+msgstr "رمز المنتج"
+
+#: .\templates\shop\product_detail.html:100
+msgid "Stock"
+msgstr "المخزون"
+
+#: .\templates\shop\product_detail.html:100
+msgid "in stock"
+msgstr "متوفر"
+
+#: .\templates\shop\product_detail.html:105
+msgid "Quantity:"
+msgstr "الكمية:"
+
+#: .\templates\shop\product_detail.html:112
+msgid "Close"
+msgstr "إغلاق"
+
+#: .\templates\shop\product_detail.html:116
+msgid "Add to Cart"
+msgstr "أضف إلى السلة"
+
+#: .\templates\shop\product_detail.html:117
+msgid "Add to Wishlist"
+msgstr "أضف إلى المفضلة"
+
+#: .\templates\shop\product_detail.html:125
+msgid "Related Products"
+msgstr "منتجات ذات صلة"
+
+#: .\templates\shop\product_detail.html:151
+msgid "No related products found."
+msgstr "لم يتم العثور على منتجات ذات صلة."
+
+

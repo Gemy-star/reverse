@@ -1,6 +1,41 @@
+{% load i18n %}
 
-    <footer class="footer mt-auto py-3">
-        <div class="container text-center">
-            <span>&copy; 2025 My E-commerce Site. All rights reserved.</span>
-        </div>
-    </footer>
+<footer class="footer mt-auto py-4 bg-dark border-top border-secondary text-light">
+  <div class="container text-center text-md-start">
+    <div class="row">
+      <!-- Intro Section -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase fw-bold">Reverse</h5>
+        <p class="text-white-50">
+          {% trans "Reverse is a modern e-commerce platform offering premium products and a seamless shopping experience." %}
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase fw-bold">{% trans "Quick Links" %}</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Home" %}</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Shop" %}</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Cart" %}</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "My Account" %}</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Contact Us" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Social Media -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase fw-bold">{% trans "Follow Us" %}</h5>
+        <a href="#" class="me-2 text-white-50"><i class="fab fa-facebook fa-lg"></i></a>
+        <a href="#" class="me-2 text-white-50"><i class="fab fa-twitter fa-lg"></i></a>
+        <a href="#" class="me-2 text-white-50"><i class="fab fa-instagram fa-lg"></i></a>
+        <a href="#" class="me-2 text-white-50"><i class="fab fa-linkedin fa-lg"></i></a>
+      </div>
+    </div>
+
+    <hr class="border-secondary">
+    <div class="text-center mt-3">
+      <span class="text-white-50">&copy; {% now "Y" %} {% trans "Reverse. All rights reserved." %}</span>
+    </div>
+  </div>
+</footer>

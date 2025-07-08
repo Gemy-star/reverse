@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="row d-flex justify-content-center">
+    <div class="col-8">
+      <ul class="nav nav-tabs" id="accountTabs">
+        <li class="nav-item">
+          <a class="nav-link active" data-bs-toggle="tab" href="#login-tab">{% trans "Sign In" %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#register-tab">{% trans "Register" %}</a>
+        </li>
+      </ul>
+
+      <div class="tab-content mt-3">
+        <!-- Login Tab -->
+        <div class="tab-pane fade show active" id="login-tab">
+          <form method="POST">
+            {% csrf_token %}
+            {{ login_form|crispy }}
+            <button type="submit" name="login" class="btn btn-primary">{% trans "Login" %}</button>
+          </form>
+        </div>
+
+        <!-- Register Tab -->
+        <div class="tab-pane fade" id="register-tab">
+          <form method="POST">
+            {% csrf_token %}
+            {{ register_form|crispy }}
+            <button type="submit" name="register" class="btn btn-success">{% trans "Register" %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
