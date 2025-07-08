@@ -39,17 +39,9 @@
                                         <span class="old-price">${{ product.price }}</span>
                                     {% endif %}
                                 </div>
-                                <div class="mb-3">
-                                    {% if product.is_best_seller %}
-                                        <span class="badge badge-bestseller"><i class="fas fa-star"></i> Best Seller</span>
-                                    {% endif %}
-                                    {% if product.is_new_arrival %}
-                                        <span class="badge badge-new-arrival"><i class="fas fa-tag"></i> New Arrival</span>
-                                    {% endif %}
-                                    {% if product.is_on_sale %}
-                                        <span class="badge badge-on-sale"><i class="fas fa-fire"></i> On Sale</span>
-                                    {% endif %}
-                                </div>
+                               <div class="mb-3">
+    {% include "shop/partials/product_flags.html" with product=product %}
+</div>
                                 <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">View Details <i class="fas fa-chevron-right ms-1"></i></a>
                             </div>
                         </div>

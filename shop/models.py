@@ -129,41 +129,40 @@ class Size(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_size_type_display()})" # type: ignore
-
 class Product(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     description = models.TextField()
     short_description = models.CharField(max_length=300, blank=True)
-    
+
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE)
     fit_type = models.ForeignKey(FitType, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
     brand = models.ForeignKey(Brand, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
-    
+
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
-    
-    # Product flags
+
+    # Flags
     is_best_seller = models.BooleanField(default=False)
     is_new_arrival = models.BooleanField(default=False)
-    is_on_sale = models.BooleanField(default=False)
+    is_on_sale = models.BooleanField(default=False)  # Will be auto-set in save()
     is_featured = models.BooleanField(default=False)
-    
-    # Stock and availability
+
+    # Stock status
     stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     is_active = models.BooleanField(default=True)
     is_available = models.BooleanField(default=True)
-    
+
     # SEO fields
     meta_title = models.CharField(max_length=200, blank=True)
     meta_description = models.CharField(max_length=300, blank=True)
-    
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
-    # Many-to-many relationships
+
+    # Many-to-many
     colors = models.ManyToManyField(Color, through='ProductColor', blank=True)
     sizes = models.ManyToManyField(Size, through='ProductSize', blank=True)
 
@@ -181,13 +180,13 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        
-        # Auto-set sale flag based on sale_price
+
+        # Automatically set is_on_sale
         if self.sale_price and self.sale_price < self.price:
             self.is_on_sale = True
         else:
             self.is_on_sale = False
-            
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -195,37 +194,36 @@ class Product(models.Model):
 
     @property
     def get_price(self):
-        """Return the current price (sale price if on sale, otherwise regular price)"""
+        """Return current price (sale price if applicable)"""
         if self.is_on_sale and self.sale_price:
             return self.sale_price
         return self.price
 
     @property
     def get_discount_percentage(self):
-        """Calculate discount percentage"""
+        """Return discount percentage if on sale"""
         if self.is_on_sale and self.sale_price:
-            return round(((self.price - self.sale_price) / self.price) * 100)
+            discount = (self.price - self.sale_price) / self.price
+            return round(discount * 100)
         return 0
 
     @property
     def is_in_stock(self):
-        """Check if product is in stock"""
-        return self.stock_quantity > 0
+        """Return if total stock is above 0"""
+        return self.stock_quantity > 0 or self.variants.filter(stock_quantity__gt=0, is_available=True).exists()
 
     def get_main_image(self):
-        """Get the main product image"""
+        """Return the main image or fallback to first image"""
         main_image = self.images.filter(is_main=True).first()
-        if main_image:
-            return main_image
-        return self.images.first()
+        return main_image or self.images.first()
 
     def get_available_colors(self):
-        """Get available colors for this product"""
-        return self.colors.filter(is_active=True)
+        """Return distinct active colors from variants"""
+        return self.colors.filter(is_active=True, product_images__product=self).distinct()
 
     def get_available_sizes(self):
-        """Get available sizes for this product"""
-        return self.sizes.filter(is_active=True)
+        """Return distinct active sizes from variants"""
+        return self.sizes.filter(is_active=True, product=self).distinct()
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
