@@ -152,7 +152,7 @@
         {% if related_product.variants.exists %}
             {% with variant=related_product.variants.first %}
                 <!-- Add to Cart Form -->
-                <form method="post" action="{% url 'add_to_cart' %}" class="mb-2">
+                <form method="post" action="{% url 'shop:add_to_cart' %}" class="mb-2">
                     {% csrf_token %}
                     <input type="hidden" name="variant_id" value="{{ variant.id }}">
                     <input type="hidden" name="quantity" value="1">
