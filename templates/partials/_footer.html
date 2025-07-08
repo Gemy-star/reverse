@@ -1,13 +1,14 @@
 {% load i18n %}
-
 <footer class="footer mt-auto py-4 bg-dark border-top border-secondary text-light">
   <div class="container text-center text-md-start">
     <div class="row">
       <!-- Intro Section -->
       <div class="col-md-4 mb-3">
-        <h5 class="text-uppercase fw-bold">Reverse</h5>
+        <h5 class="text-uppercase fw-bold">{{ constance.COMPANY_NAME }}</h5>
+        <p class="text-white-50">{{ constance.COMPANY_DESCRIPTION }}</p>
         <p class="text-white-50">
-          {% trans "Reverse is a modern e-commerce platform offering premium products and a seamless shopping experience." %}
+          <i class="fas fa-envelope me-2"></i> {{ constance.EMAIL_ADDRESS }}<br>
+          <i class="fab fa-whatsapp me-2"></i> <a href="https://wa.me/{{ constance.WHATSAPP_NUMBER|cut:'+' }}" class="text-white-50 text-decoration-none">{{ constance.WHATSAPP_NUMBER }}</a>
         </p>
       </div>
 
@@ -15,27 +16,27 @@
       <div class="col-md-4 mb-3">
         <h5 class="text-uppercase fw-bold">{% trans "Quick Links" %}</h5>
         <ul class="list-unstyled">
-          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Home" %}</a></li>
-          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Shop" %}</a></li>
-          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Cart" %}</a></li>
-          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "My Account" %}</a></li>
-          <li><a href="#" class="text-white-50 text-decoration-none">{% trans "Contact Us" %}</a></li>
+          <li><a href="{% url 'shop:home' %}" class="text-white-50 text-decoration-none">{% trans "Home" %}</a></li>
+          <li><a href="{% url 'shop:category_detail' slug='all' %}" class="text-white-50 text-decoration-none">{% trans "Shop" %}</a></li>
+          <li><a href="" class="text-white-50 text-decoration-none">{% trans "Cart" %}</a></li>
+          <li><a href="" class="text-white-50 text-decoration-none">{% trans "My Account" %}</a></li>
+          <li><a href="" class="text-white-50 text-decoration-none">{% trans "Contact Us" %}</a></li>
         </ul>
       </div>
 
       <!-- Social Media -->
       <div class="col-md-4 mb-3">
         <h5 class="text-uppercase fw-bold">{% trans "Follow Us" %}</h5>
-        <a href="#" class="me-2 text-white-50"><i class="fab fa-facebook fa-lg"></i></a>
-        <a href="#" class="me-2 text-white-50"><i class="fab fa-twitter fa-lg"></i></a>
-        <a href="#" class="me-2 text-white-50"><i class="fab fa-instagram fa-lg"></i></a>
-        <a href="#" class="me-2 text-white-50"><i class="fab fa-linkedin fa-lg"></i></a>
+        <a href="{{ constance.FACEBOOK_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
+        <a href="{{ constance.TWITTER_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-twitter fa-lg"></i></a>
+        <a href="{{ constance.INSTAGRAM_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
+        <a href="{{ constance.LINKEDIN_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-linkedin fa-lg"></i></a>
       </div>
     </div>
 
     <hr class="border-secondary">
     <div class="text-center mt-3">
-      <span class="text-white-50">&copy; {% now "Y" %} {% trans "Reverse. All rights reserved." %}</span>
+      <span class="text-white-50">&copy; {% now "Y" %} {{ constance.COMPANY_NAME }}. {% trans "All rights reserved." %}</span>
     </div>
   </div>
 </footer>

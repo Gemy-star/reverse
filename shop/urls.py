@@ -14,5 +14,13 @@ urlpatterns = [
     path('api/add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'), # New AJAX endpoint for wishlist
     path('api/get-counts/', views.get_cart_and_wishlist_counts, name='get_cart_and_wishlist_counts'), # New AJAX endpoint for counts
     path('account/', views.account_view, name='account'),
+    path('cart/', views.cart_detail, name='cart_detail'),
+    path('cart/add/', views.add_to_cart, name='add_to_cart'),
+    path('cart/update/<int:item_id>/', views.update_cart_item, name='update_cart_item'),
+    path('cart/remove/<int:item_id>/', views.remove_cart_item, name='remove_cart_item'),
+
+    path('wishlist/', views.wishlist_detail, name='wishlist_detail'),
+    path('wishlist/add/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/remove/<int:item_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
 
 ]

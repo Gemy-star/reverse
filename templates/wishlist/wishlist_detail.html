@@ -1,0 +1,27 @@
+<!-- templates/wishlist/wishlist_detail.html -->
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+ <div class="container my-4">
+  <div class="row">
+   <div class="col">
+<h2>{% trans 'My Wishlist' %}</h2>
+{% if wishlist.items.all %}
+  <ul>
+    {% for item in wishlist.items.all %}
+      <li>
+        {{ item.product.name }}
+        <form method="post" action="{% url 'shop:remove_from_wishlist' item.id %}">{% csrf_token %}
+          <button type="submit">{% trans 'Remove' %}</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>{% trans 'Your wishlist is empty' %}.</p>
+{% endif %}
+   </div>
+  </div>
+ </div>
+{% endblock %}

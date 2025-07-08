@@ -13,6 +13,8 @@ from .models import (
     Category, SubCategory, FitType, Brand, Color, Size,
     Product, ProductVariant, Cart, CartItem, Wishlist, WishlistItem
 )
+from django.views.decorators.http import require_POST
+
 
 def home(request):
     """Homepage view"""
@@ -53,15 +55,26 @@ def home(request):
     return render(request, 'shop/home.html', context)
 
 def category_detail(request, slug):
-    """Category detail view"""
-    category = get_object_or_404(Category, slug=slug, is_active=True)
-    subcategories = category.subcategories.filter(is_active=True)
+    """Category detail view - supports 'all' to show all products"""
+    category = None
+    subcategories = []
 
-    products = Product.objects.filter(
-        category=category,
-        is_active=True,
-        is_available=True
-    ).select_related('category', 'subcategory', 'brand')
+    if slug != 'all':
+        category = get_object_or_404(Category, slug=slug, is_active=True)
+        subcategories = category.subcategories.filter(is_active=True)
+        products = Product.objects.filter(
+            category=category,
+            is_active=True,
+            is_available=True
+        )
+    else:
+        products = Product.objects.filter(
+            is_active=True,
+            is_available=True
+        )
+
+    # Prefetch related objects
+    products = products.select_related('category', 'subcategory', 'brand')
 
     # Filters
     subcategory_filter = request.GET.get('subcategory')
@@ -111,7 +124,7 @@ def category_detail(request, slug):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Get filter options
+    # Filter options
     fit_types = FitType.objects.filter(is_active=True)
     brands = Brand.objects.filter(is_active=True)
     colors = Color.objects.filter(is_active=True)
@@ -119,12 +132,12 @@ def category_detail(request, slug):
 
     # Price range
     price_range = Product.objects.filter(
-        category=category,
         is_active=True,
-        is_available=True
+        is_available=True,
+        category=category if category else None
     ).aggregate(Min('price'), Max('price'))
 
-    # Pass all categories for the base.html navbar
+    # All categories for navbar
     all_categories = Category.objects.filter(is_active=True)
 
     context = {
@@ -136,7 +149,7 @@ def category_detail(request, slug):
         'colors': colors,
         'sizes': sizes,
         'price_range': price_range,
-        'categories': all_categories, # Pass all categories for base.html dropdown
+        'categories': all_categories,
         'current_filters': {
             'subcategory': subcategory_filter,
             'fit_type': fit_type_filter,
@@ -490,3 +503,76 @@ def account_view(request):
         'login_form': login_form,
         'register_form': register_form
     })
+
+
+def get_cart(request):
+    if request.user.is_authenticated:
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+    else:
+        session_key = request.session.session_key or request.session.save() or request.session.session_key
+        cart, _ = Cart.objects.get_or_create(session_key=session_key)
+    return cart
+
+
+def cart_detail(request):
+    cart = get_cart(request)
+    return render(request, 'cart/cart_detail.html', {'cart': cart})
+
+
+@require_POST
+def add_to_cart(request):
+    cart = get_cart(request)
+    variant_id = request.POST.get('variant_id')
+    quantity = int(request.POST.get('quantity', 1))
+    variant = get_object_or_404(ProductVariant, id=variant_id)
+    item, created = CartItem.objects.get_or_create(cart=cart, product_variant=variant)
+    if not created:
+        item.quantity += quantity
+    item.save()
+    return redirect('cart_detail')
+
+
+@require_POST
+def update_cart_item(request, item_id):
+    cart = get_cart(request)
+    item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    quantity = int(request.POST.get('quantity', 1))
+    if quantity > 0:
+        item.quantity = quantity
+        item.save()
+    else:
+        item.delete()
+    return redirect('cart_detail')
+
+
+@require_POST
+def remove_cart_item(request, item_id):
+    cart = get_cart(request)
+    item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    item.delete()
+    return redirect('cart_detail')
+
+
+@login_required
+def wishlist_detail(request):
+    wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
+    return render(request, 'wishlist/wishlist_detail.html', {'wishlist': wishlist})
+
+
+@login_required
+@require_POST
+def add_to_wishlist(request):
+    product_id = request.POST.get('product_id')
+    product = get_object_or_404(Product, id=product_id)
+    wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
+    WishlistItem.objects.get_or_create(wishlist=wishlist, product=product)
+    return redirect('wishlist_detail')
+
+
+@login_required
+@require_POST
+def remove_from_wishlist(request, item_id):
+    wishlist = get_object_or_404(Wishlist, user=request.user)
+    item = get_object_or_404(WishlistItem, id=item_id, wishlist=wishlist)
+    item.delete()
+    return redirect('wishlist_detail')
