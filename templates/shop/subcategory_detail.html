@@ -17,21 +17,21 @@
         <div class="mb-4">
             <h6>{% trans "Categories" %}</h6>
             <div class="list-group list-group-flush category-list">
-                <a href="{% url 'store:home' %}" class="list-group-item" data-category-slug="">
+                <a href="{% url 'shop:home' %}" class="list-group-item" data-category-slug="">
                     <i class="fas fa-th-large"></i> {% trans "All Products" %}
                 </a>
                 {% for cat in categories %}
-                    <a href="{% url 'store:category_detail' slug=cat.slug %}"
+                    <a href="{% url 'shop:category_detail' slug=cat.slug %}"
                        class="list-group-item {% if category and category.slug == cat.slug %}active{% endif %}"
                        data-category-slug="{{ cat.slug }}">
-                        <i class="fas fa-folder"></i> {{ cat.name|trans }}
+                        <i class="fas fa-folder"></i> {{ cat.name }}
                     </a>
                     {% if category and category.slug == cat.slug %}
                         {% for subcat in subcategories %}
-                            <a href="{% url 'store:subcategory_detail' category_slug=cat.slug slug=subcat.slug %}"
+                            <a href="{% url 'shop:subcategory_detail' category_slug=cat.slug slug=subcat.slug %}"
                                class="list-group-item ps-4 {% if subcategory and subcategory.slug == subcat.slug %}active{% endif %}"
                                data-subcategory-slug="{{ subcat.slug }}">
-                                <i class="fas fa-angle-right"></i> {{ subcat.name|trans }}
+                                <i class="fas fa-angle-right"></i> {{ subcat.name }}
                             </a>
                         {% endfor %}
                     {% endif %}
@@ -49,7 +49,7 @@
                 <div class="form-check">
                     <input class="form-check-input filter-checkbox" type="checkbox" name="fit_type" value="{{ fit_type.slug }}" id="fitType{{ fit_type.slug }}" {% if fit_type.slug == current_filters.fit_type %}checked{% endif %}>
                     <label class="form-check-label" for="fitType{{ fit_type.slug }}">
-                        {{ fit_type.name|trans }}
+                        {{ fit_type.name }}
                     </label>
                 </div>
                 {% endfor %}
@@ -61,7 +61,7 @@
                 <div class="form-check">
                     <input class="form-check-input filter-checkbox" type="checkbox" name="brand" value="{{ brand.slug }}" id="brand{{ brand.slug }}" {% if brand.slug == current_filters.brand %}checked{% endif %}>
                     <label class="form-check-label" for="brand{{ brand.slug }}">
-                        {{ brand.name|trans }}
+                        {{ brand.name }}
                     </label>
                 </div>
                 {% endfor %}
@@ -74,7 +74,7 @@
                     <input class="form-check-input filter-checkbox" type="checkbox" name="color" value="{{ color.name }}" id="color{{ color.name }}" {% if color.name == current_filters.color %}checked{% endif %}>
                     <label class="form-check-label" for="color{{ color.name }}">
                         <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ color.hex_code }}; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; margin-right: 5px;"></span>
-                        {{ color.name|trans }}
+                        {{ color.name }}
                     </label>
                 </div>
                 {% endfor %}
@@ -86,7 +86,7 @@
                 <div class="form-check">
                     <input class="form-check-input filter-checkbox" type="checkbox" name="size" value="{{ size.name }}" id="size{{ size.name }}" {% if size.name == current_filters.size %}checked{% endif %}>
                     <label class="form-check-label" for="size{{ size.name }}">
-                        {{ size.name|trans }} ({{ size.get_size_type_display|trans }})
+                        {{ size.name }} ({{ size.get_size_type_display }})
                     </label>
                 </div>
                 {% endfor %}
