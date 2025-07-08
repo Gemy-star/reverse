@@ -153,6 +153,10 @@
     {% endfor %}
 </div>
 </div>
+{% endblock %}
+
+
+{% block js %}
 <script>
     $(document).ready(function() {
         const productId = {{ product.id }};
@@ -369,4 +373,4 @@
         updateProductVariantDetails(null); // Start with a prompt to select
     });
 </script>
-{% endblock %}
+{% endblock js  %}
