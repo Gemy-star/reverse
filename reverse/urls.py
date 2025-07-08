@@ -27,7 +27,7 @@ urlpatterns = [
 
 urlpatterns += i18n_patterns(
     path('', include('shop.urls')),  # Your main app
-    path('admin/', include('admin.urls')),  # Add trailing slash!
+    path('admin/', admin.site.urls),
 )
 
 if settings.DEBUG:
