@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'constance',
     'constance.backends.database',
+    'imagekit',
 ]
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 

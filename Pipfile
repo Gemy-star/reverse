@@ -13,6 +13,7 @@ gunicorn = "*"
 mysqlclient = "*"
 python-dotenv = "*"
 django-constance = {extras = ["redis"], version = "*"}
+django-imagekit = "*"
 
 [dev-packages]
 django-silk = "*"
