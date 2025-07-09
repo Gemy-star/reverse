@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login
 from .forms import RegisterForm, LoginForm
 from .models import (
     Category, SubCategory, FitType, Brand, Color, Size,
-    Product, ProductVariant, Cart, CartItem, Wishlist, WishlistItem
+    Product, ProductVariant, Cart, CartItem, Wishlist, WishlistItem , HomeSlider
 )
 from django.views.decorators.http import require_POST
 
@@ -43,6 +43,7 @@ def home(request):
     ).select_related('category', 'subcategory', 'brand')[:8]
 
     categories = Category.objects.filter(is_active=True)
+    sliders = HomeSlider.objects.filter(is_active=True).order_by('order')
 
     context = {
         'featured_products': featured_products,
@@ -50,6 +51,7 @@ def home(request):
         'best_sellers': best_sellers,
         'sale_products': sale_products,
         'categories': categories,
+        'sliders': sliders,
     }
 
     return render(request, 'shop/home.html', context)

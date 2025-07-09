@@ -7,7 +7,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from django.conf import settings # Import settings to get AUTH_USER_MODEL
 from django.contrib.auth.models import AbstractUser
-
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+from django.utils.translation import gettext_lazy as _
 
 class ReverseUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True, null=True)
@@ -370,4 +372,37 @@ class WishlistItem(models.Model):
 
     def __str__(self):
         return f"{self.product.name} in {self.wishlist.user.username}'s Wishlist"
+
+
+class HomeSlider(models.Model):
+    image = models.ImageField(upload_to='slider/', verbose_name=_("Slider Image"))
+    # Processed image (1920x600)
+    image_resized = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(1400, 650)],
+        format='JPEG',
+        options={'quality': 85}
+    )
+
+    alt_text = models.CharField(max_length=255, verbose_name=_("Alt Text"))
+    heading = models.CharField(max_length=255, verbose_name=_("Heading"))
+    subheading = models.TextField(verbose_name=_("Subheading"))
+    button_text = models.CharField(max_length=100, verbose_name=_("Button Text"))
+    button_url_name = models.URLField(
+        max_length=100,
+        verbose_name=_("URL Address"),
+        help_text=_("Enter the URL Address")
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name=_("Display Order"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = _("Home Slider")
+        verbose_name_plural = _("Home Sliders")
+
+    def __str__(self):
+        return self.heading
+
+
 
