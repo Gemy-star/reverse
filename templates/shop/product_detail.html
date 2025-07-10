@@ -5,8 +5,8 @@
 {% block title %}{{ product.name }} - {% trans "Reverse" %}{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-<div class="row">
+<div class="container my-4 pt-4">
+<div class="row pt-4">
 
 <!-- Product Images (Swiper Carousel) -->
 <div class="col-md-6 mb-4">
@@ -52,23 +52,9 @@
         {% endif %}
     </div>
 
-    <div class="mb-4">
-        {% if product.is_best_seller %}
-            <span class="badge badge-bestseller badge-flag"><i class="fas fa-star me-1"></i> {% trans "Best Seller" %}</span>
-        {% endif %}
-        {% if product.is_new_arrival %}
-            <span class="badge badge-new-arrival badge-flag"><i class="fas fa-tag me-1"></i> {% trans "New Arrival" %}</span>
-        {% endif %}
-        {% if product.is_on_sale %}
-            <span class="badge badge-on-sale badge-flag"><i class="fas fa-fire me-1"></i> {% trans "On Sale" %}</span>
-        {% endif %}
-        {% if product.brand %}
-            <span class="badge bg-secondary badge-flag"><i class="fas fa-tag me-1"></i> {{ product.brand.name }}</span>
-        {% endif %}
-        {% if product.fit_type %}
-            <span class="badge bg-info badge-flag"><i class="fas fa-ruler-horizontal me-1"></i> {{ product.fit_type.name }} {% trans "Fit" %}</span>
-        {% endif %}
-    </div>
+      <div class="mb-3">
+            {% include "shop/partials/product_flags.html" with product=product is_showed=False %}
+        </div>
 
     {% if available_colors %}
         <div class="mb-4">
@@ -96,15 +82,33 @@
     {% endif %}
 
     <div class="mb-4">
-        <p>{% trans "SKU" %}: <span id="display-sku">N/A</span></p>
+        
         <p>{% trans "Stock" %}: <span id="display-stock" class="fw-bold {% if product.is_in_stock %}text-success{% else %}text-danger{% endif %}">{{ product.stock_quantity }} {% trans "in stock" %}</span></p>
     </div>
 
     <!-- Quantity Input -->
-    <div class="mb-3">
-        <h6>{% trans "Quantity:" %}</h6>
-        <input type="number" id="quantity-input" class="form-control" value="1" min="1" style="width: 100px;">
+  
+
+<div class="mb-3">
+    <h6>{% trans "Payment Method:" %}</h6>
+    <div id="payment-methods-buttons" class="btn-list-group-horizontal" role="group" aria-label="Payment methods">
+        <button type="button" class="btn btn-outline-primary active" data-value="COD">{% trans "Cash on Delivery (COD)" %}</button>
+        <button type="button" class="btn btn-outline-primary" data-value="VISA">{% trans "VISA" %}</button>
+        <button type="button" class="btn btn-outline-primary" data-value="MASTERCARD">{% trans "MasterCard" %}</button>
+        <button type="button" class="btn btn-outline-primary" data-value="VALUE">{% trans "VALUE" %}</button>
+        <button type="button" class="btn btn-outline-primary" data-value="SYMBOL">{% trans "SYMBOL" %}</button>
     </div>
+    <input type="hidden" id="selected-payment-method" value="COD">
+</div>
+
+<div class="mb-3">
+    <h6>{% trans "Quantity:" %}</h6>
+    <div style="display: flex; align-items: center;">
+        <span id="quantity-display" style="font-size: 1.2em; margin-right: 10px;">+1</span>
+        <button id="increase-quantity" class="btn btn-primary">+</button>
+    </div>
+    <input type="hidden" id="quantity-input" value="1" min="1">
+</div>
 
     <!-- Message Display Area -->
     <div id="message-area" class="alert alert-dismissible fade show d-none" role="alert">
@@ -402,6 +406,20 @@
         // If you want a default variant to be selected on page load (e.g., first available),
         // you would set selectedColorId and selectedSizeId here after page load.
         updateProductVariantDetails(null); // Start with a prompt to select
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityDisplay = document.getElementById('quantity-display');
+        const quantityInput = document.getElementById('quantity-input');
+        const increaseQuantityButton = document.getElementById('increase-quantity');
+
+        increaseQuantityButton.addEventListener('click', function() {
+            let currentQuantity = parseInt(quantityInput.value);
+            currentQuantity++;
+            quantityInput.value = currentQuantity;
+            quantityDisplay.textContent = '+' + currentQuantity;
+        });
     });
 </script>
 {% endblock js  %}

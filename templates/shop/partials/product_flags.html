@@ -1,5 +1,5 @@
 {% load i18n %}
-
+{% if is_showed %}
 {% if product.is_featured %}
     <span class="badge badge-featured"><i class="fas fa-star"></i> {% trans "Featured" %}</span>
 {% endif %}
@@ -14,4 +14,5 @@
     {% if product.get_discount_percentage > 0 %}
         <span class="badge bg-success badge-flag">{{ product.get_discount_percentage }}% {% trans "Off" %}</span>
     {% endif %}
+{% endif %}
 {% endif %}

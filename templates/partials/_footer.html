@@ -1,45 +1,71 @@
-{% load i18n %}
-<footer class="footer mt-auto py-4 bg-dark border-top border-secondary text-light">
-  <div class="container text-center text-md-start">
-    <div class="row">
-      <!-- Intro Section -->
-      <div class="col-md-4 mb-3">
-        <h5 class="text-uppercase fw-bold">{{ config.COMPANY_NAME }}</h5>
-        <p class="text-white-50">{{ config.COMPANY_DESCRIPTION }}</p>
-        <p class="text-white-50">
-          <i class="fas fa-envelope me-2"></i> {{ config.EMAIL_ADDRESS }}<br>
-          <i class="fab fa-whatsapp me-2"></i> <a href="https://wa.me/{{ config.WHATSAPP_NUMBER|cut:'+' }}" class="text-white-50 text-decoration-none">{{ config.WHATSAPP_NUMBER }}</a>
-        </p>
+{% load i18n static %}
+<footer class="footer mt-auto py-5 bg-dark text-light border-top border-secondary">
+  <div class="container">
+    <!-- Top Row: Social Icons -->
+    <div class="text-center mb-4">
+      <a href="{{ config.FACEBOOK_URL }}" class="text-white-50 me-3" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
+      <a href="{{ config.INSTAGRAM_URL }}" class="text-white-50 me-3" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
+      <a href="{{ config.TIKTOK_URL }}" class="text-white-50" target="_blank"><i class="fab fa-tiktok fa-lg"></i></a>
+    </div>
+
+    <!-- Middle Row: About - Connect - Links - Contact -->
+    <div class="row text-center text-md-start">
+      <!-- About -->
+      <div class="col-md-3 mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">{% trans "About Us" %}</h6>
+        <p class="text-white-50">About Reverse</p>
+      </div>
+
+      <!-- Let's Connect -->
+      <div class="col-md-3 mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">{% trans "LET’S CONNECT" %}</h6>
+        <p class="text-white-50">{% trans "Follow us on our Social Media Channels." %}</p>
+        <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+          <a href="{{ config.FACEBOOK_URL }}" class="btn btn-outline-light rounded-circle p-2" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="{{ config.INSTAGRAM_URL }}" class="btn btn-outline-light rounded-circle p-2" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="{{ config.TIKTOK_URL }}" class="btn btn-outline-light rounded-circle p-2" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
       </div>
 
       <!-- Quick Links -->
-      <div class="col-md-4 mb-3">
-        <h5 class="text-uppercase fw-bold">{% trans "Quick Links" %}</h5>
-        <ul class="list-unstyled">
-          <li><a href="{% url 'shop:home' %}" class="text-white-50 text-decoration-none">{% trans "Home" %}</a></li>
-          <li><a href="{% url 'shop:category_detail' slug='all' %}" class="text-white-50 text-decoration-none">{% trans "Shop" %}</a></li>
-          <li><a href="" class="text-white-50 text-decoration-none">{% trans "Cart" %}</a></li>
-          <li><a href="" class="text-white-50 text-decoration-none">{% trans "My Account" %}</a></li>
-          <li><a href="" class="text-white-50 text-decoration-none">{% trans "Contact Us" %}</a></li>
-          <li><a href="{% url 'shop:terms' %}" class="text-white-50 text-decoration-none">{% trans "Terms of service" %}</a></li>
-          <li><a href="{% url 'shop:policy' %}" class="text-white-50 text-decoration-none">{% trans "Privacy & Policy" %}</a></li>
-
+      <div class="col-md-3 mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">{% trans "Quick links" %}</h6>
+        <ul class="list-unstyled text-white-50">
+          <li><a href="{% url 'shop:terms' %}" class="text-white-50 text-decoration-none">{% trans "Terms & Conditions" %}</a></li>
         </ul>
       </div>
 
-      <!-- Social Media -->
-      <div class="col-md-4 mb-3">
-        <h5 class="text-uppercase fw-bold">{% trans "Follow Us" %}</h5>
-        <a href="{{ config.FACEBOOK_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
-        <a href="{{ config.TWITTER_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-twitter fa-lg"></i></a>
-        <a href="{{ config.INSTAGRAM_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
-        <a href="{{ config.LINKEDIN_URL }}" class="me-2 text-white-50" target="_blank"><i class="fab fa-linkedin fa-lg"></i></a>
+      <!-- Contact -->
+      <div class="col-md-3 mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">{% trans "Contact Us" %}</h6>
+        <p class="mb-0 text-white-50">
+          <i class="fas fa-phone-alt me-2"></i>
+          <span class="text-success">{{ config.WHATSAPP_NUMBER }}</span>
+        </p>
       </div>
     </div>
 
+    <!-- Payment & Bottom -->
     <hr class="border-secondary">
-    <div class="text-center mt-3">
-      <span class="text-white-50">&copy; {% now "Y" %} {{ config.COMPANY_NAME }}. {% trans "All rights reserved." %}</span>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <!-- Payment Icons -->
+      <div class="mb-3 mb-md-0">
+        <img src="{% static 'img/payments/apple-pay.png' %}" alt="Apple Pay" class="me-2" height="30">
+        <img src="{% static 'img/payments/stc-pay.png' %}" alt="STC Pay" class="me-2" height="30">
+        <img src="{% static 'img/payments/visa.png' %}" alt="Visa" class="me-2" height="30">
+        <img src="{% static 'img/payments/fawry.png' %}" alt="Fawry" class="me-2" height="30">
+        <img src="{% static 'img/payments/mastercard.png' %}" alt="Mastercard" class="me-2" height="30">
+      </div>
+
+      <!-- Copyright -->
+      <div>
+        <span class="text-white-50">&copy; {% now "Y" %}, Novencci EG.</span>
+      </div>
     </div>
+
+    <!-- Scroll to Top -->
+    <a href="#" class="btn btn-dark rounded-circle position-fixed bottom-0 end-0 m-4 shadow" style="z-index: 999;">
+      <i class="fas fa-arrow-up"></i>
+    </a>
   </div>
 </footer>

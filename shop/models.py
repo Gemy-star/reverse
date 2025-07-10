@@ -218,6 +218,10 @@ class Product(models.Model):
         """Return the main image or fallback to first image"""
         main_image = self.images.filter(is_main=True).first()
         return main_image or self.images.first()
+    def get_hover_image(self):
+        """Return the hover image or fallback to first image"""
+        hover_image = self.images.filter(is_hover=True).first()
+        return hover_image or self.images.first()
 
     def get_available_colors(self):
         """Return distinct active colors from variants"""
@@ -235,6 +239,7 @@ class ProductImage(models.Model):
     order = models.IntegerField(default=0)
     color = models.ForeignKey(Color, related_name='product_images', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_hover = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['order', 'created_at']

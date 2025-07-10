@@ -178,7 +178,7 @@ CONSTANCE_CONFIG = {
         'https://instagram.com/yourprofile',
         'Instagram URL'
     ),
-    'LINKEDIN_URL': (
+    'TIKTOK_URL': (
         'https://linkedin.com/company/yourcompany',
         'LinkedIn URL'
     ),

@@ -1,0 +1,9 @@
+
+{% load i18n %}
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/{{ config.WHATSAPP_NUMBER|cut:'+' }}" target="_blank"
+   class="btn btn-success rounded-circle position-fixed bottom-0 end-1 me-5 mb-6 shadow"
+   style="z-index: 998; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;"
+   title="{% trans 'Chat with us on WhatsApp' %}">
+  <i class="fab fa-whatsapp fa-lg text-white"></i>
+</a>
