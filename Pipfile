@@ -11,13 +11,13 @@ crispy-bootstrap5 = "*"
 django-silk = "*"
 gunicorn = "*"
 mysqlclient = "*"
-python-dotenv = "*"
 django-constance = {extras = ["redis"], version = "*"}
 django-imagekit = "*"
+python-dotenv = "*"
 
 [dev-packages]
 django-silk = "*"
 
 [requires]
-python_version = "3.13"
-python_full_version = "3.13.3"
+python_version = "3.11"
+python_full_version = "3.11.3"
