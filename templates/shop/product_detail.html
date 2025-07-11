@@ -5,7 +5,7 @@
 {% block title %}{{ product.name }} - {% trans "Reverse" %}{% endblock %}
 
 {% block content %}
-<div class="container my-5 pt-5">
+<div class="container my-4 pt-4">
 <div class="row pt-4">
 
 <!-- Product Images (Swiper Carousel) -->
@@ -180,17 +180,15 @@
         <h5 class="card-title">{{ related_product.name }}</h5>
         
         <div class="d-flex align-items-baseline mb-2">
-    <span class="price text-dark">${{ related_product.get_price }}</span>
-    {% if related_product.is_on_sale and related_product.sale_price %}
-        <span class="old-price ms-2 text-muted text-decoration-line-through">${{ related_product.price }}</span>
-    {% endif %}
-</div>
-
+            <span class="price">${{ related_product.get_price }}</span>
+            {% if related_product.is_on_sale and related_product.sale_price %}
+                <span class="old-price ms-2 text-muted text-decoration-line-through">${{ related_product.price }}</span>
+            {% endif %}
+        </div>
         
-        <a href="{{ related_product.get_absolute_url }}" class="btn btn-view-details btn-sm rounded-pill mb-2 w-100">
-    {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
-</a>
-
+        <a href="{{ related_product.get_absolute_url }}" class="btn btn-outline-primary btn-sm rounded-pill mb-2 w-100">
+            {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
+        </a>
 {% if related_product.variants.exists %}
     {% with variant=related_product.variants.first %}
         <!-- Add to Cart Form -->
@@ -227,7 +225,6 @@
         </div>
     {% endfor %}
 </div>
-
 </div>
 {% endblock %}
 

@@ -1,83 +1,40 @@
 {% load i18n %}
-<style>
-    .navbar {
-        background-color: #000 !important;
-        transition: background-color 0.3s ease;
-        z-index: 1030;
-        padding-top: 0.15rem;
-        padding-bottom: 0.15rem;
-    }
+    <style>
+   
 
-    .navbar-brand {
-        font-size: 2.8rem;
-        font-weight: 800;
-        letter-spacing: 4px;
-        color: white !important;
-        margin-right: auto;
-        padding: 0.2rem 0;
-    }
-
-    .navbar-nav .nav-link,
-    .navbar-nav .nav-link i {
-        color: white !important;
-        font-size: 1rem;
-        padding-top: 0.3rem;
-        padding-bottom: 0.3rem;
-    }
-
-    .navbar .badge {
-        position: absolute;
-        top: 0.2rem;
-        right: -0.5rem;
-        background-color: #dc3545;
-        color: white;
-        font-size: 0.65rem;
-        padding: 0.3em 0.5em;
-        border-radius: 50%;
-    }
-
-    .navbar-toggler {
-        padding: 0.2rem 0.4rem;
-    }
-
-    @media (max-width: 767px) {
-        .dropdown-menu {
-            width: 100%;
+        .navbar {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            transition: background-color 0.3s ease;
+            z-index: 1030;
         }
 
-        .navbar-brand {
-            font-size: 2.1rem;
+        @media (max-width: 767px) {
+            .dropdown-menu {
+                width: 100%;
+            }
+
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem;
+            }
         }
 
-        .navbar-nav .nav-link {
-            padding: 0.5rem 1rem;
-        }
-    }
-</style>
-
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+    </style>
+<nav class="navbar navbar-expand-lg navbar-light bg-transparent fixed-top shadow-sm">
     <div class="container">
-
-        <!-- Mobile toggler -->
+        <a class="navbar-brand" href="{% url 'shop:home' %}">
+            <i class="fas fa-store me-2"></i>Reverse
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav"
                 aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
             <span class="navbar-toggler-icon"></span>
         </button>
-
-        <!-- Logo text only -->
-        <a class="navbar-brand" href="{% url 'shop:home' %}">
-            REVƎRSE
-        </a>
-
-        <!-- Right Nav Items -->
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav align-items-center">
-
-                <li class="nav-item d-none d-lg-block">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{% url 'shop:home' %}">{% trans "Home" %}</a>
                 </li>
-
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -91,32 +48,29 @@
                         <li><a class="dropdown-item" href="{% url 'shop:home' %}">{% trans "All Products" %}</a></li>
                     </ul>
                 </li>
-
                 <li class="nav-item position-relative">
-                    <a class="nav-link" href="{% url 'shop:cart_detail' %}" title="{% trans 'Cart' %}">
-                        <i class="fas fa-shopping-cart"></i>
+                    <a class="nav-link" href="{% url 'shop:cart_detail' %}">
+                        <i class="fas fa-shopping-cart"></i> {% trans "Cart" %}
                         <span class="badge" id="cart-count">0</span>
                     </a>
                 </li>
-
                 <li class="nav-item position-relative">
-                    <a class="nav-link" href="{% url 'shop:wishlist_detail' %}" title="{% trans 'Wishlist' %}">
-                        <i class="fas fa-heart"></i>
+                    <a class="nav-link" href="{% url 'shop:wishlist_detail' %}">
+                        <i class="fas fa-heart"></i> {% trans "Wishlist" %}
                         <span class="badge" id="wishlist-count">0</span>
                     </a>
                 </li>
-
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'shop:account' %}" title="{% trans 'Account' %}">
-                        <i class="fas fa-user"></i>
+                    <a class="nav-link" href="{% url 'shop:account' %}">
+                        <i class="fas fa-user"></i> {% trans "Account" %}
                     </a>
                 </li>
 
-                <!-- Language Icon -->
+                <!-- 🌍 Language Switcher Dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="languageDropdown"
-                       role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans 'Language' %}">
-                        <i class="fas fa-globe"></i>
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown"
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        🌐 {% trans "Language" %}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                         <li>
@@ -131,7 +85,6 @@
                         </li>
                     </ul>
                 </li>
-
             </ul>
         </div>
     </div>
