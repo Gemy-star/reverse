@@ -56,56 +56,87 @@
             {% include "shop/partials/product_flags.html" with product=product is_showed=False %}
         </div>
 
-    {% if available_colors %}
-        <div class="mb-4">
-            <h6>{% trans "Available Colors:" %}</h6>
-            <div class="d-flex flex-wrap color-buttons">
-                {% for color in available_colors %}
-                    <button type="button" class="btn btn-outline-secondary rounded-pill me-2 mb-2" data-color-id="{{ color.id }}" data-color-name="{{ color.name }}">
-                        <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ color.hex_code }}; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; margin-right: 5px;"></span>
-                        {{ color.name }}
-                    </button>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-
-    {% if available_sizes %}
-        <div class="mb-4">
-            <h6>{% trans "Select Size:" %}</h6>
-            <div class="size-buttons">
-                {% for size in available_sizes %}
-                    <button type="button" class="btn btn-outline-primary rounded-pill" data-size-id="{{ size.id }}" data-size-name="{{ size.name }}">{{ size.name }}</button>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-
-    <div class="mb-4">
-        
-        <p>{% trans "Stock" %}: <span id="display-stock" class="fw-bold {% if product.is_in_stock %}text-success{% else %}text-danger{% endif %}">{{ product.stock_quantity }} {% trans "in stock" %}</span></p>
+ {% if available_colors %}
+<div class="mb-4">
+    <h6 class="text-dark">{% trans "Available Colors:" %}</h6>
+    <div class="d-flex flex-wrap color-buttons gap-2">
+        {% for color in available_colors %}
+            <button type="button"
+                    class="btn btn-light border rounded-pill text-body px-3 py-2 d-flex align-items-center shadow-sm"
+                    style="font-weight: 500;"
+                    data-color-id="{{ color.id }}"
+                    data-color-name="{{ color.name }}">
+                <span style="display: inline-block;
+                             width: 16px;
+                             height: 16px;
+                             background-color: {{ color.hex_code }};
+                             border: 1px solid #aaa;
+                             border-radius: 50%;
+                             margin-right: 8px;"></span>
+                {{ color.name }}
+            </button>
+        {% endfor %}
     </div>
+</div>
+{% endif %}
+{% if available_sizes %}
+<div class="mb-4">
+    <h6 class="text-dark">{% trans "Select Size:" %}</h6>
+    <div class="size-buttons d-flex flex-wrap gap-2">
+        {% for size in available_sizes %}
+            <button type="button"
+                    class="btn btn-light border rounded-pill text-body px-4 py-2 shadow-sm"
+                    style="font-weight: 500;"
+                    data-size-id="{{ size.id }}"
+                    data-size-name="{{ size.name }}">
+                <i class="fas fa-ruler me-1 text-muted small"></i> {{ size.name }}
+            </button>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 
     <!-- Quantity Input -->
   
 
 <div class="mb-3">
-    <h6>{% trans "Payment Method:" %}</h6>
-    <div id="payment-methods-buttons" class="btn-list-group-horizontal" role="group" aria-label="Payment methods">
-        <button type="button" class="btn btn-outline-primary active" data-value="COD">{% trans "Cash on Delivery (COD)" %}</button>
-        <button type="button" class="btn btn-outline-primary" data-value="VISA">{% trans "VISA" %}</button>
-        <button type="button" class="btn btn-outline-primary" data-value="MASTERCARD">{% trans "MasterCard" %}</button>
-        <button type="button" class="btn btn-outline-primary" data-value="VALUE">{% trans "VALUE" %}</button>
-        <button type="button" class="btn btn-outline-primary" data-value="SYMBOL">{% trans "SYMBOL" %}</button>
+    <h6 class="mb-2">{% trans "Payment Method:" %}</h6>
+    <div id="payment-methods-buttons" class="d-flex flex-wrap gap-1 flex-md-nowrap" role="group" aria-label="Payment methods">
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap active" data-value="COD">
+            <i class="fas fa-money-bill-wave me-1 small"></i> <small>{% trans "Cash on Delivery (COD)" %}</small>
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="VISA">
+            <i class="fab fa-cc-visa me-1 small"></i> <small>{% trans "VISA" %}</small>
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="MASTERCARD">
+            <i class="fab fa-cc-mastercard me-1 small"></i> <small>{% trans "MasterCard" %}</small>
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="VALUE">
+            <i class="fas fa-wallet me-1 small"></i> <small>{% trans "VALUE" %}</small>
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="SYMBOL">
+            <i class="fas fa-coins me-1 small"></i> <small>{% trans "SYMBOL" %}</small>
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="PayMob">
+            <i class="fas fa-credit-card me-1 small"></i> <small>{% trans "PayMob" %}</small>
+        </button>
     </div>
     <input type="hidden" id="selected-payment-method" value="COD">
 </div>
 
+
+
 <div class="mb-3">
     <h6>{% trans "Quantity:" %}</h6>
-    <div style="display: flex; align-items: center;">
-        <span id="quantity-display" style="font-size: 1.2em; margin-right: 10px;">+1</span>
-        <button id="increase-quantity" class="btn btn-primary">+</button>
+    <div class="d-inline-flex align-items-center border rounded px-2">
+        <button id="decrease-quantity" class="btn btn-outline-dark btn-sm px-3" type="button">
+            <i class="fas fa-minus"></i>
+        </button>
+        <span id="quantity-display" class="mx-3 fw-bold" style="min-width: 30px; text-align: center;">1</span>
+        <button id="increase-quantity" class="btn btn-outline-dark btn-sm px-3" type="button">
+            <i class="fas fa-plus"></i>
+        </button>
     </div>
     <input type="hidden" id="quantity-input" value="1" min="1">
 </div>
@@ -117,9 +148,15 @@
     </div>
 
     <div class="d-grid gap-2">
-        <button class="btn btn-success btn-lg rounded-pill" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}><i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}</button>
-        <button class="btn btn-outline-secondary btn-lg rounded-pill" id="add-to-wishlist-btn" data-product-id="{{ product.id }}"><i class="fas fa-heart me-2"></i> {% trans "Add to Wishlist" %}</button>
-    </div>
+    <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>
+        <i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}
+    </button>
+    <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6" id="add-to-wishlist-btn" data-product-id="{{ product.id }}">
+        <i class="fas fa-heart text-danger me-2"></i> {% trans "Add to Wishlist" %}
+    </button>
+</div>
+
+
 </div>
 </div>
 
@@ -152,20 +189,21 @@
         <a href="{{ related_product.get_absolute_url }}" class="btn btn-outline-primary btn-sm rounded-pill mb-2 w-100">
             {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
         </a>
+{% if related_product.variants.exists %}
+    {% with variant=related_product.variants.first %}
+        <!-- Add to Cart Form -->
+       <form method="post" action="{% url 'shop:add_to_wishlist' %}">
+    {% csrf_token %}
+    <input type="hidden" name="product_id" value="{{ related_product.id }}">
+    <button type="submit" class="btn btn-dark-outline btn-sm w-100">
+        <i class="fas fa-heart text-danger me-1"></i> {% trans "Add to Wishlist" %}
+    </button>
+</form>
+    {% endwith %}
+{% endif %}
 
-        {% if related_product.variants.exists %}
-            {% with variant=related_product.variants.first %}
-                <!-- Add to Cart Form -->
-                <form method="post" action="{% url 'shop:add_to_cart' %}" class="mb-2">
-                    {% csrf_token %}
-                    <input type="hidden" name="variant_id" value="{{ variant.id }}">
-                    <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="btn btn-success btn-sm w-100">
-                        <i class="fas fa-shopping-cart me-1"></i> {% trans "Add to Cart" %}
-                    </button>
-                </form>
-            {% endwith %}
-        {% endif %}
+
+    
 
         {% if user.is_authenticated %}
             <!-- Add to Wishlist Form -->
@@ -320,22 +358,25 @@
                 }
             });
         }
+        //color handle
+$('.color-buttons .btn').on('click', function() {
+    $('.color-buttons .btn').removeClass('active');
+    $(this).addClass('active');
 
-        // Handle color selection
-        $('.color-buttons .btn').on('click', function() {
-            $('.color-buttons .btn').removeClass('btn-primary').addClass('btn-outline-secondary');
-            $(this).removeClass('btn-outline-secondary').addClass('btn-primary');
-            selectedColorId = $(this).data('color-id');
-            fetchProductVariants(); // Fetch variants after color selection
-        });
+    selectedColorId = $(this).data('color-id');
+    fetchProductVariants(); // Call your variant fetch logic
+});
+
 
         // Handle size selection
-        $('.size-buttons .btn').on('click', function() {
-            $('.size-buttons .btn').removeClass('btn-primary').addClass('btn-outline-primary');
-            $(this).removeClass('btn-outline-primary').addClass('btn-primary');
-            selectedSizeId = $(this).data('size-id');
-            fetchProductVariants(); // Fetch variants after size selection
-        });
+       $('.size-buttons .btn').on('click', function() {
+    $('.size-buttons .btn').removeClass('active');
+    $(this).addClass('active');
+
+    selectedSizeId = $(this).data('size-id');
+    fetchProductVariants(); // Fetch variants after size selection
+});
+
 
         // Handle Add to Cart button click
         $('#add-to-cart-btn').on('click', function() {
@@ -343,6 +384,7 @@
                 showMessage('Please select a color and size first.', 'warning');
                 return;
             }
+            
 
             const quantity = parseInt($('#quantity-input').val());
             if (isNaN(quantity) || quantity <= 0) {
@@ -421,5 +463,30 @@
             quantityDisplay.textContent = '+' + currentQuantity;
         });
     });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const increaseBtn = document.getElementById('increase-quantity');
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const quantityInput = document.getElementById('quantity-input');
+        const quantityDisplay = document.getElementById('quantity-display');
+
+        function updateDisplay(value) {
+            quantityInput.value = value;
+            quantityDisplay.textContent = value;
+        }
+
+        increaseBtn.addEventListener('click', () => {
+            let current = parseInt(quantityInput.value) || 1;
+            updateDisplay(current + 1);
+        });
+
+        decreaseBtn.addEventListener('click', () => {
+            let current = parseInt(quantityInput.value) || 1;
+            if (current > 1) updateDisplay(current - 1);
+        });
+    });
+    
+    
 </script>
 {% endblock js  %}
