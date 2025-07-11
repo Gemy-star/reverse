@@ -3,49 +3,45 @@
 {% load i18n %}
 
 {% block title %}{% trans "Home - Reverse" %}{% endblock %}
+
 {% block css %}
 <style>
-    .onsale-swiper-unique .swiper-slide {
-    width: 250px;
-}
+    .onsale-swiper-unique .swiper-slide,
+    .newarrivals-swiper-unique .swiper-slide,
+    .category-swiper-unique .swiper-slide,
+    .featured-swiper-unique .swiper-slide,
+    .bestseller-swiper-unique .swiper-slide {
+        width: 250px;
+    }
 
-.onsale-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
+    .onsale-swiper-controls,
+    .newarrivals-swiper-controls,
+    .category-swiper-controls,
+    .featured-swiper-controls,
+    .bestseller-swiper-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
 
-    .newarrivals-swiper-unique .swiper-slide {
-    width: 250px;
-}
+    /* Custom "View Details" Button Styling */
+    .btn-view-details {
+        background-color: #fff;
+        color: #000;
+        border: 1px solid #000;
+        transition: all 0.3s ease;
+    }
 
-.newarrivals-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
+    .btn-view-details:hover {
+        background-color: #000;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+      /* Force black color for the price */
+    .price {
+        color: #000 !important;
+    }
 
-.category-swiper-unique .swiper-slide {
-    width: 250px; /* optional: adjust as needed */
-}
-.category-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-.featured-swiper-unique .swiper-slide {
-    width: 250px; /* adjust per card width */
-}
 
-.featured-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-.bestseller-swiper-unique .swiper-slide {
-    width: 250px;
-}
-
-.bestseller-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
 
 
 </style>
@@ -103,7 +99,8 @@
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-view-details btn-sm rounded-pill"
+>
                                 {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
                             </a>
                         </div>
@@ -158,7 +155,8 @@
                             {% endif %}
                         </div>
                         <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-view-details btn-sm rounded-pill"
+">
                                 {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
                             </a>
                         </div>
@@ -213,7 +211,8 @@
                             {% endif %}
                         </div>
                         <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-view-details btn-sm rounded-pill"
+">
                                 {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
                             </a>
                         </div>
@@ -267,7 +266,8 @@
                             {% endif %}
                         </div>
                         <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-view-details btn-sm rounded-pill"
+">
                                 {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
                             </a>
                         </div>
