@@ -50,22 +50,192 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
       <!-- Payment Icons -->
       <div class="mb-3 mb-md-0">
-        <img src="{% static 'img/payments/apple-pay.png' %}" alt="Apple Pay" class="me-2" height="30">
-        <img src="{% static 'img/payments/PayMob-.png' %}" alt="PayMob" class="me-2" height="30">
-        <img src="{% static 'img/payments/visa.png' %}" alt="Visa" class="me-2" height="30">
-        <img src="{% static 'img/payments/fawry.png' %}" alt="Fawry" class="me-2" height="30">
+       
+        <img src="{% static 'img/payments/PayMob.png' %}" alt="PayMob" class="me-2" height="30">
         <img src="{% static 'img/payments/mastercard.png' %}" alt="Mastercard" class="me-2" height="30">
       </div>
 
       <!-- Copyright -->
       <div>
-        <span class="text-white-50">&copy; {% now "Y" %}, Novencci EG.</span>
+        <span class="text-white-50">&copy; {% now "Y" %}, Reverse EG.</span>
       </div>
     </div>
 
-    <!-- Scroll to Top -->
-    <a href="#" class="btn btn-dark rounded-circle position-fixed bottom-0 end-0 m-4 shadow" style="z-index: 999;">
-      <i class="fas fa-arrow-up"></i>
-    </a>
-  </div>
+<!-- Scroll to Top Button -->
+<a href="#" id="scrollTopBtn" class="btn btn-scroll-top rounded-circle position-fixed bottom-0 end-0 m-4">
+  <i class="fas fa-arrow-up" id="scrollTopIcon"></i>
+</a>
+
+<!-- Styles -->
+<style>
+.btn-scroll-top {
+  border: none;
+  padding: 0.75rem 0.85rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Light background: white button, black arrow */
+.scroll-light {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+.scroll-light #scrollTopIcon {
+  color: #000 !important;
+}
+
+/* Dark background: black button, white arrow */
+.scroll-dark {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+}
+.scroll-dark #scrollTopIcon {
+  color: #fff !important;
+}
+</style>
+
+<!-- Script -->
+<script>
+function getBackgroundColorAtCenter(el) {
+  const rect = el.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  const elemAtPoint = document.elementFromPoint(x, y);
+  if (!elemAtPoint) return null;
+
+  let bg = window.getComputedStyle(elemAtPoint).backgroundColor;
+
+  // Fallback if transparent: climb up the DOM to find background color
+  let current = elemAtPoint;
+  while (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
+    current = current.parentElement;
+    if (!current) break;
+    bg = window.getComputedStyle(current).backgroundColor;
+  }
+  return bg;
+}
+
+function isDarkColor(rgb) {
+  const result = rgb.match(/\d+/g);
+  if (!result || result.length < 3) return false;
+  const [r, g, b] = result.map(Number);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness < 128;
+}
+
+function updateScrollButtonTheme() {
+  const btn = document.getElementById('scrollTopBtn');
+  const bg = getBackgroundColorAtCenter(btn);
+  if (!bg) return;
+
+  if (isDarkColor(bg)) {
+    btn.classList.add('scroll-dark');
+    btn.classList.remove('scroll-light');
+  } else {
+    btn.classList.add('scroll-light');
+    btn.classList.remove('scroll-dark');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateScrollButtonTheme();
+  window.addEventListener('scroll', updateScrollButtonTheme);
+  window.addEventListener('resize', updateScrollButtonTheme);
+});
+
+function getBackgroundColorAtButtonPosition(btn) {
+    const rect = btn.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    // Temporarily hide the button to find the element behind it
+    btn.style.visibility = 'hidden';
+    const elemAtPoint = document.elementFromPoint(x, y);
+    btn.style.visibility = 'visible'; // Show it again immediately
+
+    if (!elemAtPoint) return null;
+
+    let bg = window.getComputedStyle(elemAtPoint).backgroundColor;
+
+    // Fallback if transparent: climb up the DOM to find background color
+    let current = elemAtPoint;
+    while (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
+        current = current.parentElement;
+        if (!current) break; // Reached top of document
+        bg = window.getComputedStyle(current).backgroundColor;
+    }
+    return bg;
+}
+
+function isDarkColor(rgb) {
+    // This function remains the same and is generally reliable
+    const result = rgb.match(/\d+/g);
+    if (!result || result.length < 3) return false;
+    const [r, g, b] = result.map(Number);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness < 128; // Threshold for dark vs. light
+}
+
+function updateScrollButtonTheme() {
+    const btn = document.getElementById('scrollTopBtn');
+    if (!btn) return; // Exit if button not found
+
+    // Ensure the button is visible before checking its background
+    // (In case display: none was applied by something else)
+    if (window.getComputedStyle(btn).display === 'none') {
+        // If button is hidden, its background can't be reliably checked.
+        // We might choose to set a default or just return.
+        // For now, let's assume it should be visible if we're trying to style it.
+        return;
+    }
+
+    const bg = getBackgroundColorAtButtonPosition(btn);
+
+    if (!bg) {
+        // Fallback if no background color could be determined
+        btn.classList.add('scroll-light'); // Default to light theme
+        btn.classList.remove('scroll-dark');
+        return;
+    }
+
+    if (isDarkColor(bg)) {
+        btn.classList.add('scroll-dark');
+        btn.classList.remove('scroll-light');
+    } else {
+        btn.classList.add('scroll-light');
+        btn.classList.remove('scroll-dark');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('scrollTopBtn');
+    if (!btn) return;
+
+    // Add scroll-to-top functionality
+    btn.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent default anchor link behavior
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Smooth scroll animation
+        });
+    });
+
+    // Initial update
+    updateScrollButtonTheme();
+
+    // Event listeners for dynamic updates
+    window.addEventListener('scroll', updateScrollButtonTheme);
+    window.addEventListener('resize', updateScrollButtonTheme);
+
+    // Optional: If you hide the button until scroll, you might need to call
+    // updateScrollButtonTheme when it becomes visible.
+    // For example, if you toggle its display based on scroll position:
+    // window.addEventListener('scroll', () => {
+    //     if (window.scrollY > 200) { // Example threshold
+    //         btn.style.display = 'block';
+    //         updateScrollButtonTheme(); // Call again after making visible
+    //     } else {
+    //         btn.style.display = 'none';
+    //     }
+    // });
+});
+</script>
 </footer>

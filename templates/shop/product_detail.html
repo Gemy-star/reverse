@@ -1,24 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
-
 {% block title %}{{ product.name }} - {% trans "Reverse" %}{% endblock %}
-
 {% block content %}
-<div class="container my-4 pt-4">
+<div class="container my-5 pt-5">
 <div class="row pt-4">
-
 <!-- Product Images (Swiper Carousel) -->
 <div class="col-md-6 mb-4">
     <div class="swiper product-detail-swiper mb-3">
         <div class="swiper-wrapper">
             {% for image in product_images %}
                 <div class="swiper-slide">
-                    <img src="{{ image.image.url }}" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}">
+                    <img src="{{ image.image.url }}" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid">
                 </div>
             {% empty %}
                 <div class="swiper-slide">
-                    <img src="https://placehold.co/600x500/e0e0e0/555555?text=No+Image" alt="{% trans 'No image available' %}">
+                    <img src="https://placehold.co/600x500/e0e0e0/555555?text=No+Image" alt="{% trans 'No image available' %}" class="img-fluid">
                 </div>
             {% endfor %}
         </div>
@@ -26,13 +23,12 @@
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
     </div>
-
     <!-- Thumbnail Swiper -->
-    <div class="swiper product-detail-thumbs">
+    <div class="swiper product-detail-thumbs mt-2">
         <div class="swiper-wrapper">
             {% for image in product_images %}
                 <div class="swiper-slide">
-                    <img src="{{ image.image.url }}" alt="{% trans "Thumbnail of" %} {{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}">
+                    <img src="{{ image.image.url }}" alt="{% trans "Thumbnail of" %} {{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid">
                 </div>
             {% endfor %}
         </div>
@@ -44,180 +40,150 @@
     <h1 class="mb-3">{{ product.name }}</h1>
     <p class="lead">{{ product.short_description }}</p>
     <p>{{ product.description }}</p>
-
     <div class="d-flex align-items-baseline mb-3">
         <span class="price fs-3 me-2" id="display-price">${{ product.get_price }}</span>
         {% if product.is_on_sale and product.sale_price %}
             <span class="old-price fs-5" id="display-old-price">${{ product.price }}</span>
         {% endif %}
     </div>
+    <div class="mb-3">
+        {% include "shop/partials/product_flags.html" with product=product is_showed=False %}
+    </div>
 
-      <div class="mb-3">
-            {% include "shop/partials/product_flags.html" with product=product is_showed=False %}
+    {% if available_colors %}
+    <div class="mb-4">
+        <h6 class="text-dark">{% trans "Available Colors:" %}</h6>
+        <div class="d-flex flex-wrap color-buttons gap-2">
+            {% for color in available_colors %}
+                <button type="button"
+                        class="btn btn-light border rounded-pill text-body px-3 py-2 d-flex align-items-center shadow-sm color-select"
+                        style="font-weight: 500;"
+                        data-color-id="{{ color.id }}"
+                        data-color-name="{{ color.name }}">
+                    <span style="display: inline-block;
+                                 width: 16px;
+                                 height: 16px;
+                                 background-color: {{ color.hex_code }};
+                                 border: 1px solid #aaa;
+                                 border-radius: 50%;
+                                 margin-right: 8px;"></span>
+                    {{ color.name }}
+                </button>
+            {% endfor %}
         </div>
+    </div>
+    {% endif %}
 
- {% if available_colors %}
+    {% if available_sizes %}
+    <div class="mb-4">
+        <h6 class="text-dark">{% trans "Select Size:" %}</h6>
+        <div class="size-buttons d-flex flex-wrap gap-2">
+            {% for size in available_sizes %}
+                <button type="button"
+                        class="btn btn-light border rounded-pill text-body px-4 py-2 shadow-sm size-select"
+                        style="font-weight: 500;"
+                        data-size-id="{{ size.id }}"
+                        data-size-name="{{ size.name }}">
+                    <i class="fas fa-ruler me-1 text-muted small"></i> {{ size.name }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Collapsible Size Chart -->
+ <!-- Collapsible Size Chart -->
 <div class="mb-4">
-    <h6 class="text-dark">{% trans "Available Colors:" %}</h6>
-    <div class="d-flex flex-wrap color-buttons gap-2">
-        {% for color in available_colors %}
-            <button type="button"
-                    class="btn btn-light border rounded-pill text-body px-3 py-2 d-flex align-items-center shadow-sm"
-                    style="font-weight: 500;"
-                    data-color-id="{{ color.id }}"
-                    data-color-name="{{ color.name }}">
-                <span style="display: inline-block;
-                             width: 16px;
-                             height: 16px;
-                             background-color: {{ color.hex_code }};
-                             border: 1px solid #aaa;
-                             border-radius: 50%;
-                             margin-right: 8px;"></span>
-                {{ color.name }}
-            </button>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-{% if available_sizes %}
-<div class="mb-4">
-    <h6 class="text-dark">{% trans "Select Size:" %}</h6>
-    <div class="size-buttons d-flex flex-wrap gap-2">
-        {% for size in available_sizes %}
-            <button type="button"
-                    class="btn btn-light border rounded-pill text-body px-4 py-2 shadow-sm"
-                    style="font-weight: 500;"
-                    data-size-id="{{ size.id }}"
-                    data-size-name="{{ size.name }}">
-                <i class="fas fa-ruler me-1 text-muted small"></i> {{ size.name }}
-            </button>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-
-    <!-- Quantity Input -->
-  
-
-<div class="mb-3">
-    <h6 class="mb-2">{% trans "Payment Method:" %}</h6>
-    <div id="payment-methods-buttons" class="d-flex flex-wrap gap-1 flex-md-nowrap" role="group" aria-label="Payment methods">
-        </button>
-        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap active" data-value="COD">
-            <i class="fas fa-money-bill-wave me-1 small"></i> <small>{% trans "Cash on Delivery (COD)" %}</small>
-        </button>
-        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="VISA">
-            <i class="fab fa-cc-visa me-1 small"></i> <small>{% trans "VISA" %}</small>
-        </button>
-        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="MASTERCARD">
-            <i class="fab fa-cc-mastercard me-1 small"></i> <small>{% trans "MasterCard" %}</small>
-        </button>
-        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="VALUE">
-            <i class="fas fa-wallet me-1 small"></i> <small>{% trans "VALUE" %}</small>
-        </button>
-        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="SYMBOL">
-            <i class="fas fa-coins me-1 small"></i> <small>{% trans "SYMBOL" %}</small>
-        </button>
-        <button type="button" class="btn btn-outline-dark btn-sm p-0 px-1 fw-light text-nowrap" data-value="PayMob">
-            <i class="fas fa-credit-card me-1 small"></i> <small>{% trans "PayMob" %}</small>
-        </button>
-    </div>
-    <input type="hidden" id="selected-payment-method" value="COD">
-</div>
-
-
-
-<div class="mb-3">
-    <h6>{% trans "Quantity:" %}</h6>
-    <div class="d-inline-flex align-items-center border rounded px-2">
-        <button id="decrease-quantity" class="btn btn-outline-dark btn-sm px-3" type="button">
-            <i class="fas fa-minus"></i>
-        </button>
-        <span id="quantity-display" class="mx-3 fw-bold" style="min-width: 30px; text-align: center;">1</span>
-        <button id="increase-quantity" class="btn btn-outline-dark btn-sm px-3" type="button">
-            <i class="fas fa-plus"></i>
-        </button>
-    </div>
-    <input type="hidden" id="quantity-input" value="1" min="1">
-</div>
-
-    <!-- Message Display Area -->
-    <div id="message-area" class="alert alert-dismissible fade show d-none" role="alert">
-        <span id="message-text"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
-    </div>
-
-    <div class="d-grid gap-2">
-    <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>
-        <i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}
+    <button
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#sizeChartCollapse"
+      aria-expanded="false"
+      aria-controls="sizeChartCollapse"
+      class="d-flex align-items-center p-0"
+      style="color: #000; background: transparent; border: none; font-weight: 500; font-size: 1rem; cursor: pointer;"
+    >
+        <i class="fas fa-plus me-2"></i> {% trans "Size Chart" %}
     </button>
-    <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6" id="add-to-wishlist-btn" data-product-id="{{ product.id }}">
-        <i class="fas fa-heart text-danger me-2"></i> {% trans "Add to Wishlist" %}
-    </button>
+    <div class="collapse mt-3" id="sizeChartCollapse">
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% trans "Size" %}</th>
+                        <th>{% trans "Chest/Bust (in)" %}</th>
+                        <th>{% trans "Chest/Bust (cm)" %}</th>
+                        <th>{% trans "Waist (in)" %}</th>
+                        <th>{% trans "Waist (cm)" %}</th>
+                        <th>{% trans "Hips (in)" %}</th>
+                        <th>{% trans "Hips (cm)" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>XS</td><td>32–34</td><td>81–86</td><td>26–27</td><td>66–69</td><td>33–34</td><td>84–86</td></tr>
+                    <tr><td>S</td><td>35–37</td><td>89–94</td><td>28–29</td><td>71–74</td><td>35–37</td><td>89–94</td></tr>
+                    <tr><td>M</td><td>38–40</td><td>97–102</td><td>30–32</td><td>76–81</td><td>38–40</td><td>97–102</td></tr>
+                    <tr><td>L</td><td>41–43</td><td>104–109</td><td>33–35</td><td>84–89</td><td>41–43</td><td>104–109</td></tr>
+                    <tr><td>XL</td><td>44–46</td><td>112–117</td><td>36–38</td><td>91–97</td><td>44–46</td><td>112–117</td></tr>
+                    <tr><td>XXL</td><td>47–49</td><td>119–124</td><td>39–41</td><td>99–104</td><td>47–49</td><td>119–124</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
+    {% endif %}
 
+    <div class="mb-3">
+        <h6>{% trans "Quantity:" %}</h6>
+        <div class="d-inline-flex align-items-center border rounded px-2">
+            <button id="decrease-quantity" class="btn btn-outline-dark btn-sm px-2 py-1" type="button">
+                <i class="fas fa-minus"></i>
+            </button>
+            <span id="quantity-display" class="mx-2 fw-bold" style="min-width: 24px; text-align: center;">1</span>
+            <button id="increase-quantity" class="btn btn-outline-dark btn-sm px-2 py-1" type="button">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        <input type="hidden" id="quantity-input" value="1" min="1">
+    </div>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6 flex-grow-1" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>
+            <i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}
+        </button>
+        <button class="btn btn-outline-danger rounded-pill px-3" id="add-to-wishlist-btn" data-product-id="{{ product.id }}" title="{% trans 'Add to Wishlist' %}">
+            <i class="fas fa-heart"></i>
+        </button>
+    </div>
+
+    <div id="toast-popup" class="toast align-items-center text-white border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toast-message"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
 </div>
 </div>
 
 <hr class="my-5">
-
-<!-- Related Products Section -->
 <h3 class="mb-4">{% trans "Related Products" %}</h3>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
     {% for related_product in related_products %}
         <div class="col">
-            <div class="card product-card h-100">
-    {% with main_image=related_product.get_main_image %}
-        {% if main_image and main_image.image %}
-            <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ related_product.name }}">
-        {% else %}
-            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
-        {% endif %}
-    {% endwith %}
-    
-    <div class="card-body d-flex flex-column">
-        <h5 class="card-title">{{ related_product.name }}</h5>
-        
-        <div class="d-flex align-items-baseline mb-2">
-            <span class="price">${{ related_product.get_price }}</span>
-            {% if related_product.is_on_sale and related_product.sale_price %}
-                <span class="old-price ms-2 text-muted text-decoration-line-through">${{ related_product.price }}</span>
-            {% endif %}
-        </div>
-        
-        <a href="{{ related_product.get_absolute_url }}" class="btn btn-outline-primary btn-sm rounded-pill mb-2 w-100">
-            {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
-        </a>
-{% if related_product.variants.exists %}
-    {% with variant=related_product.variants.first %}
-        <!-- Add to Cart Form -->
-       <form method="post" action="{% url 'shop:add_to_wishlist' %}">
-    {% csrf_token %}
-    <input type="hidden" name="product_id" value="{{ related_product.id }}">
-    <button type="submit" class="btn btn-dark-outline btn-sm w-100">
-        <i class="fas fa-heart text-danger me-1"></i> {% trans "Add to Wishlist" %}
-    </button>
-</form>
-    {% endwith %}
-{% endif %}
-
-
-    
-
-        {% if user.is_authenticated %}
-            <!-- Add to Wishlist Form -->
-            <form method="post" action="{% url 'shop:add_to_wishlist' %}">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ related_product.id }}">
-                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                    <i class="fas fa-heart me-1"></i> {% trans "Add to Wishlist" %}
-                </button>
-            </form>
-        {% endif %}
-    </div>
-</div>
-
+            <a href="{{ related_product.get_absolute_url }}" class="text-decoration-none">
+                <div class="card product-card h-100">
+                    {% with main_image=related_product.get_main_image %}
+                        {% if main_image and main_image.image %}
+                            <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ related_product.name }}">
+                        {% else %}
+                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
+                        {% endif %}
+                    {% endwith %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ related_product.name }}</h5>
+                    </div>
+                </div>
+            </a>
         </div>
     {% empty %}
         <div class="col-12">
@@ -228,265 +194,102 @@
 </div>
 {% endblock %}
 
-
 {% block js %}
 <script>
-    $(document).ready(function() {
-        const productId = {{ product.id }};
-        let selectedColorId = null;
-        let selectedSizeId = null;
-        let currentProductVariantId = null; // shop the ID of the currently selected variant
+document.addEventListener('DOMContentLoaded', function () {
+    const increaseBtn = document.getElementById('increase-quantity');
+    const decreaseBtn = document.getElementById('decrease-quantity');
+    const quantityInput = document.getElementById('quantity-input');
+    const quantityDisplay = document.getElementById('quantity-display');
+    const wishlistBtn = document.getElementById('add-to-wishlist-btn');
+    const toastElement = document.getElementById('toast-popup');
+    const toastMessage = document.getElementById('toast-message');
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    let isWishlisted = false;
 
-        // Get CSRF token for AJAX POST requests
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        const csrftoken = getCookie('csrftoken');
+    let selectedColorId = null;
+    let selectedSizeId = null;
 
-        // Function to display messages
-        function showMessage(message, type = 'success') {
-            const messageArea = $('#message-area');
-            const messageText = $('#message-text');
-            messageText.text(message);
-            messageArea.removeClass('d-none alert-success alert-danger alert-warning').addClass(`alert-${type}`).slideDown();
-            setTimeout(() => {
-                messageArea.slideUp(() => messageArea.addClass('d-none'));
-            }, 5000); // Hide after 5 seconds
-        }
+    function updateDisplay(value) {
+        quantityInput.value = value;
+        quantityDisplay.textContent = value;
+    }
 
-        // Initialize Swiper for product images
-        const productThumbsSwiper = new Swiper('.product-detail-thumbs', {
-            spaceBetween: 10,
-            slidesPerView: 4,
-            freeMode: true,
-            watchSlidesProgress: true,
-            breakpoints: {
-                640: {
-                    slidesPerView: 5,
-                },
-                768: {
-                    slidesPerView: 6,
-                },
-                1024: {
-                    slidesPerView: 7,
-                },
-            }
-        });
-
-        const productMainSwiper = new Swiper('.product-detail-swiper', {
-            spaceBetween: 10,
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            thumbs: {
-                swiper: productThumbsSwiper,
-            },
-        });
-
-        // Function to update product details based on selected variant
-        function updateProductVariantDetails(variant) {
-            if (variant) {
-                $('#display-price').text(`$${variant.price}`);
-                $('#display-sku').text(variant.sku);
-                $('#display-stock').text(`${variant.stock} in stock`);
-                currentProductVariantId = variant.id; // shop the variant ID
-
-                if (variant.stock > 0) {
-                    $('#display-stock').removeClass('text-danger').addClass('text-success');
-                    $('#add-to-cart-btn').prop('disabled', false);
-                    $('#quantity-input').attr('max', variant.stock); // Set max quantity to available stock
-                } else {
-                    $('#display-stock').removeClass('text-success').addClass('text-danger');
-                    $('#add-to-cart-btn').prop('disabled', true);
-                    $('#quantity-input').attr('max', 0).val(0); // Reset quantity to 0 if out of stock
-                }
-            } else {
-                // No variant found for selection or incomplete selection
-                $('#display-price').text('$--.--');
-                $('#display-sku').text('N/A');
-                $('#display-stock').text('Please select color and size');
-                $('#display-stock').removeClass('text-success').addClass('text-danger');
-                $('#add-to-cart-btn').prop('disabled', true);
-                $('#quantity-input').attr('max', 0).val(0);
-                currentProductVariantId = null;
-            }
-        }
-
-        // Function to fetch variants based on selections
-        function fetchProductVariants() {
-            if (selectedColorId === null || selectedSizeId === null) {
-                updateProductVariantDetails(null); // Indicate no valid variant selected
-                return;
-            }
-
-            $.ajax({
-                url: `{% url 'shop:get_product_variants' product.id %}`,
-                type: 'GET',
-                data: {
-                    color: selectedColorId,
-                    size: selectedSizeId
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.variants && response.variants.length > 0) {
-                        updateProductVariantDetails(response.variants[0]); // Assuming one variant per color/size combo
-                    } else {
-                        updateProductVariantDetails(null); // No variant found for this combination
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching variants:", status, error);
-                    showMessage('Error fetching product variants. Please try again.', 'danger');
-                    updateProductVariantDetails(null);
-                }
-            });
-        }
-        //color handle
-$('.color-buttons .btn').on('click', function() {
-    $('.color-buttons .btn').removeClass('active');
-    $(this).addClass('active');
-
-    selectedColorId = $(this).data('color-id');
-    fetchProductVariants(); // Call your variant fetch logic
-});
-
-
-        // Handle size selection
-       $('.size-buttons .btn').on('click', function() {
-    $('.size-buttons .btn').removeClass('active');
-    $(this).addClass('active');
-
-    selectedSizeId = $(this).data('size-id');
-    fetchProductVariants(); // Fetch variants after size selection
-});
-
-
-        // Handle Add to Cart button click
-        $('#add-to-cart-btn').on('click', function() {
-            if (currentProductVariantId === null) {
-                showMessage('Please select a color and size first.', 'warning');
-                return;
-            }
-            
-
-            const quantity = parseInt($('#quantity-input').val());
-            if (isNaN(quantity) || quantity <= 0) {
-                showMessage('Please enter a valid quantity.', 'warning');
-                return;
-            }
-
-            $.ajax({
-                url: '{% url "shop:add_to_cart" %}',
-                type: 'POST',
-                data: {
-                    'product_variant_id': currentProductVariantId,
-                    'quantity': quantity,
-                    'csrfmiddlewaretoken': csrftoken // Include CSRF token for POST
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        showMessage(response.message, 'success');
-                        // Optionally update cart icon/count in navbar
-                        // e.g., $('#cart-count').text(response.cart_total_items);
-                    } else {
-                        showMessage(response.message, 'danger');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Add to Cart Error:", status, error);
-                    showMessage('Error adding item to cart. Please try again.', 'danger');
-                }
-            });
-        });
-
-        // Handle Add to Wishlist button click
-        $('#add-to-wishlist-btn').on('click', function() {
-            const productId = $(this).data('product-id');
-
-            $.ajax({
-                url: '{% url "shop:add_to_wishlist" %}',
-                type: 'POST',
-                data: {
-                    'product_id': productId,
-                    'csrfmiddlewaretoken': csrftoken // Include CSRF token for POST
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        showMessage(response.message, 'success');
-                    } else {
-                        showMessage(response.message, 'danger');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Add to Wishlist Error:", status, error);
-                    showMessage('Error adding item to wishlist. Please ensure you are logged in.', 'danger');
-                }
-            });
-        });
-
-        // Initial call to update variant details based on default selection (if any)
-        // or to prompt selection if no defaults.
-        // If you want a default variant to be selected on page load (e.g., first available),
-        // you would set selectedColorId and selectedSizeId here after page load.
-        updateProductVariantDetails(null); // Start with a prompt to select
+    increaseBtn.addEventListener('click', () => {
+        let current = parseInt(quantityInput.value) || 1;
+        updateDisplay(current + 1);
     });
+
+    decreaseBtn.addEventListener('click', () => {
+        let current = parseInt(quantityInput.value) || 1;
+        if (current > 1) updateDisplay(current - 1);
+    });
+
+    wishlistBtn.addEventListener('click', function () {
+        isWishlisted = !isWishlisted;
+        toastMessage.textContent = isWishlisted ? 'Added to your wishlist' : 'Removed from your wishlist';
+        toastElement.classList.remove('bg-danger', 'bg-success');
+        toastElement.classList.add(isWishlisted ? 'bg-success' : 'bg-danger');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    });
+
+    document.querySelectorAll('.color-select').forEach(button => {
+        button.addEventListener('click', function () {
+            document.querySelectorAll('.color-select').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            selectedColorId = this.getAttribute('data-color-id');
+        });
+    });
+
+    document.querySelectorAll('.size-select').forEach(button => {
+        button.addEventListener('click', function () {
+            document.querySelectorAll('.size-select').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            selectedSizeId = this.getAttribute('data-size-id');
+        });
+    });
+
+    addToCartBtn.addEventListener('click', () => {
+        if (!selectedColorId || !selectedSizeId) {
+            alert("Please select color and size first.");
+            return;
+        }
+        const quantity = quantityInput.value;
+        toastMessage.textContent = `Added ${quantity} item(s) to your cart.`;
+        toastElement.classList.remove('bg-danger');
+        toastElement.classList.add('bg-primary');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    });
+});
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const quantityDisplay = document.getElementById('quantity-display');
-        const quantityInput = document.getElementById('quantity-input');
-        const increaseQuantityButton = document.getElementById('increase-quantity');
-
-        increaseQuantityButton.addEventListener('click', function() {
-            let currentQuantity = parseInt(quantityInput.value);
-            currentQuantity++;
-            quantityInput.value = currentQuantity;
-            quantityDisplay.textContent = '+' + currentQuantity;
-        });
-    });
+const productThumbsSwiper = new Swiper('.product-detail-thumbs', {
+    spaceBetween: 10,
+    slidesPerView: 4,
+    freeMode: true,
+    watchSlidesProgress: true,
+    breakpoints: {
+        640: { slidesPerView: 5 },
+        768: { slidesPerView: 6 },
+        1024: { slidesPerView: 7 },
+    }
+});
+const productMainSwiper = new Swiper('.product-detail-swiper', {
+    spaceBetween: 10,
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    thumbs: {
+        swiper: productThumbsSwiper,
+    },
+});
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const increaseBtn = document.getElementById('increase-quantity');
-        const decreaseBtn = document.getElementById('decrease-quantity');
-        const quantityInput = document.getElementById('quantity-input');
-        const quantityDisplay = document.getElementById('quantity-display');
+{% endblock js %}
 
-        function updateDisplay(value) {
-            quantityInput.value = value;
-            quantityDisplay.textContent = value;
-        }
-
-        increaseBtn.addEventListener('click', () => {
-            let current = parseInt(quantityInput.value) || 1;
-            updateDisplay(current + 1);
-        });
-
-        decreaseBtn.addEventListener('click', () => {
-            let current = parseInt(quantityInput.value) || 1;
-            if (current > 1) updateDisplay(current - 1);
-        });
-    });
-    
-    
-</script>
-{% endblock js  %}

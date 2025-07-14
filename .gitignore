@@ -9,7 +9,7 @@
 .coverage
 htmlcov
 staticfiles
-db1.sqlite3
+db.sqlite3
 
 helm/Chart.lock
 helm/charts/*.tgz

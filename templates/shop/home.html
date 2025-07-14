@@ -1,380 +1,199 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
-
 {% block title %}{% trans "Home - Reverse" %}{% endblock %}
 {% block css %}
 <style>
-    .onsale-swiper-unique .swiper-slide {
-    width: 250px;
-}
-
-.onsale-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-
-    .newarrivals-swiper-unique .swiper-slide {
-    width: 250px;
-}
-
-.newarrivals-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.category-swiper-unique .swiper-slide {
-    width: 250px; /* optional: adjust as needed */
-}
-.category-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-.featured-swiper-unique .swiper-slide {
-    width: 250px; /* adjust per card width */
-}
-
-.featured-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-.bestseller-swiper-unique .swiper-slide {
-    width: 250px;
-}
-
-.bestseller-swiper-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-
-
+    .swiper-slide {
+        width: 250px;
+    }
+    .product-card {
+        border: none;
+        background: transparent;
+        transition: transform 0.2s ease-in-out;
+    }
+    .product-card:hover {
+        transform: scale(1.02);
+    }
+    .product-card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+    .product-name {
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #000;
+    }
+    .product-name,
+    .product-card a {
+        text-decoration: none !important;
+        color: inherit;
+    }
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    .swiper-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
 </style>
 {% endblock %}
 {% block content %}
-    <!-- Hero Section -->
+<!-- Hero Section -->
 {% include 'shop/partials/hero_slider.html' %}
-
-    <div class="container my-4">
-    <div class="container">
-
-        <!-- New Arrivals Section -->
-<!-- New Arrivals Section -->
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">{% trans "New Arrivals" %}</h2>
-    <div class="newarrivals-swiper-controls">
-        <button class="btn btn-outline-secondary btn-sm me-2 newarrivals-swiper-prev">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="btn btn-outline-secondary btn-sm newarrivals-swiper-next">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+<div class="container my-5">
+    <!-- New Arrivals -->
+    <div class="section-header">
+        <h2>{% trans "New Arrivals" %}</h2>
+        <div class="swiper-controls">
+            <button class="btn btn-outline-secondary btn-sm newarrivals-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-outline-secondary btn-sm newarrivals-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
     </div>
-</div>
-
-<div class="swiper newarrivals-swiper-unique mb-4">
-    <div class="swiper-wrapper">
-        {% for product in new_arrivals %}
+    <div class="swiper newarrivals-swiper mb-5">
+        <div class="swiper-wrapper">
+            {% for product in new_arrivals %}
             <div class="swiper-slide">
-                <div class="product-card card border-0 bg-transparent text-center">
-                    {% with main_image=product.get_main_image alt_image=product.get_hover_image %}
-                    <div class="position-relative overflow-hidden">
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="img-fluid product-image default-img" alt="{{ product.name }}">
-                            {% if alt_image and alt_image.image %}
-                                <img src="{{ alt_image.image.url }}" class="img-fluid product-image hover-img position-absolute top-0 start-0 w-100 h-100" alt="{{ product.name }}">
+                <div class="product-card text-center">
+                    <a href="{{ product.get_absolute_url }}">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" alt="{% trans 'No Image' %}">
                             {% endif %}
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
-                        {% endif %}
-                    </div>
-                    {% endwith %}
-
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex justify-content-center align-items-baseline mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price ms-2 text-muted text-decoration-line-through">${{ product.price }}</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3 d-none">
-                            {% include "shop/partials/product_flags.html" with product=product %}
-                        </div>
-
-                        <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
-                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
-                            </a>
-                        </div>
-                    </div>
+                        {% endwith %}
+                        <div class="product-name">{{ product.name }}</div>
+                    </a>
                 </div>
             </div>
-        {% empty %}
-            <div class="text-center text-muted">
-                <p>{% trans "No new arrivals available." %}</p>
-            </div>
-        {% endfor %}
+            {% empty %}
+            <div class="text-muted">{% trans "No new arrivals available." %}</div>
+            {% endfor %}
+        </div>
     </div>
-</div>
-
-<!-- Featured Products Section -->
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">{% trans "Featured Products" %}</h2>
-    <div class="featured-swiper-controls">
-        <button class="btn btn-outline-secondary btn-sm me-2 featured-swiper-prev">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="btn btn-outline-secondary btn-sm featured-swiper-next">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+    <!-- Featured Products -->
+    <div class="section-header">
+        <h2>{% trans "Featured Products" %}</h2>
+        <div class="swiper-controls">
+            <button class="btn btn-outline-secondary btn-sm featured-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-outline-secondary btn-sm featured-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
     </div>
-</div>
-
-<!-- Swiper Container -->
-<div class="swiper featured-swiper-unique mb-5">
-    <div class="swiper-wrapper">
-        {% for product in featured_products %}
+    <div class="swiper featured-swiper mb-5">
+        <div class="swiper-wrapper">
+            {% for product in featured_products %}
             <div class="swiper-slide">
-                <div class="product-card card border-0 bg-transparent text-center">
-                    {% with main_image=product.get_main_image alt_image=product.get_hover_image %}
-                    <div class="position-relative overflow-hidden">
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="img-fluid product-image default-img" alt="{{ product.name }}">
-                            {% if alt_image and alt_image.image %}
-                                <img src="{{ alt_image.image.url }}" class="img-fluid product-image hover-img position-absolute top-0 start-0 w-100 h-100" alt="{{ product.name }}">
+                <div class="product-card text-center">
+                    <a href="{{ product.get_absolute_url }}">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" alt="{% trans 'No Image' %}">
                             {% endif %}
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
-                        {% endif %}
-                    </div>
-                    {% endwith %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex align-items-baseline justify-content-center mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price ms-2 text-muted text-decoration-line-through">${{ product.price }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
-                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
-                            </a>
-                        </div>
-                    </div>
+                        {% endwith %}
+                        <div class="product-name">{{ product.name }}</div>
+                    </a>
                 </div>
             </div>
-        {% empty %}
-            <div class="text-center text-muted">
-                <p>{% trans "No featured products available." %}</p>
-            </div>
-        {% endfor %}
+            {% empty %}
+            <div class="text-muted">{% trans "No featured products available." %}</div>
+            {% endfor %}
+        </div>
     </div>
-</div>
-
-<!-- Best Sellers Section -->
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">{% trans "Best Sellers" %}</h2>
-    <div class="bestseller-swiper-controls">
-        <button class="btn btn-outline-secondary btn-sm me-2 bestseller-swiper-prev">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="btn btn-outline-secondary btn-sm bestseller-swiper-next">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+    <!-- Best Sellers -->
+    <div class="section-header">
+        <h2>{% trans "Best Sellers" %}</h2>
+        <div class="swiper-controls">
+            <button class="btn btn-outline-secondary btn-sm bestseller-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-outline-secondary btn-sm bestseller-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
     </div>
-</div>
-
-<!-- Swiper Container -->
-<div class="swiper bestseller-swiper-unique mb-5">
-    <div class="swiper-wrapper">
-        {% for product in best_sellers %}
+    <div class="swiper bestseller-swiper mb-5">
+        <div class="swiper-wrapper">
+            {% for product in best_sellers %}
             <div class="swiper-slide">
-                <div class="product-card card border-0 bg-transparent text-center">
-                    {% with main_image=product.get_main_image alt_image=product.get_hover_image %}
-                    <div class="position-relative overflow-hidden">
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="img-fluid product-image default-img" alt="{{ product.name }}">
-                            {% if alt_image and alt_image.image %}
-                                <img src="{{ alt_image.image.url }}" class="img-fluid product-image hover-img position-absolute top-0 start-0 w-100 h-100" alt="{{ product.name }}">
+                <div class="product-card text-center">
+                    <a href="{{ product.get_absolute_url }}">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" alt="{% trans 'No Image' %}">
                             {% endif %}
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
-                        {% endif %}
-                    </div>
-                    {% endwith %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex align-items-baseline justify-content-center mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price ms-2 text-muted text-decoration-line-through">${{ product.price }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
-                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
-                            </a>
-                        </div>
-                    </div>
+                        {% endwith %}
+                        <div class="product-name">{{ product.name }}</div>
+                    </a>
                 </div>
             </div>
-        {% empty %}
-            <div class="text-center text-muted">
-                <p>{% trans "No best sellers available." %}</p>
-            </div>
-        {% endfor %}
+            {% empty %}
+            <div class="text-muted">{% trans "No best sellers available." %}</div>
+            {% endfor %}
+        </div>
     </div>
-</div>
-
-<!-- On Sale Products Section -->
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">{% trans "On Sale!" %}</h2>
-    <div class="onsale-swiper-controls">
-        <button class="btn btn-outline-secondary btn-sm me-2 onsale-swiper-prev">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="btn btn-outline-secondary btn-sm onsale-swiper-next">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+    <!-- On Sale -->
+    <div class="section-header">
+        <h2>{% trans "On Sale!" %}</h2>
+        <div class="swiper-controls">
+            <button class="btn btn-outline-secondary btn-sm onsale-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-outline-secondary btn-sm onsale-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
     </div>
-</div>
-
-<div class="swiper onsale-swiper-unique mb-5">
-    <div class="swiper-wrapper">
-        {% for product in sale_products %}
+    <div class="swiper onsale-swiper mb-5">
+        <div class="swiper-wrapper">
+            {% for product in sale_products %}
             <div class="swiper-slide">
-                <div class="product-card card border-0 bg-transparent text-center">
-                    {% with main_image=product.get_main_image alt_image=product.get_hover_image %}
-                    <div class="position-relative overflow-hidden">
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="img-fluid product-image default-img" alt="{{ product.name }}">
-                            {% if alt_image and alt_image.image %}
-                                <img src="{{ alt_image.image.url }}" class="img-fluid product-image hover-img position-absolute top-0 start-0 w-100 h-100" alt="{{ product.name }}">
+                <div class="product-card text-center">
+                    <a href="{{ product.get_absolute_url }}">
+                        {% with main_image=product.get_main_image %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" alt="{% trans 'No Image' %}">
                             {% endif %}
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
-                        {% endif %}
-                    </div>
-                    {% endwith %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <div class="d-flex align-items-baseline justify-content-center mb-2">
-                            <span class="price">${{ product.get_price }}</span>
-                            {% if product.is_on_sale and product.sale_price %}
-                                <span class="old-price ms-2 text-muted text-decoration-line-through">${{ product.price }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm rounded-pill">
-                                {% trans "View Details" %} <i class="fas fa-chevron-right ms-1"></i>
-                            </a>
-                        </div>
-                    </div>
+                        {% endwith %}
+                        <div class="product-name">{{ product.name }}</div>
+                    </a>
                 </div>
             </div>
-        {% empty %}
-            <div class="text-center text-muted">
-                <p>{% trans "No products currently on sale." %}</p>
-            </div>
-        {% endfor %}
+            {% empty %}
+            <div class="text-muted">{% trans "No sale products available." %}</div>
+            {% endfor %}
+        </div>
     </div>
 </div>
-    </div>
-    </div>
 {% endblock %}
-
 {% block js %}
 <script>
+    function setupSwiper(className, next, prev) {
+        new Swiper(`.${className}`, {
+            slidesPerView: 2,
+            spaceBetween: 16,
+            breakpoints: {
+                576: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                992: { slidesPerView: 4 }
+            },
+            navigation: {
+                nextEl: `.${next}`,
+                prevEl: `.${prev}`
+            }
+        });
+    }
     document.addEventListener('DOMContentLoaded', function () {
-    new Swiper('.category-swiper-unique', {
-        slidesPerView: 1,
-        spaceBetween: 16,
-        breakpoints: {
-            576: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            992: { slidesPerView: 4 },
-        },
-        navigation: {
-            nextEl: '.category-swiper-next',
-            prevEl: '.category-swiper-prev',
-        },
+        setupSwiper('newarrivals-swiper', 'newarrivals-next', 'newarrivals-prev');
+        setupSwiper('featured-swiper', 'featured-next', 'featured-prev');
+        setupSwiper('bestseller-swiper', 'bestseller-next', 'bestseller-prev');
+        setupSwiper('onsale-swiper', 'onsale-next', 'onsale-prev');
     });
-});
-document.addEventListener('DOMContentLoaded', function () {
-    new Swiper('.featured-swiper-unique', {
-        slidesPerView: 2,
-        spaceBetween: 16,
-        breakpoints: {
-            576: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            992: { slidesPerView: 4 },
-        },
-        navigation: {
-            nextEl: '.featured-swiper-next',
-            prevEl: '.featured-swiper-prev',
-        },
-    });
-});
-document.addEventListener('DOMContentLoaded', function () {
-    new Swiper('.bestseller-swiper-unique', {
-        slidesPerView: 2,
-        spaceBetween: 16,
-        breakpoints: {
-            576: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            992: { slidesPerView: 4 },
-        },
-        navigation: {
-            nextEl: '.bestseller-swiper-next',
-            prevEl: '.bestseller-swiper-prev',
-        },
-    });
-});document.addEventListener('DOMContentLoaded', function () {
-    new Swiper('.bestseller-swiper-unique', {
-        slidesPerView: 2,
-        spaceBetween: 16,
-        breakpoints: {
-            576: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            992: { slidesPerView: 4 },
-        },
-        navigation: {
-            nextEl: '.bestseller-swiper-next',
-            prevEl: '.bestseller-swiper-prev',
-        },
-    });
-});
-document.addEventListener('DOMContentLoaded', function () {
-    new Swiper('.newarrivals-swiper-unique', {
-        slidesPerView: 2,
-        spaceBetween: 16,
-        breakpoints: {
-            576: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            992: { slidesPerView: 4 },
-        },
-        navigation: {
-            nextEl: '.newarrivals-swiper-next',
-            prevEl: '.newarrivals-swiper-prev',
-        },
-    });
-});
-document.addEventListener('DOMContentLoaded', function () {
-    new Swiper('.onsale-swiper-unique', {
-        slidesPerView: 1,
-        spaceBetween: 16,
-        breakpoints: {
-            576: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            992: { slidesPerView: 4 },
-        },
-        navigation: {
-            nextEl: '.onsale-swiper-next',
-            prevEl: '.onsale-swiper-prev',
-        },
-    });
-});
 </script>
 {% endblock %}
