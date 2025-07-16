@@ -37,19 +37,18 @@
 
 <!-- Product Details -->
 <div class="col-md-6">
+    <!-- Product Details -->
+<div class="col-md-6">
     <h1 class="mb-3">{{ product.name }}</h1>
     <p class="lead">{{ product.short_description }}</p>
     <p>{{ product.description }}</p>
     <div class="d-flex align-items-baseline mb-3">
         <span class="price fs-3 me-2" id="display-price">${{ product.get_price }}</span>
-        {% if product.is_on_sale and product.sale_price %}
-            <span class="old-price fs-5" id="display-old-price">${{ product.price }}</span>
-        {% endif %}
+        
     </div>
     <div class="mb-3">
         {% include "shop/partials/product_flags.html" with product=product is_showed=False %}
     </div>
-
     {% if available_colors %}
     <div class="mb-4">
         <h6 class="text-dark">{% trans "Available Colors:" %}</h6>
@@ -73,7 +72,6 @@
         </div>
     </div>
     {% endif %}
-
     {% if available_sizes %}
     <div class="mb-4">
         <h6 class="text-dark">{% trans "Select Size:" %}</h6>
@@ -89,7 +87,6 @@
             {% endfor %}
         </div>
     </div>
-
     <!-- Collapsible Size Chart -->
  <!-- Collapsible Size Chart -->
 <div class="mb-4">
@@ -130,9 +127,7 @@
         </div>
     </div>
 </div>
-
     {% endif %}
-
     <div class="mb-3">
         <h6>{% trans "Quantity:" %}</h6>
         <div class="d-inline-flex align-items-center border rounded px-2">
@@ -146,7 +141,6 @@
         </div>
         <input type="hidden" id="quantity-input" value="1" min="1">
     </div>
-
     <div class="d-flex gap-2">
         <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6 flex-grow-1" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>
             <i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}
@@ -155,7 +149,6 @@
             <i class="fas fa-heart"></i>
         </button>
     </div>
-
     <div id="toast-popup" class="toast align-items-center text-white border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body" id="toast-message"></div>
@@ -165,25 +158,30 @@
 </div>
 </div>
 
+
 <hr class="my-5">
 <h3 class="mb-4">{% trans "Related Products" %}</h3>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
     {% for related_product in related_products %}
         <div class="col">
-            <a href="{{ related_product.get_absolute_url }}" class="text-decoration-none">
-                <div class="card product-card h-100">
-                    {% with main_image=related_product.get_main_image %}
-                        {% if main_image and main_image.image %}
-                            <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ related_product.name }}">
-                        {% else %}
-                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" class="card-img-top" alt="{% trans 'No Image' %}">
-                        {% endif %}
-                    {% endwith %}
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ related_product.name }}</h5>
-                    </div>
-                </div>
-            </a>
+            <div class="product-card text-center position-relative h-100">
+                {% with main_image=related_product.get_main_image %}
+                    {% if main_image and main_image.image %}
+                        <div class="position-relative">
+                            <a href="{{ related_product.get_absolute_url }}">
+                                <img src="{{ main_image.image.url }}" alt="{{ related_product.name }}">
+                            </a>
+                            <div class="product-icons">
+                                <a href="#" class="wishlist-btn" title="{% trans 'Add to Wishlist' %}"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="cart-btn" title="{% trans 'Add to Cart' %}"><i class="fas fa-shopping-cart"></i></a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" alt="{% trans 'No Image' %}">
+                    {% endif %}
+                {% endwith %}
+                <div class="product-name">{{ related_product.name }}</div>
+            </div>
         </div>
     {% empty %}
         <div class="col-12">
@@ -191,8 +189,83 @@
         </div>
     {% endfor %}
 </div>
+
+<div id="toast-popup" class="toast align-items-center text-white border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body" id="toast-message"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
 </div>
+
+<style>
+.product-card {
+    border: none;
+    background: transparent;
+    transition: transform 0.2s ease-in-out;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: scale(1.02);
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.product-name {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #000;
+}
+
+.product-name,
+.product-card a {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.product-icons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.product-icons a {
+    color: black;
+    background-color: transparent;
+    border: 1.5px solid black;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.product-icons a:hover {
+    background-color: black;
+    color: white;
+}
+
+/* ✅ Toast Notification on top of everything */
+#toast-popup {
+    z-index: 9999 !important;
+    position: fixed !important;
+    bottom: 1rem;
+    right: 1rem;
+}
+</style>
 {% endblock %}
+
 
 {% block js %}
 <script>
@@ -205,8 +278,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const toastElement = document.getElementById('toast-popup');
     const toastMessage = document.getElementById('toast-message');
     const addToCartBtn = document.getElementById('add-to-cart-btn');
-    let isWishlisted = false;
 
+    let isWishlisted = false;
     let selectedColorId = null;
     let selectedSizeId = null;
 
@@ -215,17 +288,17 @@ document.addEventListener('DOMContentLoaded', function () {
         quantityDisplay.textContent = value;
     }
 
-    increaseBtn.addEventListener('click', () => {
+    increaseBtn?.addEventListener('click', () => {
         let current = parseInt(quantityInput.value) || 1;
         updateDisplay(current + 1);
     });
 
-    decreaseBtn.addEventListener('click', () => {
+    decreaseBtn?.addEventListener('click', () => {
         let current = parseInt(quantityInput.value) || 1;
         if (current > 1) updateDisplay(current - 1);
     });
 
-    wishlistBtn.addEventListener('click', function () {
+    wishlistBtn?.addEventListener('click', function () {
         isWishlisted = !isWishlisted;
         toastMessage.textContent = isWishlisted ? 'Added to your wishlist' : 'Removed from your wishlist';
         toastElement.classList.remove('bg-danger', 'bg-success');
@@ -250,20 +323,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    addToCartBtn.addEventListener('click', () => {
+    addToCartBtn?.addEventListener('click', () => {
         if (!selectedColorId || !selectedSizeId) {
             alert("Please select color and size first.");
             return;
         }
         const quantity = quantityInput.value;
         toastMessage.textContent = `Added ${quantity} item(s) to your cart.`;
-        toastElement.classList.remove('bg-danger');
+        toastElement.classList.remove('bg-danger', 'bg-success');
         toastElement.classList.add('bg-primary');
         const toast = new bootstrap.Toast(toastElement);
         toast.show();
     });
+
+    // Related product quick add buttons
+    document.querySelectorAll('.wishlist-btn').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            toastMessage.textContent = '{{ _("Added to Wishlist") }}';
+            toastElement.classList.remove('bg-primary', 'bg-danger');
+            toastElement.classList.add('bg-success');
+            new bootstrap.Toast(toastElement).show();
+        });
+    });
+
+    document.querySelectorAll('.cart-btn').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            toastMessage.textContent = '{{ _("Please select a color and size from the product page.") }}';
+            toastElement.classList.remove('bg-success', 'bg-danger');
+            toastElement.classList.add('bg-primary');
+            new bootstrap.Toast(toastElement).show();
+        });
+    });
 });
 </script>
+
 <script>
 const productThumbsSwiper = new Swiper('.product-detail-thumbs', {
     spaceBetween: 10,
@@ -292,4 +387,3 @@ const productMainSwiper = new Swiper('.product-detail-swiper', {
 });
 </script>
 {% endblock js %}
-

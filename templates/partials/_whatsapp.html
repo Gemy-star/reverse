@@ -1,9 +1,38 @@
-
 {% load i18n %}
+<style>
+#whatsappBtn {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  z-index: 9999;
+  bottom: env(safe-area-inset-bottom, 20px); /* Respect iOS bottom safe area */
+}
+
+#whatsappIcon {
+  font-size: 28px;
+  color: #25D366 !important;
+  transition: color 0.3s ease;
+}
+
+#whatsappBtn:hover #whatsappIcon {
+  color: #000000 !important;
+}
+#whatsappBtn {
+  text-decoration: none !important;
+}
+
+</style>
+
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/{{ config.WHATSAPP_NUMBER|cut:'+' }}" target="_blank"
-   class="btn btn-success rounded-circle position-fixed bottom-0 end-1 me-5 mb-6 shadow"
-   style="z-index: 998; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;"
+   id="whatsappBtn"
+   class="position-fixed start-0 m-3"
    title="{% trans 'Chat with us on WhatsApp' %}">
-  <i class="fab fa-whatsapp fa-lg text-white"></i>
+  <i class="fab fa-whatsapp fa-lg" id="whatsappIcon"></i>
 </a>

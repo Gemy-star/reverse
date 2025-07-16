@@ -13,12 +13,13 @@
         }
     }
 
-    /* Black button with hover shadow */
     .btn-hero-transparent {
         background-color: black;
         color: #fff;
         border: 2px solid black;
         transition: all 0.3s ease;
+        font-size: 1rem;
+        padding: 0.5rem 1.2rem;
     }
 
     .btn-hero-transparent:hover {
@@ -27,19 +28,44 @@
         color: #fff;
     }
 
-    /* Black text for heading and subheading */
-    .hero-text {
+    .hero-heading {
         color: #000 !important;
     }
 
-    /* Add spacing to prevent slider from touching navbar */
+    .hero-subtext {
+        color: #000 !important;
+    }
+
     .hero-swiper {
-        margin-top: 100px; /* default for desktop */
+        margin-top: 80px; /* Default for desktop */
     }
 
     @media (max-width: 768px) {
+        .hero-heading {
+            font-size: 1.2rem !important;
+            text-align: left;
+        }
+
+        .hero-subtext {
+            font-size: 0.85rem !important;
+            text-align: left;
+            max-width: 95%;
+            word-break: break-word;
+            line-height: 1.4;
+            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.85);
+        }
+
+        .btn-hero-transparent {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.9rem;
+        }
+
         .hero-swiper {
-            margin-top: 120px; /* more space on smaller screens */
+            margin-top: 60px; /* Slimmed for mobile only */
+        }
+
+        .hero-button-wrapper {
+            text-align: left !important;
         }
     }
 </style>
@@ -52,11 +78,13 @@
 
             <!-- Overlay content -->
             <div class="container position-absolute top-50 start-50 translate-middle text-center text-md-start px-3 px-md-5" style="z-index: 2;">
-                <h1 class="fw-bold display-6 display-md-4 display-lg-3 hero-text">{{ slider.heading }}</h1>
-                <p class="fs-5 fs-md-4 col-lg-6 mx-auto mx-md-0 hero-text">{{ slider.subheading }}</p>
-                <a href="{{slider.button_url_name}}" class="btn btn-hero-transparent btn-lg rounded-pill mt-3">
-                    {{ slider.button_text }} <i class="fas fa-arrow-right ms-2"></i>
-                </a>
+                <h1 class="fw-bold display-6 display-md-4 display-lg-3 hero-heading">{{ slider.heading }}</h1>
+                <p class="fs-5 fs-md-4 col-lg-6 mx-auto mx-md-0 hero-subtext">{{ slider.subheading }}</p>
+                <div class="hero-button-wrapper">
+                    <a href="{{ slider.button_url_name }}" class="btn btn-hero-transparent btn-lg rounded-pill mt-3">
+                        {{ slider.button_text }} <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
             </div>
 
             <!-- Dark overlay -->
@@ -68,6 +96,7 @@
     <!-- Pagination Dots -->
     <div class="swiper-pagination mt-3"></div>
 </div>
+
 {% else %}
 <!-- Default Hero Section -->
 <div class="p-5 mb-4 bg-light rounded-3 shadow-sm intro" style="margin-top: 120px;">
