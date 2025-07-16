@@ -1,12 +1,8 @@
 {% load i18n static %}
-<footer class="footer mt-auto py-5 bg-dark text-light border-top border-secondary">
+<footer class="footer mt-auto py-5 bg-dark text-light border-top border-secondary position-relative">
   <div class="container">
     <!-- Top Row: Social Icons -->
-    <div class="text-center mb-4">
-      <a href="{{ config.FACEBOOK_URL }}" class="text-white-50 me-3" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
-      <a href="{{ config.INSTAGRAM_URL }}" class="text-white-50 me-3" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
-      <a href="{{ config.TIKTOK_URL }}" class="text-white-50" target="_blank"><i class="fab fa-tiktok fa-lg"></i></a>
-    </div>
+   
 
     <!-- Middle Row: About - Connect - Links - Contact -->
     <div class="row text-center text-md-start">
@@ -21,7 +17,9 @@
         <h6 class="text-uppercase fw-bold mb-3">{% trans "LET’S CONNECT" %}</h6>
         <p class="text-white-50">{% trans "Follow us on our Social Media Channels." %}</p>
         <div class="d-flex gap-3 justify-content-center justify-content-md-start">
-         
+          <a href="{{ config.FACEBOOK_URL }}" class="text-white-50" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
+          <a href="{{ config.INSTAGRAM_URL }}" class="text-white-50" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
+          <a href="{{ config.TIKTOK_URL }}" class="text-white-50" target="_blank"><i class="fab fa-tiktok fa-lg"></i></a>
         </div>
       </div>
 
@@ -38,17 +36,18 @@
         <h6 class="text-uppercase fw-bold mb-3">{% trans "Contact Us" %}</h6>
         <p class="mb-0 text-white-50">
           <i class="fas fa-phone-alt me-2"></i>
-          <span class="text-success">{{ config.WHATSAPP_NUMBER }}</span>
+          <a href="tel:{{ config.WHATSAPP_NUMBER }}" class="text-success text-decoration-none">{{ config.WHATSAPP_NUMBER }}</a>
         </p>
       </div>
     </div>
 
-    <!-- Payment & Bottom -->
+    <!-- Divider -->
     <hr class="border-secondary">
+
+    <!-- Bottom Row -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
       <!-- Payment Icons -->
       <div class="mb-3 mb-md-0">
-       
         <img src="{% static 'img/payments/PayMob.png' %}" alt="PayMob" class="me-2" height="30">
         <img src="{% static 'img/payments/mastercard.png' %}" alt="Mastercard" class="me-2" height="30">
       </div>
@@ -59,181 +58,125 @@
       </div>
     </div>
 
-<!-- Scroll to Top Button -->
-<a href="#" id="scrollTopBtn" class="btn btn-scroll-top rounded-circle position-fixed bottom-0 end-0 m-4">
-  <i class="fas fa-arrow-up" id="scrollTopIcon"></i>
-</a>
+    <!-- Scroll to Top Button -->
+    <a href="#" id="scrollTopBtn" class="btn btn-scroll-top rounded-circle position-fixed bottom-0 end-0 m-4">
+      <i class="fas fa-arrow-up" id="scrollTopIcon"></i>
+    </a>
 
-<!-- Styles -->
-<style>
-.btn-scroll-top {
-  border: none;
-  padding: 0.75rem 0.85rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
+    <!-- WhatsApp Floating Button -->
+  
+    <!-- Styles -->
+    <style>
+      .btn-scroll-top {
+        border: none;
+        padding: 0.75rem 0.85rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
 
-/* Light background: white button, black arrow */
-.scroll-light {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-}
-.scroll-light #scrollTopIcon {
-  color: #000 !important;
-}
+      .scroll-light {
+        background-color: rgba(255, 255, 255, 0.85) !important;
+      }
 
-/* Dark background: black button, white arrow */
-.scroll-dark {
-  background-color: rgba(0, 0, 0, 0.85) !important;
-}
-.scroll-dark #scrollTopIcon {
-  color: #fff !important;
-}
-</style>
+      .scroll-light #scrollTopIcon {
+        color: #000 !important;
+      }
 
-<!-- Script -->
-<script>
-function getBackgroundColorAtCenter(el) {
-  const rect = el.getBoundingClientRect();
-  const x = rect.left + rect.width / 2;
-  const y = rect.top + rect.height / 2;
-  const elemAtPoint = document.elementFromPoint(x, y);
-  if (!elemAtPoint) return null;
+      .scroll-dark {
+        background-color: rgba(0, 0, 0, 0.85) !important;
+      }
 
-  let bg = window.getComputedStyle(elemAtPoint).backgroundColor;
+      .scroll-dark #scrollTopIcon {
+        color: #fff !important;
+      }
 
-  // Fallback if transparent: climb up the DOM to find background color
-  let current = elemAtPoint;
-  while (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
-    current = current.parentElement;
-    if (!current) break;
-    bg = window.getComputedStyle(current).backgroundColor;
-  }
-  return bg;
-}
+      /* WhatsApp Button */
+      #whatsappBtn {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 1050;
+        text-decoration: none !important;
+      }
 
-function isDarkColor(rgb) {
-  const result = rgb.match(/\d+/g);
-  if (!result || result.length < 3) return false;
-  const [r, g, b] = result.map(Number);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness < 128;
-}
+      #whatsappIcon {
+        font-size: 28px;
+        color: #25D366 !important;
+        transition: color 0.3s ease;
+      }
 
-function updateScrollButtonTheme() {
-  const btn = document.getElementById('scrollTopBtn');
-  const bg = getBackgroundColorAtCenter(btn);
-  if (!bg) return;
+      #whatsappBtn:hover #whatsappIcon {
+        color: black !important;
+      }
+    </style>
 
-  if (isDarkColor(bg)) {
-    btn.classList.add('scroll-dark');
-    btn.classList.remove('scroll-light');
-  } else {
-    btn.classList.add('scroll-light');
-    btn.classList.remove('scroll-dark');
-  }
-}
+    <!-- Script -->
+    <script>
+      function getBackgroundColorAtButtonPosition(btn) {
+        const rect = btn.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
 
-document.addEventListener('DOMContentLoaded', () => {
-  updateScrollButtonTheme();
-  window.addEventListener('scroll', updateScrollButtonTheme);
-  window.addEventListener('resize', updateScrollButtonTheme);
-});
+        btn.style.visibility = 'hidden';
+        const elemAtPoint = document.elementFromPoint(x, y);
+        btn.style.visibility = 'visible';
 
-function getBackgroundColorAtButtonPosition(btn) {
-    const rect = btn.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
+        if (!elemAtPoint) return null;
+        let bg = window.getComputedStyle(elemAtPoint).backgroundColor;
 
-    // Temporarily hide the button to find the element behind it
-    btn.style.visibility = 'hidden';
-    const elemAtPoint = document.elementFromPoint(x, y);
-    btn.style.visibility = 'visible'; // Show it again immediately
+        let current = elemAtPoint;
+        while (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
+          current = current.parentElement;
+          if (!current) break;
+          bg = window.getComputedStyle(current).backgroundColor;
+        }
+        return bg;
+      }
 
-    if (!elemAtPoint) return null;
+      function isDarkColor(rgb) {
+        const result = rgb.match(/\d+/g);
+        if (!result || result.length < 3) return false;
+        const [r, g, b] = result.map(Number);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness < 128;
+      }
 
-    let bg = window.getComputedStyle(elemAtPoint).backgroundColor;
+      function updateScrollButtonTheme() {
+        const btn = document.getElementById('scrollTopBtn');
+        if (!btn) return;
+        if (window.getComputedStyle(btn).display === 'none') return;
+        const bg = getBackgroundColorAtButtonPosition(btn);
+        if (!bg) {
+          btn.classList.add('scroll-light');
+          btn.classList.remove('scroll-dark');
+          return;
+        }
+        if (isDarkColor(bg)) {
+          btn.classList.add('scroll-dark');
+          btn.classList.remove('scroll-light');
+        } else {
+          btn.classList.add('scroll-light');
+          btn.classList.remove('scroll-dark');
+        }
+      }
 
-    // Fallback if transparent: climb up the DOM to find background color
-    let current = elemAtPoint;
-    while (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
-        current = current.parentElement;
-        if (!current) break; // Reached top of document
-        bg = window.getComputedStyle(current).backgroundColor;
-    }
-    return bg;
-}
+      document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('scrollTopBtn');
+        if (!btn) return;
 
-function isDarkColor(rgb) {
-    // This function remains the same and is generally reliable
-    const result = rgb.match(/\d+/g);
-    if (!result || result.length < 3) return false;
-    const [r, g, b] = result.map(Number);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    return brightness < 128; // Threshold for dark vs. light
-}
-
-function updateScrollButtonTheme() {
-    const btn = document.getElementById('scrollTopBtn');
-    if (!btn) return; // Exit if button not found
-
-    // Ensure the button is visible before checking its background
-    // (In case display: none was applied by something else)
-    if (window.getComputedStyle(btn).display === 'none') {
-        // If button is hidden, its background can't be reliably checked.
-        // We might choose to set a default or just return.
-        // For now, let's assume it should be visible if we're trying to style it.
-        return;
-    }
-
-    const bg = getBackgroundColorAtButtonPosition(btn);
-
-    if (!bg) {
-        // Fallback if no background color could be determined
-        btn.classList.add('scroll-light'); // Default to light theme
-        btn.classList.remove('scroll-dark');
-        return;
-    }
-
-    if (isDarkColor(bg)) {
-        btn.classList.add('scroll-dark');
-        btn.classList.remove('scroll-light');
-    } else {
-        btn.classList.add('scroll-light');
-        btn.classList.remove('scroll-dark');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('scrollTopBtn');
-    if (!btn) return;
-
-    // Add scroll-to-top functionality
-    btn.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent default anchor link behavior
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth' // Smooth scroll animation
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-    });
 
-    // Initial update
-    updateScrollButtonTheme();
-
-    // Event listeners for dynamic updates
-    window.addEventListener('scroll', updateScrollButtonTheme);
-    window.addEventListener('resize', updateScrollButtonTheme);
-
-    // Optional: If you hide the button until scroll, you might need to call
-    // updateScrollButtonTheme when it becomes visible.
-    // For example, if you toggle its display based on scroll position:
-    // window.addEventListener('scroll', () => {
-    //     if (window.scrollY > 200) { // Example threshold
-    //         btn.style.display = 'block';
-    //         updateScrollButtonTheme(); // Call again after making visible
-    //     } else {
-    //         btn.style.display = 'none';
-    //     }
-    // });
-});
-</script>
+        updateScrollButtonTheme();
+        window.addEventListener('scroll', updateScrollButtonTheme);
+        window.addEventListener('resize', updateScrollButtonTheme);
+      });
+    </script>
+  </div>
 </footer>

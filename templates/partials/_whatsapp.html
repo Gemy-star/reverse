@@ -1,38 +1,44 @@
 {% load i18n %}
 <style>
-#whatsappBtn {
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
-  z-index: 9999;
-  bottom: env(safe-area-inset-bottom, 20px); /* Respect iOS bottom safe area */
-}
+  #whatsappBtn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    z-index: 9999;
+    position: fixed;
+    bottom: env(safe-area-inset-bottom, 20px);
+    left: 20px;
+    text-decoration: none !important;
+  }
 
-#whatsappIcon {
-  font-size: 28px;
-  color: #25D366 !important;
-  transition: color 0.3s ease;
-}
+  #whatsappIcon {
+    font-size: 28px;
+    color: #25D366 !important;
+    transition: color 0.3s ease;
+  }
 
-#whatsappBtn:hover #whatsappIcon {
-  color: #000000 !important;
-}
-#whatsappBtn {
-  text-decoration: none !important;
-}
+  #whatsappBtn:hover #whatsappIcon {
+    color: #000 !important;
+  }
 
+  /* Prevent blue underline in some mobile browsers */
+  #whatsappBtn:focus, #whatsappBtn:active, #whatsappBtn i {
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    border: none !important;
+  }
 </style>
 
-<!-- WhatsApp Floating Button -->
-<a href="https://wa.me/{{ config.WHATSAPP_NUMBER|cut:'+' }}" target="_blank"
+<a href="https://wa.me/{{ config.WHATSAPP_NUMBER|cut:'+' }}"
    id="whatsappBtn"
-   class="position-fixed start-0 m-3"
+   target="_blank"
    title="{% trans 'Chat with us on WhatsApp' %}">
-  <i class="fab fa-whatsapp fa-lg" id="whatsappIcon"></i>
+  <i class="fab fa-whatsapp" id="whatsappIcon"></i>
 </a>
