@@ -9,131 +9,139 @@
 <div class="container my-4">
     <div class="row">
         <!-- Sidebar for Categories and Filters -->
-        <div class="col-lg-3 mb-4">
-            <div class="filter-section mb-4">
-                <h5 class="mb-3"><i class="fas fa-filter me-2"></i>{% trans "Filters" %}</h5>
-                <div class="mb-4">
-                    <h6>{% trans "Categories" %}</h6>
-                    <div class="list-group list-group-flush category-list">
-                        <a href="{% url 'shop:home' %}" class="list-group-item {% if not category %}active{% endif %}" data-category-slug="">
-                            <i class="fas fa-th-large"></i> {% trans "All Products" %}
-                        </a>
-                        {% for cat in categories %}
-                            <a href="{% url 'shop:category_detail' slug=cat.slug %}"
-                               class="list-group-item {% if category and category.slug == cat.slug %}active{% endif %}"
-                               data-category-slug="{{ cat.slug }}">
-                                <i class="fas fa-folder"></i> {{ cat.name }}
+<div class="col-lg-3 mb-4">
+    <div class="accordion" id="filterAccordion">
+        <!-- Filters Header -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFilters">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="true" aria-controls="collapseFilters">
+                    <i class="fas fa-filter me-2"></i>{% trans "Filters" %}
+                </button>
+            </h2>
+            <div id="collapseFilters" class="accordion-collapse collapse show" aria-labelledby="headingFilters" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+
+                    <!-- Categories -->
+                    <div class="mb-4">
+                        <h6>{% trans "Categories" %}</h6>
+                        <div class="list-group list-group-flush category-list">
+                            <a href="{% url 'shop:home' %}" class="list-group-item {% if not category %}active{% endif %}">
+                                <i class="fas fa-th-large"></i> {% trans "All Products" %}
                             </a>
-                            {% if category and category.slug == cat.slug %}
-                                {% for subcat in subcategories %}
-                                    <a href="{% url 'shop:subcategory_detail' category_slug=cat.slug slug=subcat.slug %}"
-                                       class="list-group-item ps-4 {% if current_filters.subcategory == subcat.slug %}active{% endif %}"
-                                       data-subcategory-slug="{{ subcat.slug }}">
-                                        <i class="fas fa-angle-right"></i> {{ subcat.name }}
-                                    </a>
-                                {% endfor %}
-                            {% endif %}
-                        {% endfor %}
+                            {% for cat in categories %}
+                                <a href="{% url 'shop:category_detail' slug=cat.slug %}" class="list-group-item {% if category and category.slug == cat.slug %}active{% endif %}">
+                                    <i class="fas fa-folder"></i> {{ cat.name }}
+                                </a>
+                                {% if category and category.slug == cat.slug %}
+                                    {% for subcat in subcategories %}
+                                        <a href="{% url 'shop:subcategory_detail' category_slug=cat.slug slug=subcat.slug %}" class="list-group-item ps-4 {% if current_filters.subcategory == subcat.slug %}active{% endif %}">
+                                            <i class="fas fa-angle-right"></i> {{ subcat.name }}
+                                        </a>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
+
+                    <!-- Filter Form -->
+                    <form id="filter-form">
+                        <input type="hidden" name="category_slug" value="{{ category.slug|default:'' }}">
+                        <input type="hidden" name="subcategory_slug" value="{{ current_filters.subcategory|default:'' }}">
+
+                        <!-- Fit Type -->
+                        <div class="mb-3">
+                            <h6>{% trans "Fit Type" %}</h6>
+                            {% for fit_type in fit_types %}
+                                <div class="form-check">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" name="fit_type" value="{{ fit_type.slug }}" id="fitType{{ fit_type.slug }}" {% if fit_type.slug == current_filters.fit_type %}checked{% endif %}>
+                                    <label class="form-check-label" for="fitType{{ fit_type.slug }}">{{ fit_type.name }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Brand -->
+                        <div class="mb-3">
+                            <h6>{% trans "Brand" %}</h6>
+                            {% for brand in brands %}
+                                <div class="form-check">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" name="brand" value="{{ brand.slug }}" id="brand{{ brand.slug }}" {% if brand.slug == current_filters.brand %}checked{% endif %}>
+                                    <label class="form-check-label" for="brand{{ brand.slug }}">{{ brand.name }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Color -->
+                        <div class="mb-3">
+                            <h6>{% trans "Color" %}</h6>
+                            {% for color in colors %}
+                                <div class="form-check">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" name="color" value="{{ color.name }}" id="color{{ color.name }}" {% if color.name == current_filters.color %}checked{% endif %}>
+                                    <label class="form-check-label" for="color{{ color.name }}">
+                                        <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ color.hex_code }}; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; margin-right: 5px;"></span>
+                                        {{ color.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Size -->
+                        <div class="mb-3">
+                            <h6>{% trans "Size" %}</h6>
+                            {% for size in sizes %}
+                                <div class="form-check">
+                                    <input class="form-check-input filter-checkbox" type="checkbox" name="size" value="{{ size.name }}" id="size{{ size.name }}" {% if size.name == current_filters.size %}checked{% endif %}>
+                                    <label class="form-check-label" for="size{{ size.name }}">
+                                        {{ size.name }} ({{ size.get_size_type_display }})
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-3">
+                            <h6>{% trans "Price Range" %}</h6>
+                            <div class="d-flex mb-2">
+                                <input type="number" class="form-control me-2" name="min_price" placeholder="{% trans 'Min' %}" value="{{ current_filters.min_price|default:'' }}">
+                                <input type="number" class="form-control" name="max_price" placeholder="{% trans 'Max' %}" value="{{ current_filters.max_price|default:'' }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100">{% trans "Apply Price" %}</button>
+                        </div>
+
+                        <!-- Sort -->
+                        <div class="mb-3">
+                            <h6>{% trans "Sort By" %}</h6>
+                            <select class="form-select" name="sort">
+                                <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
+                                <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>{% trans "Price (Low to High)" %}</option>
+                                <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>{% trans "Price (High to Low)" %}</option>
+                                <option value="newest" {% if current_filters.sort == 'newest' %}selected{% endif %}>{% trans "Newest" %}</option>
+                                <option value="popular" {% if current_filters.sort == 'popular' %}selected{% endif %}>{% trans "Popular" %}</option>
+                            </select>
+                        </div>
+
+                        <!-- Flags -->
+                        <div class="mb-3">
+                            <h6>{% trans "Flags" %}</h6>
+                            <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="is_best_seller" value="true" id="isBestseller" {% if current_filters.is_best_seller %}checked{% endif %}>
+                                <label class="form-check-label" for="isBestseller"><i class="fas fa-star text-warning me-1"></i> {% trans "Best Seller" %}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="is_new_arrival" value="true" id="isNewArrival" {% if current_filters.is_new_arrival %}checked{% endif %}>
+                                <label class="form-check-label" for="isNewArrival"><i class="fas fa-tag text-info me-1"></i> {% trans "New Arrival" %}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="is_on_sale" value="true" id="onSale" {% if current_filters.is_on_sale %}checked{% endif %}>
+                                <label class="form-check-label" for="onSale"><i class="fas fa-fire text-danger me-1"></i> {% trans "On Sale" %}</label>
+                            </div>
+                        </div>
+                    </form>
+
                 </div>
-
-                <form id="filter-form">
-                    <input type="hidden" name="category_slug" value="{{ category.slug|default:'' }}">
-                    <input type="hidden" name="subcategory_slug" value="{{ current_filters.subcategory|default:'' }}">
-
-                    <div class="mb-3">
-                        <h6>{% trans "Fit Type" %}</h6>
-                        {% for fit_type in fit_types %}
-                            <div class="form-check">
-                                <input class="form-check-input filter-checkbox" type="checkbox" name="fit_type" value="{{ fit_type.slug }}" id="fitType{{ fit_type.slug }}" {% if fit_type.slug == current_filters.fit_type %}checked{% endif %}>
-                                <label class="form-check-label" for="fitType{{ fit_type.slug }}">
-                                    {{ fit_type.name }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                        <h6>{% trans "Brand" %}</h6>
-                        {% for brand in brands %}
-                            <div class="form-check">
-                                <input class="form-check-input filter-checkbox" type="checkbox" name="brand" value="{{ brand.slug }}" id="brand{{ brand.slug }}" {% if brand.slug == current_filters.brand %}checked{% endif %}>
-                                <label class="form-check-label" for="brand{{ brand.slug }}">
-                                    {{ brand.name }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                        <h6>{% trans "Color" %}</h6>
-                        {% for color in colors %}
-                            <div class="form-check">
-                                <input class="form-check-input filter-checkbox" type="checkbox" name="color" value="{{ color.name }}" id="color{{ color.name }}" {% if color.name == current_filters.color %}checked{% endif %}>
-                                <label class="form-check-label" for="color{{ color.name }}">
-                                    <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ color.hex_code }}; border: 1px solid #ccc; border-radius: 3px; vertical-align: middle; margin-right: 5px;"></span>
-                                    {{ color.name }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                        <h6>{% trans "Size" %}</h6>
-                        {% for size in sizes %}
-                            <div class="form-check">
-                                <input class="form-check-input filter-checkbox" type="checkbox" name="size" value="{{ size.name }}" id="size{{ size.name }}" {% if size.name == current_filters.size %}checked{% endif %}>
-                                <label class="form-check-label" for="size{{ size.name }}">
-                                    {{ size.name }} ({{ size.get_size_type_display }})
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                        <h6>{% trans "Price Range" %}</h6>
-                        <div class="d-flex mb-2">
-                            <input type="number" class="form-control me-2" name="min_price" placeholder="{% trans 'Min' %}" value="{{ current_filters.min_price|default:'' }}">
-                            <input type="number" class="form-control" name="max_price" placeholder="{% trans 'Max' %}" value="{{ current_filters.max_price|default:'' }}">
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm w-100">{% trans "Apply Price" %}</button>
-                    </div>
-
-                    <div class="mb-3">
-                        <h6>{% trans "Sort By" %}</h6>
-                        <select class="form-select" name="sort">
-                            <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
-                            <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>{% trans "Price (Low to High)" %}</option>
-                            <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>{% trans "Price (High to Low)" %}</option>
-                            <option value="newest" {% if current_filters.sort == 'newest' %}selected{% endif %}>{% trans "Newest" %}</option>
-                            <option value="popular" {% if current_filters.sort == 'popular' %}selected{% endif %}>{% trans "Popular" %}</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <h6>{% trans "Flags" %}</h6>
-                        <div class="form-check">
-                            <input class="form-check-input filter-checkbox" type="checkbox" name="is_best_seller" value="true" id="isBestseller" {% if current_filters.is_best_seller %}checked{% endif %}>
-                            <label class="form-check-label" for="isBestseller">
-                                <i class="fas fa-star text-warning me-1"></i> {% trans "Best Seller" %}
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input filter-checkbox" type="checkbox" name="is_new_arrival" value="true" id="isNewArrival" {% if current_filters.is_new_arrival %}checked{% endif %}>
-                            <label class="form-check-label" for="isNewArrival">
-                                <i class="fas fa-tag text-info me-1"></i> {% trans "New Arrival" %}
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input filter-checkbox" type="checkbox" name="is_on_sale" value="true" id="onSale" {% if current_filters.is_on_sale %}checked{% endif %}>
-                            <label class="form-check-label" for="onSale">
-                                <i class="fas fa-fire text-danger me-1"></i> {% trans "On Sale" %}
-                            </label>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Product Listing Area -->
         <div class="col-lg-9">

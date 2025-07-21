@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block content %}
+    <section class="section pt-2">
+<div class="container my-5 pt-4">
+
+    <!-- Example Section: Wishlist Items -->
+    <div class="section-header">
+        <h2>{% trans "My Wishlist" %}</h2>
+    </div>
+    <div class="swiper wishlist-swiper mb-5">
+        <div class="swiper-wrapper">
+            {% for product in products %}
+            <div class="swiper-slide">
+                <div class="product-card text-center">
+                    {% with main_image=product.get_main_image %}
+                    <div class="position-relative">
+                        <a href="{{ product.get_absolute_url }}">
+                            {% if main_image and main_image.image %}
+                            <img src="{{ main_image.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                            <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" alt="{% trans 'No Image' %}">
+                            {% endif %}
+                        </a>
+                        <div class="product-icons">
+                            <a href="javascript:void(0);" onclick="addToWishlist({{ product.id }})" title="{% trans 'Add to Wishlist' %}"><i class="fas fa-heart"></i></a>
+                            {% if product.get_default_variant %}
+                            <a href="javascript:void(0);" onclick="addToCart({{ product.get_default_variant.id }})" title="{% trans 'Add to Cart' %}"><i class="fas fa-shopping-cart"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endwith %}
+                    <div class="product-name">{{ product.name }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-muted">{% trans "No products available." %}</div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+    </section>
+{% endblock %}
+
+{% block css %}
+<style>
+    .swiper-slide {
+        width: 250px;
+    }
+
+    .product-card {
+        border: none;
+        background: transparent;
+        transition: transform 0.2s ease-in-out;
+        position: relative;
+    }
+
+    .product-card:hover {
+        transform: scale(1.02);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .product-name {
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #000;
+    }
+
+    .product-name,
+    .product-card a {
+        text-decoration: none !important;
+        color: inherit;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .swiper-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .product-icons {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .product-icons a {
+        color: black;
+        background-color: transparent;
+        border: 1.5px solid black;
+        padding: 6px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .product-icons a:hover {
+        background-color: black;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function addToCart(variantId) {
+        const url = `{% url 'add_to_cart' 0 %}`.replace(0, variantId);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert("تمت إضافة المنتج إلى السلة");
+            } else {
+                alert("حدث خطأ أثناء الإضافة");
+            }
+        });
+    }
+
+    function addToWishlist(productId) {
+        const url = `{% url 'add_to_wishlist' 0 %}`.replace(0, productId);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert("تمت إضافة المنتج إلى المفضلة");
+            } else {
+                alert("حدث خطأ أثناء الإضافة");
+            }
+        });
+    }
+</script>
+
+<!-- SwiperJS (if not already included) -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script>
+    new Swiper('.wishlist-swiper', {
+        slidesPerView: 4,
+        spaceBetween: 20,
+        navigation: {
+            nextEl: '.wishlist-next',
+            prevEl: '.wishlist-prev',
+        },
+        breakpoints: {
+            0: { slidesPerView: 1 },
+            576: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            992: { slidesPerView: 4 },
+        }
+    });
+</script>
+{% endblock %}
