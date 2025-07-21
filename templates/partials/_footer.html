@@ -1,182 +1,85 @@
 {% load i18n static %}
-<footer class="footer mt-auto py-5 bg-black text-light border-top border-secondary position-relative ">
+<footer class="footer mt-auto py-5 bg-black text-white border-top border-secondary position-relative">
   <div class="container">
-    <!-- Top Row: Social Icons -->
-   
-
-    <!-- Middle Row: About - Connect - Links - Contact -->
     <div class="row text-center text-md-start">
       <!-- About -->
       <div class="col-md-3 mb-4">
         <h6 class="text-uppercase fw-bold mb-3">{% trans "About Us" %}</h6>
-        <p class="text-white-50">{% trans 'About Reverse' %}</p>
+        <p class="text-white">{% trans 'About Reverse' %}</p>
       </div>
 
       <!-- Let's Connect -->
       <div class="col-md-3 mb-4">
         <h6 class="text-uppercase fw-bold mb-3">{% trans "LET’S CONNECT" %}</h6>
-        <p class="text-white-50">{% trans "Follow us on our Social Media Channels." %}</p>
+        <p class="text-white">{% trans "Follow us on our Social Media Channels." %}</p>
         <div class="d-flex gap-3 justify-content-center justify-content-md-start">
-          <a href="{{ config.FACEBOOK_URL }}" class="text-white-50" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
-          <a href="{{ config.INSTAGRAM_URL }}" class="text-white-50" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
-          <a href="{{ config.TIKTOK_URL }}" class="text-white-50" target="_blank"><i class="fab fa-tiktok fa-lg"></i></a>
+          <a href="{{ config.FACEBOOK_URL }}" class="text-white" target="_blank"><i class="fab fa-facebook fa-lg"></i></a>
+          <a href="{{ config.INSTAGRAM_URL }}" class="text-white" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
+          <a href="{{ config.TIKTOK_URL }}" class="text-white" target="_blank"><i class="fab fa-tiktok fa-lg"></i></a>
         </div>
       </div>
 
       <!-- Quick Links -->
       <div class="col-md-3 mb-4">
         <h6 class="text-uppercase fw-bold mb-3">{% trans "Quick links" %}</h6>
-        <ul class="list-unstyled text-white-50">
-          <li><a href="{% url 'shop:terms' %}" class="text-white-50 text-decoration-none">{% trans "Terms & Conditions" %}</a></li>
+        <ul class="list-unstyled text-white">
+          <li><a href="{% url 'shop:terms' %}" class="text-white text-decoration-none">{% trans "Terms & Conditions" %}</a></li>
         </ul>
       </div>
 
       <!-- Contact -->
       <div class="col-md-3 mb-4">
         <h6 class="text-uppercase fw-bold mb-3">{% trans "Contact Us" %}</h6>
-        <p class="mb-0 text-white-50">
+        <p class="mb-0 text-white">
           <i class="fas fa-phone-alt me-2"></i>
           <a href="tel:{{ config.WHATSAPP_NUMBER }}" class="text-success text-decoration-none">{{ config.WHATSAPP_NUMBER }}</a>
         </p>
       </div>
     </div>
 
-    <!-- Divider -->
     <hr class="border-secondary">
 
-    <!-- Bottom Row -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
       <!-- Payment Icons -->
       <div class="mb-3 mb-md-0">
-        <img src="{% static 'img/payments/PayMob.png' %}" alt="PayMob" class="me-2" height="30">
-        <img src="{% static 'img/payments/mastercard.png' %}" alt="Mastercard" class="me-2" height="30">
+        <img src="{% static 'img/payments/PayMob.png' %}" alt="PayMob" class="me-2" height="30" onerror="this.style.display='none'">
+        <img src="{% static 'img/payments/mastercard.png' %}" alt="Mastercard" class="me-2" height="30" onerror="this.style.display='none'">
       </div>
 
       <!-- Copyright -->
       <div>
-        <span class="text-white-50">&copy; {% now "Y" %}, Reverse EG.</span>
+        <span class="text-white">&copy; {% now "Y" %}, Reverse EG.</span>
       </div>
     </div>
 
     <!-- Scroll to Top Button -->
-    <a href="#" id="scrollTopBtn" class="btn btn-scroll-top rounded-circle position-fixed bottom-0 end-0 m-4">
+    <a href="#" id="scrollTopBtn" class="btn btn-scroll-top rounded-circle position-fixed bottom-0 end-0 m-4 bg-white text-black">
       <i class="fas fa-arrow-up" id="scrollTopIcon"></i>
     </a>
+  </div>
 
-    <!-- WhatsApp Floating Button -->
-  
-    <!-- Styles -->
-    <style>
-      .btn-scroll-top {
-        border: none;
-        padding: 0.75rem 0.85rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
+  <style>
+    .btn-scroll-top {
+      border: none;
+      padding: 0.75rem 0.85rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .scroll-dark {
+      background-color: rgba(0, 0, 0, 0.85) !important;
+      color: white !important;
+    }
+  </style>
 
-      .scroll-light {
-        background-color: rgba(255, 255, 255, 0.85) !important;
-      }
-
-      .scroll-light #scrollTopIcon {
-        color: #000 !important;
-      }
-
-      .scroll-dark {
-        background-color: rgba(0, 0, 0, 0.85) !important;
-      }
-
-      .scroll-dark #scrollTopIcon {
-        color: #fff !important;
-      }
-
-      /* WhatsApp Button */
-      #whatsappBtn {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        z-index: 1050;
-        text-decoration: none !important;
-      }
-
-      #whatsappIcon {
-        font-size: 28px;
-        color: #25D366 !important;
-        transition: color 0.3s ease;
-      }
-
-      #whatsappBtn:hover #whatsappIcon {
-        color: black !important;
-      }
-    </style>
-
-    <!-- Script -->
-    <script>
-      function getBackgroundColorAtButtonPosition(btn) {
-        const rect = btn.getBoundingClientRect();
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
-
-        btn.style.visibility = 'hidden';
-        const elemAtPoint = document.elementFromPoint(x, y);
-        btn.style.visibility = 'visible';
-
-        if (!elemAtPoint) return null;
-        let bg = window.getComputedStyle(elemAtPoint).backgroundColor;
-
-        let current = elemAtPoint;
-        while (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
-          current = current.parentElement;
-          if (!current) break;
-          bg = window.getComputedStyle(current).backgroundColor;
-        }
-        return bg;
-      }
-
-      function isDarkColor(rgb) {
-        const result = rgb.match(/\d+/g);
-        if (!result || result.length < 3) return false;
-        const [r, g, b] = result.map(Number);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness < 128;
-      }
-
-      function updateScrollButtonTheme() {
-        const btn = document.getElementById('scrollTopBtn');
-        if (!btn) return;
-        if (window.getComputedStyle(btn).display === 'none') return;
-        const bg = getBackgroundColorAtButtonPosition(btn);
-        if (!bg) {
-          btn.classList.add('scroll-light');
-          btn.classList.remove('scroll-dark');
-          return;
-        }
-        if (isDarkColor(bg)) {
-          btn.classList.add('scroll-dark');
-          btn.classList.remove('scroll-light');
-        } else {
-          btn.classList.add('scroll-light');
-          btn.classList.remove('scroll-dark');
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.getElementById('scrollTopBtn');
-        if (!btn) return;
-
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('scrollTopBtn');
+      if (btn) {
         btn.addEventListener('click', function (e) {
           e.preventDefault();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-
-        updateScrollButtonTheme();
-        window.addEventListener('scroll', updateScrollButtonTheme);
-        window.addEventListener('resize', updateScrollButtonTheme);
-      });
-    </script>
-  </div>
+      }
+    });
+  </script>
 </footer>
