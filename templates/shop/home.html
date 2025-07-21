@@ -94,11 +94,11 @@
 <div class="section-header">
     <h2>{% trans "All Products" %}</h2>
     <div class="swiper-controls">
-        <button class="btn btn-outline-secondary btn-sm newarrivals-prev"><i class="fas fa-chevron-left"></i></button>
-        <button class="btn btn-outline-secondary btn-sm newarrivals-next"><i class="fas fa-chevron-right"></i></button>
+        <button class="btn btn-outline-secondary btn-sm all-products-prev"><i class="fas fa-chevron-left"></i></button>
+        <button class="btn btn-outline-secondary btn-sm all-products-next"><i class="fas fa-chevron-right"></i></button>
     </div>
 </div>
-<div class="swiper newarrivals-swiper mb-5">
+<div class="swiper all-products-swiper mb-5">
     <div class="swiper-wrapper">
         {% for product in all_products %}
         <div class="swiper-slide">
@@ -308,6 +308,8 @@
         setupSwiper('featured-swiper', 'featured-next', 'featured-prev');
         setupSwiper('bestseller-swiper', 'bestseller-next', 'bestseller-prev');
         setupSwiper('onsale-swiper', 'onsale-next', 'onsale-prev');
+        setupSwiper('all-products-swiper', 'all-products-next', 'all-products-prev');
+
     });
 </script>
 <!-- Toast Container -->
