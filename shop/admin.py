@@ -1,10 +1,32 @@
 from django.contrib import admin
 
 from django.contrib import admin
+from django.utils.html import format_html
+
 from shop.models import (
     Category, SubCategory, FitType, Brand, Color, Size, 
-    Product, ProductImage, ProductColor, ProductSize, ProductVariant
+    Product, ProductImage, ProductColor, ProductSize, ProductVariant,HomeSlider
 )
+
+@admin.register(HomeSlider)
+class HomeSliderAdmin(admin.ModelAdmin):
+    list_display = (
+        'heading',
+        'subheading',
+        'order',
+        'is_active',
+        'preview_image',
+    )
+    list_editable = ('order', 'is_active')
+    search_fields = ('heading', 'subheading', 'alt_text')
+    list_filter = ('is_active',)
+    ordering = ('order',)
+
+    def preview_image(self, obj):
+        if obj.image_resized:
+            return format_html('<img src="{}" width="140" height="65" style="object-fit: cover;" />', obj.image_resized.url)
+        return "-"
+    preview_image.short_description = "Preview"
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):

@@ -10,6 +10,7 @@ from django.contrib.auth.models import AbstractUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils.translation import gettext_lazy as _
+from colorfield.fields import ColorField
 
 class ReverseUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True, null=True)
@@ -104,7 +105,7 @@ class Brand(models.Model):
 
 class Color(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    hex_code = models.CharField(max_length=7, help_text="Color hex code (e.g., #FF0000)")
+    hex_code = ColorField(default='#FFFFFF', verbose_name=_("Color Code"),help_text="Color hex code (e.g., #FF0000)")
     is_active = models.BooleanField(default=True)
 
     class Meta:

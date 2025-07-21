@@ -35,7 +35,7 @@ def home(request):
         is_active=True,
         is_available=True
     ).select_related('category', 'subcategory', 'brand')[:8]
-
+    all_products = Product.objects.all().order_by('-pk').select_related('category', 'subcategory', 'brand')[:8]
     sale_products = Product.objects.filter(
         is_on_sale=True,
         is_active=True,
@@ -52,6 +52,7 @@ def home(request):
         'sale_products': sale_products,
         'categories': categories,
         'sliders': sliders,
+        'all_products':all_products
     }
 
     return render(request, 'shop/home.html', context)

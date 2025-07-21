@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'constance',
     'constance.backends.database',
     'imagekit',
+    'colorfield',
 ]
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
@@ -170,23 +171,41 @@ CONSTANCE_CONFIG = {
         'https://facebook.com/yourpage',
         'Facebook URL'
     ),
-    'TWITTER_URL': (
-        'https://twitter.com/yourprofile',
-        'Twitter URL'
-    ),
     'INSTAGRAM_URL': (
         'https://instagram.com/yourprofile',
         'Instagram URL'
     ),
     'TIKTOK_URL': (
         'https://linkedin.com/company/yourcompany',
-        'LinkedIn URL'
+        'TIKTOk URL'
     ),
+    'ENABLE_BEST_SELLER_FLAG': (True, 'Enable "Best Seller" flag display for products'),
+    'ENABLE_NEW_ARRIVAL_FLAG': (True, 'Enable "New Arrival" flag display for products'),
+    'ENABLE_FEATURED_FLAG': (True, 'Enable "Featured" flag display for products'),
+    'ENABLE_SALE_FLAG': (True, 'Enable "On Sale" flag display for products'),
+    'ENABLE_ALL_FLAG': (True, 'Enable "All" flag display for products'),
 }
 
+
 CONSTANCE_CONFIG_FIELDSETS = {
-    'Company Information': ('COMPANY_NAME', 'COMPANY_DESCRIPTION', 'EMAIL_ADDRESS', 'WHATSAPP_NUMBER'),
-    'Social Media Links': ('FACEBOOK_URL', 'TWITTER_URL', 'INSTAGRAM_URL', 'LINKEDIN_URL'),
+    'Company Information': (
+        'COMPANY_NAME',
+        'COMPANY_DESCRIPTION',
+        'EMAIL_ADDRESS',
+        'WHATSAPP_NUMBER'
+    ),
+    'Social Media Links': (
+        'FACEBOOK_URL',
+        'INSTAGRAM_URL',
+        'TIKTOK_URL'
+    ),
+    'Product Flag Toggles': (
+        'ENABLE_BEST_SELLER_FLAG',
+        'ENABLE_NEW_ARRIVAL_FLAG',
+        'ENABLE_FEATURED_FLAG',
+        'ENABLE_SALE_FLAG',
+        'ENABLE_ALL_FLAG',
+    ),
 }
 
 
