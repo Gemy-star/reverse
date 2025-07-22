@@ -43,7 +43,7 @@
     <p class="lead">{{ product.short_description }}</p>
     <p>{{ product.description }}</p>
     <div class="d-flex align-items-baseline mb-3">
-        <span class="price fs-3 me-2" id="display-price">${{ product.get_price }}</span>
+        <span class="price fs-3 me-2" id="display-price">{{ product.get_price }} {% trans 'EGP' %}</span>
         
     </div>
     <div class="mb-3">
