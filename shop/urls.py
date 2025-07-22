@@ -25,8 +25,9 @@ urlpatterns = [
     # path('wishlist/remove/<int:item_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('terms/', TemplateView.as_view(template_name="shop/terms.html"), name="terms"),
     path('policy/', TemplateView.as_view(template_name="shop/policy.html"), name="policy"),
-    path('add-to-cart/<int:variant_id>/', cart_wish_views.add_to_cart, name='add_to_cart'),
-    path('add-to-wishlist/<int:product_id>/', cart_wish_views.add_to_wishlist, name='add_to_wishlist'),
     path('cart/', cart_wish_views.cart_view, name='cart_view'),
     path('wishlist/', cart_wish_views.wishlist_view, name='wishlist_view'),
+    path('wishlist/add/<int:product_id>/', cart_wish_views.add_to_wishlist, name='add_to_wishlist'),
+    path('cart/add/<int:variant_id>/', cart_wish_views.add_to_cart, name='add_to_cart'),
+    path("cart/remove/<int:variant_id>/", cart_wish_views.remove_from_cart, name="remove_from_cart"),
 ]

@@ -5,8 +5,49 @@ from django.utils.html import format_html
 
 from shop.models import (
     Category, SubCategory, FitType, Brand, Color, Size, 
-    Product, ProductImage, ProductColor, ProductSize, ProductVariant,HomeSlider
+    Product, ProductImage, ProductColor, ProductSize, ProductVariant,HomeSlider , Cart, CartItem, Wishlist, WishlistItem
 )
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user_or_session', 'total_items', 'total_price', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['user__username', 'session_key']
+
+    def user_or_session(self, obj):
+        return obj.user.username if obj.user else f"Session: {obj.session_key}"
+    user_or_session.short_description = 'Owner'
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ['cart', 'product_name', 'variant_color', 'variant_size', 'quantity', 'added_at']
+    list_filter = ['added_at']
+    search_fields = ['cart__user__username', 'product_variant__product__name']
+
+    def product_name(self, obj):
+        return obj.product_variant.product.name
+
+    def variant_color(self, obj):
+        return obj.product_variant.color.name
+
+    def variant_size(self, obj):
+        return obj.product_variant.size.name
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['user__username']
+
+@admin.register(WishlistItem)
+class WishlistItemAdmin(admin.ModelAdmin):
+    list_display = ['wishlist', 'product_name', 'added_at']
+    list_filter = ['added_at']
+    search_fields = ['wishlist__user__username', 'product__name']
+
+    def product_name(self, obj):
+        return obj.product.name
+
 
 @admin.register(HomeSlider)
 class HomeSliderAdmin(admin.ModelAdmin):

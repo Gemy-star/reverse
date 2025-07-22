@@ -1,6 +1,6 @@
-<!DOCTYPE html>
 {% load static %}
-<html lang="en">
+
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE in 'ar he fa ur' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,10 +22,16 @@
 
 {% endblock css  %}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-</head>
+ <style>
+    .swiper {
+    height: fit-content;
+}
+ </style>
+    </head>
 <body>
     {% include 'partials/_header.html' %}
     {% include 'partials/_messages.html' %}
+    {% include "partials/_toast.html" %}
         {% block content %}
         {% endblock %}
     {% include 'partials/_footer.html' %}

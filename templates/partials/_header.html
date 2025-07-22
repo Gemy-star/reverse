@@ -1,60 +1,80 @@
 {% load i18n %}
+{% with nav_id="nav1" %}
 <style>
-    .navbar {
-        background-color: #000 !important;
-        transition: background-color 0.3s ease;
-        z-index: 1030;
-        padding-top: 0.15rem;
-        padding-bottom: 0.15rem;
+.navbar-{{ nav_id }} {
+    background-color: #000 !important;
+    transition: background-color 0.3s ease;
+    z-index: 1030;
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+}
+.navbar-{{ nav_id }} .navbar-brand {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: white !important;
+    margin-right: auto;
+    padding: 0.2rem 0;
+}
+.navbar-{{ nav_id }} .nav-link,
+.navbar-{{ nav_id }} .nav-link i {
+    color: white !important;
+    font-size: 1rem;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+    position: relative;
+}
+
+.navbar-{{ nav_id }} .icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.navbar-{{ nav_id }} .icon-wrapper .badge {
+    position: absolute;
+    top: -0.4rem;
+    right: -0.5rem;
+    background-color: #dc3545;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    min-width: 1.2rem;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    padding: 0;
+    border-radius: 50%;
+    text-align: center;
+    box-shadow: 0 0 0.3rem rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.navbar-{{ nav_id }} .navbar-toggler {
+    padding: 0.2rem 0.4rem;
+}
+
+@media (max-width: 767px) {
+    .navbar-{{ nav_id }} .dropdown-menu {
+        width: 100%;
     }
-    .navbar-brand {
-        font-size: 2.8rem;
-        font-weight: 800;
-        letter-spacing: 4px;
-        color: white !important;
-        margin-right: auto;
-        padding: 0.2rem 0;
+    .navbar-{{ nav_id }} .navbar-brand {
+        font-size: 2.1rem;
     }
-    .navbar-nav .nav-link,
-    .navbar-nav .nav-link i {
-        color: white !important;
-        font-size: 1rem;
-        padding-top: 0.3rem;
-        padding-bottom: 0.3rem;
+    .navbar-{{ nav_id }} .nav-link {
+        padding: 0.5rem 1rem;
     }
-    .navbar .badge {
-        position: absolute;
-        top: 0.2rem;
-        right: -0.5rem;
-        background-color: #dc3545;
-        color: white;
-        font-size: 0.65rem;
-        padding: 0.3em 0.5em;
-        border-radius: 50%;
-    }
-    .navbar-toggler {
-        padding: 0.2rem 0.4rem;
-    }
-    @media (max-width: 767px) {
-        .dropdown-menu {
-            width: 100%;
-        }
-        .navbar-brand {
-            font-size: 2.1rem;
-        }
-        .navbar-nav .nav-link {
-            padding: 0.5rem 1rem;
-        }
-    }
+}
 </style>
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm navbar-{{ nav_id }}">
     <div class="container d-flex align-items-center">
-        <!-- Categories Dropdown on the far left -->
+        <!-- Categories Dropdown -->
         <div class="dropdown me-3">
-            <button class="btn text-white dropdown-toggle border-0 p-0" type="button" id="categoriesDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans 'Categories' %}">
+            <button class="btn text-white dropdown-toggle border-0 p-0" type="button"
+                    id="categoriesDropdown-{{ nav_id }}" data-bs-toggle="dropdown" aria-expanded="false"
+                    title="{% trans 'Categories' %}">
                 <i class="fas fa-bars fa-lg"></i>
             </button>
-            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown-{{ nav_id }}">
                 {% for cat in categories %}
                     <li><a class="dropdown-item" href="{% url 'shop:category_detail' slug=cat.slug %}">{{ cat.name }}</a></li>
                 {% endfor %}
@@ -62,52 +82,56 @@
                 <li><a class="dropdown-item" href="{% url 'shop:home' %}">{% trans "All Products" %}</a></li>
             </ul>
         </div>
-        <!-- Logo text -->
-        <a class="navbar-brand" href="{% url 'shop:home' %}">
-            REVƎRSE
-        </a>
-        <!-- Toggler for mobile -->
+
+        <!-- Logo -->
+        <a class="navbar-brand" href="{% url 'shop:home' %}">REVƎRSE</a>
+
+        <!-- Toggler -->
         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav" aria-controls="navbarNav"
+                data-bs-target="#navbarNav-{{ nav_id }}" aria-controls="navbarNav-{{ nav_id }}"
                 aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <!-- Right-side navigation -->
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+
+        <!-- Links -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav-{{ nav_id }}">
             <ul class="navbar-nav align-items-center">
-                <!-- Home -->
                 <li class="nav-item d-none d-lg-block">
                     <a class="nav-link active" href="{% url 'shop:home' %}" title="{% trans 'Home' %}">
                         <i class="fas fa-home"></i>
                     </a>
                 </li>
-                <!-- Cart -->
-                <li class="nav-item position-relative">
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'shop:cart_view' %}" title="{% trans 'Cart' %}">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="badge" id="cart-count">0</span>
+                        <span class="icon-wrapper">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge" id="cart-count-{{ nav_id }}" id="cart_count">
+                                {{ request.session.cart_count|default:"0" }}
+                            </span>
+                        </span>
                     </a>
                 </li>
-                <!-- Wishlist -->
-                <li class="nav-item position-relative">
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'shop:wishlist_view' %}" title="{% trans 'Wishlist' %}">
-                        <i class="fas fa-heart"></i>
-                        <span class="badge" id="wishlist-count">0</span>
+                        <span class="icon-wrapper">
+                            <i class="fas fa-heart"></i>
+                            <span class="badge" id="wishlist-count-{{ nav_id }}" id="wish_count">
+                                {{ request.session.wishlist_count|default:"0" }}
+                            </span>
+                        </span>
                     </a>
                 </li>
-                <!-- Account -->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'shop:account' %}" title="{% trans 'Account' %}">
                         <i class="fas fa-user"></i>
                     </a>
                 </li>
-                <!-- Language Selector -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="languageDropdown"
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="languageDropdown-{{ nav_id }}"
                        role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans 'Language' %}">
                         <i class="fas fa-globe"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown-{{ nav_id }}">
                         <li>
                             <form action="{% url 'set_language' %}" method="post" class="px-3">
                                 {% csrf_token %}
@@ -124,3 +148,4 @@
         </div>
     </div>
 </nav>
+{% endwith %}

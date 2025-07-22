@@ -1,0 +1,237 @@
+{% load i18n %}
+<style>
+    .product-card {
+        border: none !important;
+        background: transparent;
+        transition: transform 0.2s ease-in-out;
+        position: relative;
+    }
+    .product-card:hover {
+        transform: scale(1.02);
+    }
+    .product-card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+    .product-name {
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #000;
+        background: transparent !important;
+        border: none !important;
+    }
+    .product-name,
+    .product-card a {
+        text-decoration: none !important;
+        color: inherit;
+    }
+    .product-icons {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .product-icons a {
+        color: black;
+        background-color: transparent;
+        border: 1.5px solid black;
+        padding: 6px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+    .product-icons a:hover {
+        background-color: black;
+        color: white;
+    }
+    .price-area {
+        margin-top: 0.5rem;
+        background: transparent !important;
+        border: none !important;
+    }
+    .original-price {
+        text-decoration: line-through;
+        color: #888;
+        margin-right: 8px;
+    }
+    .sale-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: red;
+        color: white;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        z-index: 3;
+    }
+</style>
+
+<div class="product-card text-center {{ section }}"
+     data-product-id="{{ product.id }}"
+     data-variant-id="{{ product.variants.first.id }}"
+     id="product-card-{{ section }}-{{ product.id }}">
+
+    {% with main_image=product.get_main_image hover_image=product.get_hover_image %}
+    <div class="position-relative product-image-wrapper">
+        {% if product.is_on_sale %}
+            <div class="sale-badge">{% trans "Sale" %}</div>
+        {% endif %}
+        <a href="{{ product.get_absolute_url }}">
+            {% if main_image %}
+                <img src="{{ main_image.image.url }}"
+                     data-main="{{ main_image.image.url }}"
+                     data-hover="{% if hover_image %}{{ hover_image.image.url }}{% else %}{{ main_image.image.url }}{% endif %}"
+                     alt="{{ product.name }}"
+                     class="product-img hover-switch-img"
+                     id="product-img-{{ section }}-{{ product.id }}">
+            {% else %}
+                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image"
+                     alt="{% trans 'No Image' %}"
+                     class="product-img">
+            {% endif %}
+        </a>
+        <div class="product-icons">
+            <a href="#"
+               class="wishlist-btn"
+               id="wishlist-{{ section }}-{{ product.id }}"
+               title="{% trans 'Add to Wishlist' %}">
+               <i class="fas fa-heart"></i>
+            </a>
+            <a href="#"
+               class="cart-btn"
+               id="cart-{{ section }}-{{ product.id }}"
+               title="{% trans 'Add to Cart' %}">
+               <i class="fas fa-shopping-cart"></i>
+            </a>
+        </div>
+    </div>
+    {% endwith %}
+
+    <div class="product-name mt-2">{{ product.name }}</div>
+    <div class="price-area">
+        {% if product.is_on_sale %}
+            <span class="original-price">{{ product.price }} EGP</span>
+            <span class="sale-price text-danger fw-bold">{{ product.sale_price }} EGP</span>
+        {% else %}
+            <span class="regular-price fw-bold">{{ product.price }} EGP</span>
+        {% endif %}
+    </div>
+
+    <div class="toast-container"
+         id="toast-container-{{ section }}-{{ product.id }}"
+         style="position: absolute; bottom: 100px; right: 10px; z-index: 9999;"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function updateCountsFromResponse(data) {
+    if (data.cart_count !== undefined) {
+        const cartCountEl = document.getElementById('cart_count');
+        if (cartCountEl) {
+            cartCountEl.textContent = ''; // Clear existing content
+            cartCountEl.textContent = data.cart_count;
+        }
+    }
+
+    if (data.wishlist_count !== undefined) {
+        const wishCountEl = document.getElementById('wish_count');
+        if (wishCountEl) {
+            wishCountEl.textContent = ''; // Clear existing content
+            wishCountEl.textContent = data.wishlist_count;
+        }
+    }
+}
+    const section = "{{ section }}";
+    const productId = "{{ product.id }}";
+    const variantId = "{{ product.variants.first.id }}";
+
+    const card = document.getElementById(`product-card-${section}-${productId}`);
+    const toastContainer = document.getElementById(`toast-container-${section}-${productId}`);
+    const img = document.getElementById(`product-img-${section}-${productId}`);
+    const wishlistBtn = document.getElementById(`wishlist-${section}-${productId}`);
+    const cartBtn = document.getElementById(`cart-${section}-${productId}`);
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.innerText = message;
+        toast.style.background = '#333';
+        toast.style.color = '#fff';
+        toast.style.padding = '10px 16px';
+        toast.style.borderRadius = '8px';
+        toast.style.marginTop = '10px';
+        toast.style.fontSize = '14px';
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        toastContainer.appendChild(toast);
+
+        requestAnimationFrame(() => toast.style.opacity = '1');
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
+    // Image hover switch
+    if (img) {
+        const mainSrc = img.getAttribute("data-main");
+        const hoverSrc = img.getAttribute("data-hover");
+
+        img.addEventListener("mouseover", () => {
+            if (hoverSrc) img.src = hoverSrc;
+        });
+
+        img.addEventListener("mouseout", () => {
+            if (mainSrc) img.src = mainSrc;
+        });
+    }
+
+    // Wishlist AJAX
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            fetch(`/wishlist/add/${productId}/`, {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    updateCountsFromResponse(data);
+                    showToast("❤️ {{ _('Product added to Wishlist!')|escapejs }}");
+                }
+            });
+        });
+    }
+
+    // Cart AJAX
+    if (cartBtn) {
+        cartBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            fetch(`/cart/add/${variantId}/`, {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    updateCountsFromResponse(data);
+                    showToast("🛒 {{ _('Product added to cart!')|escapejs }}");
+                }
+            });
+        });
+    }
+});
+</script>

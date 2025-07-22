@@ -7,85 +7,6 @@
 {% endblock %}
 
 {% block content %}
-        <style>
-    .swiper-slide {
-        width: 250px;
-    }
-
-    .product-card {
-        border: none;
-        background: transparent;
-        transition: transform 0.2s ease-in-out;
-        position: relative;
-    }
-
-    .product-card:hover {
-        transform: scale(1.02);
-    }
-
-    .product-card img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-    }
-
-    .product-name {
-        margin-top: 0.5rem;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #000;
-    }
-
-    .product-name,
-    .product-card a {
-        text-decoration: none !important;
-        color: inherit;
-    }
-
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .section-header h2 {
-        font-size: 1.5rem;
-    }
-
-    .swiper-controls {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .product-icons {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        z-index: 3;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .product-icons a {
-        color: black;
-        background-color: transparent;
-        border: 1.5px solid black;
-        padding: 6px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        font-size: 1.1rem;
-    }
-
-    .product-icons a:hover {
-        background-color: black;
-        color: white;
-    }
-</style>
 <section class="section pt-4">
 <div class="container my-4 pt-4 pt-lg-4">
     <div class="row pt-4">
@@ -233,24 +154,7 @@
             <div id="product-list-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 {% for product in products %}
                     <div class="col">
-                              <div class="product-card text-center">
-                    {% with main_image=product.get_main_image %}
-                    {% if main_image and main_image.image %}
-                    <div class="position-relative">
-                        <a href="{{ product.get_absolute_url }}">
-                            <img src="{{ main_image.image.url }}" alt="{{ product.name }}">
-                        </a>
-                        <div class="product-icons">
-                            <a href="#" title="{% trans 'Add to Wishlist' %}"><i class="fas fa-heart"></i></a>
-                            <a href="#" title="{% trans 'Add to Cart' %}"><i class="fas fa-shopping-cart"></i></a>
-                        </div>
-                    </div>
-                    {% else %}
-                    <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image" alt="{% trans 'No Image' %}">
-                    {% endif %}
-                    {% endwith %}
-                    <div class="product-name">{{ product.name }}</div>
-                </div>
+            {% include "partials/_product.html" with product=product section="sub_category" %}
                     </div>
                 {% empty %}
                     <div class="col-12">
@@ -291,56 +195,12 @@
     </div>
 </div>
 <!-- Toast Container -->
-
-
-
 </section>
-    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
 
 {% endblock %}
 
 
 {% block js %}
-    <script>
-    function showToast(message) {
-        const toast = document.createElement('div');
-        toast.innerText = message;
-        toast.style.background = '#333';
-        toast.style.color = '#fff';
-        toast.style.padding = '10px 16px';
-        toast.style.borderRadius = '8px';
-        toast.style.marginTop = '10px';
-        toast.style.fontSize = '14px';
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-
-        const container = document.getElementById('toast-container');
-        container.appendChild(toast);
-
-        requestAnimationFrame(() => {
-            toast.style.opacity = '1';
-        });
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => container.removeChild(toast), 300);
-        }, 2500);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.product-icons a').forEach(icon => {
-            icon.addEventListener('click', (e) => {
-                e.preventDefault();
-                const iconClass = icon.querySelector('i').classList;
-                if (iconClass.contains('fa-heart')) {
-                    showToast("{{ _('Added to Wishlist') }}");
-                } else if (iconClass.contains('fa-shopping-cart')) {
-                    showToast("{{ _('Please select a color and size from the product page.') }}");
-                }
-            });
-        });
-    });
-</script>
 <script>
     $(document).ready(function() {
         // Function to update URL parameters and reload page

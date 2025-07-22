@@ -1,11 +1,22 @@
 {% load i18n static %}
+<style>
+  .logo {
+        font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: white !important;
+    margin-right: auto;
+    padding: 0.2rem 0;
+    text-decoration: none;
+  }
+</style>
 <footer class="footer mt-auto py-5 bg-black text-white border-top border-secondary position-relative">
   <div class="container">
     <div class="row text-center text-md-start">
       <!-- About -->
       <div class="col-md-3 mb-4">
-        <h6 class="text-uppercase fw-bold mb-3">{% trans "About Us" %}</h6>
-        <p class="text-white">{% trans 'About Reverse' %}</p>
+        <a class="logo" href="{% url 'shop:home' %}">REVƎRSE</a>
+        <p class="text-white small">{{ config.COMPANY_DESCRIPTION }}</p>
       </div>
 
       <!-- Let's Connect -->
@@ -32,7 +43,7 @@
         <h6 class="text-uppercase fw-bold mb-3">{% trans "Contact Us" %}</h6>
         <p class="mb-0 text-white">
           <i class="fas fa-phone-alt me-2"></i>
-          <a href="tel:{{ config.WHATSAPP_NUMBER }}" class="text-success text-decoration-none">{{ config.WHATSAPP_NUMBER }}</a>
+          <a href="tel:{{ config.WHATSAPP_NUMBER }}" class="text-white text-decoration-none">{{ config.WHATSAPP_NUMBER }}</a>
         </p>
       </div>
     </div>
