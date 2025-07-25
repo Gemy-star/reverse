@@ -121,11 +121,13 @@
                         </span>
                     </a>
                 </li>
+                {% if config.ENABLE_USER_LOG %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'shop:account' %}" title="{% trans 'Account' %}">
                         <i class="fas fa-user"></i>
                     </a>
                 </li>
+            {% endif %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="languageDropdown-{{ nav_id }}"
                        role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans 'Language' %}">

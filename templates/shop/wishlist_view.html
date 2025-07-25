@@ -2,36 +2,113 @@
 {% load static i18n %}
 
 {% block content %}
-    <section class="section pt-2">
-<div class="container my-5 pt-4">
+<section class="section pt-2">
+    <div class="container my-5 pt-4">
 
-    <!-- Example Section: Wishlist Items -->
-    <div class="section-header pt-2">
-        <h2>{% trans "My Wishlist" %}</h2>
-    </div>
-    <div class="swiper wishlist-swiper mb-5">
-        <div class="swiper-wrapper">
+        <div class="section-header pt-2">
+            <h2>{% trans "My Wishlist" %}</h2>
+        </div>
+
+        {% if products %}
+        <div class="products-grid">
             {% for product in products %}
-            <div class="swiper-slide">
-            {% include "partials/_product.html" with product=product section="wishlist" %}
-
-            </div>
-            {% empty %}
-            <div class="text-muted">{% trans "No products available." %}</div>
+                {% include "partials/_product.html" with product=product section="wishlist" %}
             {% endfor %}
         </div>
-    </div>
+        {% else %}
+            <div class="text-muted">{% trans "No products available." %}</div>
+        {% endif %}
+<div class="pagination">
+  {% if products.has_previous %}
+    <a href="?page={{ products.previous_page_number }}" aria-label="{% trans 'Previous page' %}">
+      <i class="fa-solid fa-chevron-left"></i> {% trans "Previous" %}
+    </a>
+  {% endif %}
 
+  {% for page_num in products.paginator.page_range %}
+    {% if page_num == products.number %}
+      <span class="current-page">{{ page_num }}</span>
+    {% else %}
+      <a href="?page={{ page_num }}">{{ page_num }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if products.has_next %}
+    <a href="?page={{ products.next_page_number }}" aria-label="{% trans 'Next page' %}">
+      {% trans "Next" %} <i class="fa-solid fa-chevron-right"></i>
+    </a>
+  {% endif %}
 </div>
-    </section>
+
+    </div>
+</section>
 {% endblock %}
 
 {% block css %}
 <style>
-    .swiper-slide {
-        width: 250px;
-    }
+    /* Remove swiper-slide styles */
+    /* Keep your product card styles */
+    .current-page {
+    color: #000000; /* primary color */
+    font-weight: 700;
+    background-color: #f4f4f4; /* secondary background */
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+}
+
+.pagination a, .pagination span {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+}
+
+.pagination a {
+    background-color: #000000; /* primary background */
+    color: #f4f4f4; /* secondary text */
+    text-decoration: none;
+    border: 2px solid transparent;
+}
+
+.pagination a:hover {
+    background-color: #222222;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border-color: #444444;
+    color: #ffffff;
+}
+
+.pagination span {
+    background-color: #f4f4f4; /* secondary background */
+    color: #000000; /* primary text */
+    border: 2px solid #dcdcdc;
+    cursor: default;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pagination a:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #555555;
+}
+/* Simple grid for products */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
     .product-card {
         border: none;
         background: transparent;
@@ -71,11 +148,6 @@
 
     .section-header h2 {
         font-size: 1.5rem;
-    }
-
-    .swiper-controls {
-        display: flex;
-        gap: 0.5rem;
     }
 
     .product-icons {
@@ -149,22 +221,5 @@
     }
 </script>
 
-<!-- SwiperJS (if not already included) -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-<script>
-    new Swiper('.wishlist-swiper', {
-        slidesPerView: 4,
-        spaceBetween: 20,
-        navigation: {
-            nextEl: '.wishlist-next',
-            prevEl: '.wishlist-prev',
-        },
-        breakpoints: {
-            0: { slidesPerView: 1 },
-            576: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            992: { slidesPerView: 4 },
-        }
-    });
-</script>
+<!-- Removed SwiperJS script and initialization -->
 {% endblock %}

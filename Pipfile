@@ -6,8 +6,6 @@ name = "pypi"
 [packages]
 django = "*"
 pillow = "*"
-django-crispy-forms = "*"
-crispy-bootstrap5 = "*"
 django-silk = "*"
 gunicorn = "*"
 mysqlclient = "*"
@@ -15,6 +13,11 @@ django-constance = {extras = ["redis"], version = "*"}
 django-imagekit = "*"
 python-dotenv = "*"
 django-colorfield = "*"
+django-mathfilters = "*"
+django-ckeditor = "*"
+django-countries = "*"
+django-crispy-forms = "*"
+crispy-bootstrap5 = "*"
 
 [dev-packages]
 django-silk = "*"

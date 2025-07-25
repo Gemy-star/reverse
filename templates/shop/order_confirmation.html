@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n math_filters %}
+
+{% block title %}{% trans "Order Confirmation" %}{% endblock %}
+
+{% block content %}
+<section class="section pt-4">
+  <div class="container my-5 pt-4">
+    <h2 class="fw-bold mb-4">{% trans "Order Confirmation" %}</h2>
+
+    <p>{% trans "Thank you for your order!" %}</p>
+    <p>{% trans "Order Number:" %} <strong>{{ order.order_number }}</strong></p>
+
+    <h4>{% trans "Order Details" %}</h4>
+    <ul class="list-group mb-4">
+      {% for item in order.items.all %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ item.product_variant.product.name }} ({{ item.product_variant.color.name }}, {{ item.product_variant.size.name }})
+        <span>{{ item.quantity }} x {{ item.price_at_purchase|floatformat:2 }} = {{ item.quantity|mul:item.price_at_purchase|floatformat:2 }}</span>
+      </li>
+      {% endfor %}
+      <li class="list-group-item d-flex justify-content-between fw-bold">
+        <span>{% trans "Total" %}</span>
+        <span>{{ order.total_price|floatformat:2 }}</span>
+      </li>
+    </ul>
+
+    <a href="{% url 'shop:home' %}" class="btn btn-primary">{% trans "Continue Shopping" %}</a>
+  </div>
+</section>
+{% endblock %}

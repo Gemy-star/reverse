@@ -109,11 +109,21 @@ class Command(BaseCommand):
                         stock_quantity=random.randint(5, 15),
                         price_adjustment=Decimal("10.00")
                     )
-                    # Add one main image per color
-                    ProductImage.objects.create(
-                        product=product,
-                        alt_text=f"{product.name} - {color.name}",
-                        is_main=True,
-                        image="products/sample.jpg",  # You must upload a sample.jpg file
-                        color=color
-                    )
+                # Add one main image per color (unique per product and color)
+                ProductImage.objects.create(
+                    product=product,
+                    alt_text=f"{product.name} - {color.name} Main Image",
+                    is_main=True,
+                    is_hover=False,
+                    image="products/sample.jpg",  # Ensure this file exists in media/products/
+                    color=color
+                )
+                # Add one hover image per color (unique per product and color)
+                ProductImage.objects.create(
+                    product=product,
+                    alt_text=f"{product.name} - {color.name} Hover Image",
+                    is_main=False,
+                    is_hover=True,
+                    image="products/hover.jpg",  # Ensure this file exists in media/products/
+                    color=color
+                )

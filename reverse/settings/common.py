@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -46,6 +45,9 @@ INSTALLED_APPS = [
     'constance.backends.database',
     'imagekit',
     'colorfield',
+    'mathfilters',
+    'ckeditor',
+    'django_countries',
 ]
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
@@ -184,6 +186,7 @@ CONSTANCE_CONFIG = {
     'ENABLE_FEATURED_FLAG': (True, 'Enable "Featured" flag display for products'),
     'ENABLE_SALE_FLAG': (True, 'Enable "On Sale" flag display for products'),
     'ENABLE_ALL_FLAG': (True, 'Enable "All" flag display for products'),
+     'ENABLE_USER_LOG': (False, 'Enable User System -- not completed yet --')
 }
 
 
@@ -205,6 +208,7 @@ CONSTANCE_CONFIG_FIELDSETS = {
         'ENABLE_FEATURED_FLAG',
         'ENABLE_SALE_FLAG',
         'ENABLE_ALL_FLAG',
+        'ENABLE_USER_LOG',
     ),
 }
 

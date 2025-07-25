@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Order Details" %}{% endblock %}
+
+{% block content %}
+<section class="section pt-4">
+  <div class="container my-5 pt-4">
+    <h2 class="fw-bold mb-4">{% trans "Order Details" %}</h2>
+
+    <div class="mb-4">
+      <h5>{% trans "Order Number:" %} {{ order.order_number }}</h5>
+      <p><strong>{% trans "Status:" %}</strong> {{ order.get_status_display }}</p>
+      <p><strong>{% trans "Placed on:" %}</strong> {{ order.created_at|date:"SHORT_DATE_FORMAT" }}</p>
+      <p><strong>{% trans "Shipping Address:" %}</strong><br>
+        {{ order.shipping_address.full_name }}<br>
+        {{ order.shipping_address.address_line1 }}<br>
+        {% if order.shipping_address.address_line2 %}{{ order.shipping_address.address_line2 }}<br>{% endif %}
+        {{ order.shipping_address.city }}, {{ order.shipping_address.state_province_region }}<br>
+        {{ order.shipping_address.postal_code }}<br>
+        {{ order.shipping_address.country }}<br>
+        {{ order.shipping_address.phone_number }}
+      </p>
+    </div>
+
+    <h5>{% trans "Items" %}</h5>
+    <ul class="list-group mb-4">
+      {% for item in order_items %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          {{ item.product_variant.product.name }}<br>
+          <small class="text-muted">
+            {% if item.product_variant.color %}{{ item.product_variant.color.name }}{% endif %}
+            {% if item.product_variant.size %} / {{ item.product_variant.size.name }}{% endif %}
+          </small>
+        </div>
+        <div>
+          {{ item.quantity }} x {{ item.price|floatformat:2 }} = {{ item.quantity|mul:item.price|floatformat:2 }}
+        </div>
+      </li>
+      {% endfor %}
+      <li class="list-group-item d-flex justify-content-between fw-bold">
+        <span>{% trans "Total" %}</span>
+        <span>{{ order.total_price|floatformat:2 }}</span>
+      </li>
+    </ul>
+
+    <a href="{% url 'shop:order_history' %}" class="btn btn-outline-secondary">{% trans "Back to Orders" %}</a>
+  </div>
+</section>
+{% endblock %}

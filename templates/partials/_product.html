@@ -1,19 +1,73 @@
 {% load i18n %}
+{% load static %}
+{% load mathfilters %} {# Requires pip install django-mathfilters and adding 'mathfilters' to INSTALLED_APPS #}
+
 <style>
+    /* Product card and general styles */
     .product-card {
         border: none !important;
         background: transparent;
         transition: transform 0.2s ease-in-out;
         position: relative;
+        height: fit-content; /* Ensure consistent height in grid layouts */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
+
     .product-card:hover {
         transform: scale(1.02);
     }
-    .product-card img {
+
+    /* Image wrapper for hover effect */
+    .product-image-wrapper {
+        position: relative;
         width: 100%;
-        height: auto;
-        object-fit: cover;
+        overflow: hidden;
     }
+
+    /* Main and hover images */
+    .product-img {
+        width: 100%;
+        height: 300px !important; /* fixed height */
+        object-fit: contain !important;
+        transition: opacity 0.3s ease;
+        display: block;
+        position: relative;
+        backface-visibility: hidden;
+    }
+
+    /* Hover image hidden by default */
+    .product-img.hover-switch-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Show hover image on hover */
+    .product-image-wrapper:hover .hover-switch-img {
+        opacity: 1;
+    }
+
+    /* Hide main image on hover */
+    .product-image-wrapper:hover .product-img:not(.hover-switch-img) {
+        opacity: 0;
+    }
+
+    /* For mobile: toggle hover image on touch */
+    @media (hover: none) and (pointer: coarse) {
+        .product-image-wrapper.is-hover .hover-switch-img {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .product-image-wrapper.is-hover .product-img:not(.hover-switch-img) {
+            opacity: 0;
+        }
+    }
+
+    /* Product name styles */
     .product-name {
         margin-top: 0.5rem;
         font-size: 1rem;
@@ -21,12 +75,21 @@
         color: #000;
         background: transparent !important;
         border: none !important;
+        min-height: 2.5em; /* Ensure consistent height for product names */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
+
     .product-name,
     .product-card a {
         text-decoration: none !important;
         color: inherit;
     }
+
+    /* Icons */
     .product-icons {
         position: absolute;
         bottom: 10px;
@@ -36,6 +99,7 @@
         flex-direction: column;
         gap: 8px;
     }
+
     .product-icons a {
         color: black;
         background-color: transparent;
@@ -48,20 +112,59 @@
         transition: all 0.3s ease;
         font-size: 1.1rem;
     }
+
     .product-icons a:hover {
         background-color: black;
         color: white;
     }
+
+    /* Remove icon styles */
+    .product-icons a.remove-icon {
+        color: red;
+        border-color: red;
+    }
+    .product-icons a.remove-icon:hover {
+        background-color: red;
+        color: white;
+    }
+
+    /* Price area */
     .price-area {
         margin-top: 0.5rem;
-        background: transparent !important;
-        border: none !important;
     }
+
+    .price-area span {
+        font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+        .price-area span {
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .price-area span {
+            font-size: 0.75rem;
+        }
+    }
+
     .original-price {
         text-decoration: line-through;
         color: #888;
         margin-right: 8px;
     }
+
+    .sale-price {
+        color: red;
+        font-weight: bold;
+    }
+
+    .regular-price {
+        font-weight: bold;
+    }
+
+    /* Sale badge */
     .sale-badge {
         position: absolute;
         top: 10px;
@@ -73,13 +176,44 @@
         border-radius: 4px;
         z-index: 3;
     }
+
+    /* Local Toast Styles */
+    .product-card .local-toast-container {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .product-card .local-toast {
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        margin-top: 5px;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateY(10px);
+        font-size: 0.85rem;
+        white-space: nowrap;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .product-card .local-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
 </style>
 
-<div class="product-card text-center {{ section }}"
-     data-product-id="{{ product.id }}"
-     data-variant-id="{{ product.variants.first.id }}"
-     id="product-card-{{ section }}-{{ product.id }}">
-
+{% with unique_id="product-card-"|add:product.pk|stringformat:"s" %}
+  <div class="product-card text-center"
+     data-product-id="{{ product.pk }}"
+     data-product-variant-id="{{ product.variants.first.pk }}">
     {% with main_image=product.get_main_image hover_image=product.get_hover_image %}
     <div class="position-relative product-image-wrapper">
         {% if product.is_on_sale %}
@@ -88,27 +222,30 @@
         <a href="{{ product.get_absolute_url }}">
             {% if main_image %}
                 <img src="{{ main_image.image.url }}"
-                     data-main="{{ main_image.image.url }}"
-                     data-hover="{% if hover_image %}{{ hover_image.image.url }}{% else %}{{ main_image.image.url }}{% endif %}"
                      alt="{{ product.name }}"
-                     class="product-img hover-switch-img"
-                     id="product-img-{{ section }}-{{ product.id }}">
+                     class="product-img">
+                <img src="{% if hover_image %}{{ hover_image.image.url }}{% else %}{{ main_image.image.url }}{% endif %}"
+                     alt="{{ product.name }}"
+                     class="product-img hover-switch-img">
             {% else %}
-                <img src="https://placehold.co/400x250/e0e0e0/555555?text=No+Image"
+                <img src="{% static 'shop/images/no_image.png' %}"
                      alt="{% trans 'No Image' %}"
                      class="product-img">
             {% endif %}
         </a>
         <div class="product-icons">
+     <a href="#"
+   class="wishlist-btn {% if product.id in products_in_wishlist_ids %}remove-icon{% endif %}"
+   data-product-id="{{ product.id }}"
+   data-in-wishlist="{% if product.id in products_in_wishlist_ids %}true{% else %}false{% endif %}"
+   title="{% if product.id in products_in_wishlist_ids %}{% trans 'Remove from Wishlist' %}{% else %}{% trans 'Add to Wishlist' %}{% endif %}">
+   <i class="fas {% if product.id in products_in_wishlist_ids %}fa-times{% else %}fa-heart{% endif %}"></i>
+   </a>
+
             <a href="#"
-               class="wishlist-btn"
-               id="wishlist-{{ section }}-{{ product.id }}"
-               title="{% trans 'Add to Wishlist' %}">
-               <i class="fas fa-heart"></i>
-            </a>
-            <a href="#"
-               class="cart-btn"
-               id="cart-{{ section }}-{{ product.id }}"
+               class="cart-btn quick-add-to-cart-btn"
+               data-product-id="{{ product.id }}"
+               data-quantity="1"
                title="{% trans 'Add to Cart' %}">
                <i class="fas fa-shopping-cart"></i>
             </a>
@@ -116,121 +253,207 @@
     </div>
     {% endwith %}
 
-    <div class="product-name mt-2">{{ product.name }}</div>
-    <div class="price-area">
-        {% if product.is_on_sale %}
-            <span class="original-price">{{ product.price }} EGP</span>
-            <span class="sale-price text-danger fw-bold">{{ product.sale_price }} EGP</span>
-        {% else %}
-            <span class="regular-price fw-bold">{{ product.price }} EGP</span>
-        {% endif %}
+    <div class="product-info mt-2">
+        <div class="product-name">{{ product.name }}</div>
+        <div class="price-area">
+            {% if product.is_on_sale %}
+                <span class="original-price">{{ product.price|floatformat:2 }} EGP</span>
+                <span class="sale-price">{{ product.sale_price|floatformat:2 }} EGP</span>
+            {% else %}
+                <span class="regular-price">{{ product.price|floatformat:2 }} EGP</span>
+            {% endif %}
+        </div>
     </div>
-
-    <div class="toast-container"
-         id="toast-container-{{ section }}-{{ product.id }}"
-         style="position: absolute; bottom: 100px; right: 10px; z-index: 9999;"></div>
+    <div class="local-toast-container"></div>
 </div>
+{% endwith %}
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    function updateCountsFromResponse(data) {
-    if (data.cart_count !== undefined) {
+document.addEventListener('DOMContentLoaded', function() {
+    // CSRF helper
+        // Update global counts
+function updateGlobalCounts() {
+    fetch("{% url 'get_cart_and_wishlist_counts' %}", {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
         const cartCountEl = document.getElementById('cart_count');
-        if (cartCountEl) {
-            cartCountEl.textContent = ''; // Clear existing content
-            cartCountEl.textContent = data.cart_count;
-        }
-    }
-
-    if (data.wishlist_count !== undefined) {
-        const wishCountEl = document.getElementById('wish_count');
-        if (wishCountEl) {
-            wishCountEl.textContent = ''; // Clear existing content
-            wishCountEl.textContent = data.wishlist_count;
-        }
-    }
+        const wishCountEl = document.getElementById('wishlist_count');
+        if (cartCountEl && data.cart_count !== undefined) cartCountEl.textContent = data.cart_count;
+        if (wishCountEl && data.wishlist_count !== undefined) wishCountEl.textContent = data.wishlist_count;
+    })
+    .catch(console.error);
 }
-    const section = "{{ section }}";
-    const productId = "{{ product.id }}";
-    const variantId = "{{ product.variants.first.id }}";
 
-    const card = document.getElementById(`product-card-${section}-${productId}`);
-    const toastContainer = document.getElementById(`toast-container-${section}-${productId}`);
-    const img = document.getElementById(`product-img-${section}-${productId}`);
-    const wishlistBtn = document.getElementById(`wishlist-${section}-${productId}`);
-    const cartBtn = document.getElementById(`cart-${section}-${productId}`);
+    updateGlobalCounts();
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
 
-    function showToast(message) {
+    // Toast helper
+    function showLocalToast(container, message, type = 'info') {
         const toast = document.createElement('div');
+        toast.className = `local-toast local-toast-${type}`;
         toast.innerText = message;
-        toast.style.background = '#333';
-        toast.style.color = '#fff';
-        toast.style.padding = '10px 16px';
-        toast.style.borderRadius = '8px';
-        toast.style.marginTop = '10px';
-        toast.style.fontSize = '14px';
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-        toastContainer.appendChild(toast);
-
-        requestAnimationFrame(() => toast.style.opacity = '1');
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
         setTimeout(() => {
-            toast.style.opacity = '0';
+            toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
         }, 2500);
     }
 
-    // Image hover switch
-    if (img) {
-        const mainSrc = img.getAttribute("data-main");
-        const hoverSrc = img.getAttribute("data-hover");
 
-        img.addEventListener("mouseover", () => {
-            if (hoverSrc) img.src = hoverSrc;
-        });
-
-        img.addEventListener("mouseout", () => {
-            if (mainSrc) img.src = mainSrc;
-        });
+    // Debounce helper to prevent rapid clicks
+    let lastClickTime = 0;
+    function canClick() {
+        const now = Date.now();
+        if (now - lastClickTime < 500) return false;
+        lastClickTime = now;
+        return true;
     }
 
-    // Wishlist AJAX
-    if (wishlistBtn) {
-        wishlistBtn.addEventListener("click", function (e) {
+    // Event delegation for wishlist and cart buttons
+    document.addEventListener('click', function(e) {
+        const wishlistBtn = e.target.closest('a.wishlist-btn');
+        if (wishlistBtn) {
             e.preventDefault();
-            fetch(`/wishlist/add/${productId}/`, {
-                method: "GET",
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
+            if (wishlistBtn.disabled || !canClick()) return;
+            handleWishlistClick(wishlistBtn);
+            return;
+        }
+
+        const cartBtn = e.target.closest('a.quick-add-to-cart-btn');
+        if (cartBtn) {
+            e.preventDefault();
+            if (cartBtn.disabled || !canClick()) return;
+            handleCartClick(cartBtn);
+            return;
+        }
+    });
+
+    // Touch support for hover image toggle on mobile
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+        document.querySelectorAll('.product-image-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('touchstart', function(e) {
+                if (!wrapper.classList.contains('is-hover')) {
+                    e.preventDefault(); // prevent immediate link navigation
+                    // Remove is-hover from other wrappers
+                    document.querySelectorAll('.product-image-wrapper.is-hover').forEach(el => {
+                        if (el !== wrapper) el.classList.remove('is-hover');
+                    });
+                    wrapper.classList.add('is-hover');
                 }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "success") {
-                    updateCountsFromResponse(data);
-                    showToast("❤️ {{ _('Product added to Wishlist!')|escapejs }}");
+            });
+            // Remove hover state if tapping outside
+            document.body.addEventListener('touchstart', function(e) {
+                if (!wrapper.contains(e.target)) {
+                    wrapper.classList.remove('is-hover');
                 }
             });
         });
     }
 
-    // Cart AJAX
-    if (cartBtn) {
-        cartBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            fetch(`/cart/add/${variantId}/`, {
-                method: "GET",
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
+    function handleWishlistClick(button) {
+        const productId = button.dataset.productId;
+        const inWishlist = button.dataset.inWishlist === 'true';
+        const icon = button.querySelector('i');
+        const toastContainer = button.closest('.product-card').querySelector('.local-toast-container');
+
+        button.disabled = true;
+        icon.className = 'fa-solid fa-spinner fa-spin';
+
+        const url = inWishlist ? '{% url "shop:remove_from_wishlist" %}' : '{% url "shop:add_to_wishlist" %}';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ product_id: productId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                updateGlobalCounts();
+                if (data.status === 'added') {
+                    icon.className = 'fa-solid fa-xmark';
+                    button.title = '{% trans "Remove from Wishlist" %}';
+                    button.dataset.inWishlist = 'true';
+                    button.classList.add('remove-icon');
+                    showLocalToast(toastContainer, '❤️ {% trans "Added to Wishlist!" %}', 'success');
+                } else if (data.status === 'removed') {
+                    icon.className = 'fa-solid fa-heart';
+                    button.title = '{% trans "Add to Wishlist" %}';
+                    button.dataset.inWishlist = 'false';
+                    button.classList.remove('remove-icon');
+                    showLocalToast(toastContainer, '🗑️ {% trans "Removed from Wishlist" %}', 'success');
+                } else if (data.status === 'exists') {
+                    showLocalToast(toastContainer, data.message, 'info');
                 }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "success") {
-                    updateCountsFromResponse(data);
-                    showToast("🛒 {{ _('Product added to cart!')|escapejs }}");
-                }
-            });
+            } else {
+                showLocalToast(toastContainer, data.message || '{% trans "Action failed." %}', 'danger');
+            }
+        })
+        .catch(err => {
+            console.error('Wishlist AJAX error:', err);
+            showLocalToast(toastContainer, '{% trans "An unexpected error occurred. Please try again." %}', 'danger');
+        })
+        .finally(() => {
+            button.disabled = false;
+        });
+    }
+
+    function handleCartClick(button) {
+        const productId = button.dataset.productId;
+        const toastContainer = button.closest('.product-card').querySelector('.local-toast-container');
+        const icon = button.querySelector('i');
+
+        button.disabled = true;
+        const originalIconClass = icon.className;
+        icon.className = 'fa-solid fa-spinner fa-spin';
+
+        fetch('{% url "shop:add_to_cart" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ product_id: productId, quantity: 1 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showLocalToast(toastContainer, `🛒 ${data.message}`, 'success');
+                updateGlobalCounts();
+            } else {
+                showLocalToast(toastContainer, data.message || '{% trans "Failed to add to cart." %}', 'danger');
+            }
+        })
+        .catch(err => {
+            console.error('Cart AJAX error:', err);
+            showLocalToast(toastContainer, '{% trans "An unexpected error occurred. Please try again." %}', 'danger');
+        })
+        .finally(() => {
+            icon.className = originalIconClass;
+            button.disabled = false;
         });
     }
 });

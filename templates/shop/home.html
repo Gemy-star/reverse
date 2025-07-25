@@ -26,56 +26,90 @@
         gap: 0.5rem;
     }
 
+    /* Remove margin/padding between product cards */
+    .swiper-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .swiper-slide {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Optional: remove margin inside product partial if any */
+    .product-card {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 {% include 'shop/partials/hero_slider.html' %}
-
+<style>
+.section {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.swiper-wrapper {
+    height: fit-content !important;
+}
+</style>
 <div class="container my-5">
-{% if config.ENABLE_ALL_FLAG %}
-<div class="section-header">
-    <h2>{% trans "All Products" %}</h2>
-    <div class="swiper-controls">
-        <button class="btn btn-outline-secondary btn-sm all-products-prev"><i class="fas fa-chevron-left"></i></button>
-        <button class="btn btn-outline-secondary btn-sm all-products-next"><i class="fas fa-chevron-right"></i></button>
-    </div>
-</div>
-<div class="swiper all-products-swiper mb-5">
-    <div class="swiper-wrapper">
-        {% for product in all_products %}
-        <div class="swiper-slide">
-          {% include "partials/_product.html" with product=product section="all" %}
+    {% if config.ENABLE_ALL_FLAG %}
+            <section class="section">
+      <div class="container-fluid">
+    <div class="section-header">
+        <h2>{% trans "All Products" %}</h2>
+        <div class="swiper-controls">
+            <button class="btn btn-outline-secondary btn-sm all-products-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-outline-secondary btn-sm all-products-next"><i class="fas fa-chevron-right"></i></button>
         </div>
-        {% empty %}
-        <div class="text-muted">{% trans "No products available." %}</div>
-        {% endfor %}
     </div>
-</div>
-{% endif %}
-    <!-- New Arrivals -->
-{% if config.ENABLE_NEW_ARRIVAL_FLAG %}
-<div class="section-header">
-    <h2>{% trans "New Arrivals" %}</h2>
-    <div class="swiper-controls">
-        <button class="btn btn-outline-secondary btn-sm newarrivals-prev"><i class="fas fa-chevron-left"></i></button>
-        <button class="btn btn-outline-secondary btn-sm newarrivals-next"><i class="fas fa-chevron-right"></i></button>
-    </div>
-</div>
-<div class="swiper newarrivals-swiper mb-5">
-    <div class="swiper-wrapper">
-        {% for product in new_arrivals %}
-        <div class="swiper-slide">
-          {% include "partials/_product.html" with product=product section="new_arrivals" %}
+    <div class="swiper all-products-swiper mb-5">
+        <div class="swiper-wrapper">
+            {% for product in all_products %}
+            <div class="swiper-slide">
+                {% include "partials/_product.html" with product=product section="all" %}
+            </div>
+            {% empty %}
+            <div class="text-muted">{% trans "No products available." %}</div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="text-muted">{% trans "No products available." %}</div>
-        {% endfor %}
     </div>
-</div>
-{% endif %}
-{% if config.ENABLE_FEATURED_FLAG %}
-    <!-- Featured Products -->
+      </div>
+            </section>
+    {% endif %}
+
+    {% if config.ENABLE_NEW_ARRIVAL_FLAG %}
+            <section class="section">
+      <div class="container-fluid">
+    <div class="section-header">
+        <h2>{% trans "New Arrivals" %}</h2>
+        <div class="swiper-controls">
+            <button class="btn btn-outline-secondary btn-sm newarrivals-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-outline-secondary btn-sm newarrivals-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+    <div class="swiper newarrivals-swiper mb-5">
+        <div class="swiper-wrapper">
+            {% for product in new_arrivals %}
+            <div class="swiper-slide">
+                {% include "partials/_product.html" with product=product section="new_arrivals" %}
+            </div>
+            {% empty %}
+            <div class="text-muted">{% trans "No products available." %}</div>
+            {% endfor %}
+        </div>
+    </div>
+      </div>
+            </section>
+    {% endif %}
+
+    {% if config.ENABLE_FEATURED_FLAG %}
+            <section class="section">
+      <div class="container-fluid">
     <div class="section-header">
         <h2>{% trans "Featured Products" %}</h2>
         <div class="swiper-controls">
@@ -87,18 +121,20 @@
         <div class="swiper-wrapper">
             {% for product in featured_products %}
             <div class="swiper-slide">
-          {% include "partials/_product.html" with product=product section="featured_products" %}
-
+                {% include "partials/_product.html" with product=product section="featured_products" %}
             </div>
             {% empty %}
             <div class="text-muted">{% trans "No products available." %}</div>
             {% endfor %}
         </div>
     </div>
-{% endif %}
-{% if config.ENABLE_BEST_SELLER_FLAG %}
+      </div>
+            </section>
+    {% endif %}
 
-    <!-- Best Sellers -->
+    {% if config.ENABLE_BEST_SELLER_FLAG %}
+            <section class="section">
+      <div class="container-fluid">
     <div class="section-header">
         <h2>{% trans "Best Sellers" %}</h2>
         <div class="swiper-controls">
@@ -110,18 +146,21 @@
         <div class="swiper-wrapper">
             {% for product in best_sellers %}
             <div class="swiper-slide">
-          {% include "partials/_product.html" with product=product section="best_sellers" %}
+                {% include "partials/_product.html" with product=product section="best_sellers" %}
             </div>
             {% empty %}
             <div class="text-muted">{% trans "No products available." %}</div>
             {% endfor %}
         </div>
     </div>
-{% endif %}
-{% if config.ENABLE_SALE_FLAG %}
+      </div>
+            </section>
+    {% endif %}
 
-    <!-- On Sale -->
-    <div class="section-header">
+    {% if config.ENABLE_SALE_FLAG %}
+    <section class="section">
+      <div class="container-fluid">
+              <div class="section-header">
         <h2>{% trans "On Sale!" %}</h2>
         <div class="swiper-controls">
             <button class="btn btn-outline-secondary btn-sm onsale-prev"><i class="fas fa-chevron-left"></i></button>
@@ -132,15 +171,16 @@
         <div class="swiper-wrapper">
             {% for product in sale_products %}
             <div class="swiper-slide">
-          {% include "partials/_product.html" with product=product section="sale_products" %}
+                {% include "partials/_product.html" with product=product section="sale_products" %}
             </div>
             {% empty %}
             <div class="text-muted">{% trans "No products available." %}</div>
             {% endfor %}
         </div>
     </div>
-{% endif %}
-
+      </div>
+    </section>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -149,7 +189,7 @@
     function setupSwiper(className, next, prev) {
         new Swiper(`.${className}`, {
             slidesPerView: 2,
-            spaceBetween: 16,
+            spaceBetween: 0,  // No space between slides
             breakpoints: {
                 576: { slidesPerView: 2 },
                 768: { slidesPerView: 3 },
@@ -168,8 +208,6 @@
         setupSwiper('bestseller-swiper', 'bestseller-next', 'bestseller-prev');
         setupSwiper('onsale-swiper', 'onsale-next', 'onsale-prev');
         setupSwiper('all-products-swiper', 'all-products-next', 'all-products-prev');
-
     });
 </script>
-
 {% endblock %}
