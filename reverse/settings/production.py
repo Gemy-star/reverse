@@ -1,7 +1,7 @@
 from .common import *
 import os
 
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = [
     'reverse-eg.com',
     'www.reverse-eg.com',
@@ -12,6 +12,24 @@ ALLOWED_HOSTS = [
 
 # Add this setting to be more strict about host validation
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': '/srv/reverse/django-error.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
 
 # Database: MariaDB (MySQL compatible)
 DATABASES = {
