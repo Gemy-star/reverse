@@ -13,11 +13,13 @@ from .forms import RegisterForm, LoginForm, ShippingAddressForm, PaymentForm
 from .models import (
     Category, SubCategory, FitType, Brand, Color, Size,
     Product, ProductVariant, Cart, CartItem, Wishlist, WishlistItem, HomeSlider,
-    Order, OrderItem, ShippingAddress, Payment, ReverseUser  # Assuming ReverseUser is a custom user model
+    Order, OrderItem, ShippingAddress, Payment, ReverseUser
 )
-from decimal import Decimal  # For handling monetary values
-import uuid  # For generating unique order numbers
+from decimal import Decimal
+import uuid
 import logging
+
+# Set up logger
 logger = logging.getLogger(__name__)
 
 
@@ -687,6 +689,7 @@ def add_to_wishlist(request):
 
 @require_POST
 def remove_from_wishlist(request):
+    from django.utils.translation import gettext as _
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
@@ -772,9 +775,8 @@ def remove_from_cart(request):
     except CartItem.DoesNotExist:
         return JsonResponse({'success': False, 'message': _('Cart item not found.')}, status=404)
     except Exception as e:
-        print(f"Error removing from cart: {e}")
+        logger.error(f"Error removing from cart: {e}", exc_info=True)
         return JsonResponse({'success': False, 'message': _(f'An unexpected error occurred: {str(e)}')}, status=500)
-
 
 @require_POST
 def update_cart_quantity(request):

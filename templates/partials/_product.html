@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // CSRF helper
         // Update global counts
 function updateGlobalCounts() {
-    fetch("{% url 'get_cart_and_wishlist_counts' %}", {
+    fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
         method: 'GET',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
