@@ -2,7 +2,13 @@ from .common import *
 import os
 
 DEBUG = False
-ALLOWED_HOSTS = ['reverse-eg.com', 'www.reverse-eg.com', 'localhost', '127.0.0.1','31.97.177.210',]
+ALLOWED_HOSTS = [
+    'reverse-eg.com',
+    'www.reverse-eg.com',
+    'localhost',
+    '127.0.0.1',
+    '31.97.177.210',
+]
 # Add this setting to be more strict about host validation
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
