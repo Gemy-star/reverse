@@ -942,10 +942,14 @@ def checkout_view(request):
 
     initial_shipping_data = {}
     user_shipping_addresses = ShippingAddress.objects.none()
+
     if request.user.is_authenticated:
-        user_shipping_addresses = ShippingAddress.objects.filter(user=request.user)
+        # Fetch orders related to the user
+        user_orders = Order.objects.filter(user=request.user)
+        # Fetch shipping addresses linked to these orders
+        user_shipping_addresses = ShippingAddress.objects.filter(order__in=user_orders)
         if user_shipping_addresses.exists():
-            default_address = user_shipping_addresses.filter(is_default=True).first() or user_shipping_addresses.order_by('-created_at').first()
+            default_address = user_shipping_addresses.filter(is_default=True).first() or user_shipping_addresses.order_by('-id').first()
             if default_address:
                 initial_shipping_data = {
                     'full_name': default_address.full_name,
@@ -964,16 +968,18 @@ def checkout_view(request):
     if request.method == 'POST':
         selected_address_id = request.POST.get('selected_address')
         if selected_address_id == 'new' or not user_shipping_addresses.exists():
+            # New address or no saved addresses
             if shipping_form.is_valid() and payment_form.is_valid():
                 return process_order(request, cart, shipping_form, payment_form)
             else:
                 messages.error(request, _("Please correct the errors in your shipping and/or payment details."))
         else:
+            # Existing address selected
             if not request.user.is_authenticated:
                 messages.error(request, _("You must be logged in to use an existing address."))
                 return redirect('shop:checkout')
             try:
-                selected_address = get_object_or_404(ShippingAddress, id=selected_address_id, user=request.user)
+                selected_address = get_object_or_404(ShippingAddress, id=selected_address_id, order__user=request.user)
             except ShippingAddress.DoesNotExist:
                 messages.error(request, _("Selected shipping address not found or does not belong to you."))
                 return redirect('shop:checkout')
