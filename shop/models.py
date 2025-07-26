@@ -30,7 +30,12 @@ class Category(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    image_resized = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(376, 477)],
+        format='JPEG',
+        options={'quality': 85}
+    )
     class Meta:
         verbose_name_plural = "Categories"
         ordering = ['name']
@@ -56,7 +61,12 @@ class SubCategory(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    image_resized = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(376, 477)],
+        format='JPEG',
+        options={'quality': 85}
+    )
     class Meta:
         verbose_name_plural = "Sub Categories"
         unique_together = ['category', 'slug']
@@ -99,7 +109,12 @@ class Brand(models.Model):
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    logo_resized = ImageSpecField(
+        source='logo',
+        processors=[ResizeToFill(376, 477)],
+        format='JPEG',
+        options={'quality': 85}
+    )
     class Meta:
         ordering = ['name']
 
@@ -284,7 +299,18 @@ class ProductImage(models.Model):
     order = models.IntegerField(default=0)
     color = models.ForeignKey(Color, related_name='product_images', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    image_resized = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(376, 477)],
+        format='JPEG',
+        options={'quality': 85}
+    )
+    full_image_resized = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(1400, 650)],
+        format='JPEG',
+        options={'quality': 85}
+    )
     class Meta:
         ordering = ['order', 'created_at']
         constraints = [

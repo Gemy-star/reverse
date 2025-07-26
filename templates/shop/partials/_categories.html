@@ -19,7 +19,7 @@
             <div class="swiper-slide">
                 <div class="card h-100 text-center shadow-sm rounded-3">
                     {% if cat.image %}
-                        <img src="{{ cat.image.url }}" class="card-img-top rounded-top" loading="lazy" alt="{{ cat.name }}" style="height: 180px; object-fit: cover;">
+                        <img src="{{ cat.image_resized.url }}" class="card-img-top rounded-top" loading="lazy" alt="{{ cat.name }}" style="height: 180px; object-fit: cover;">
                     {% else %}
                         <img src="https://placehold.co/400x180/e0e0e0/555555?text={{ cat.name }}" loading="lazy" class="card-img-top rounded-top" alt="{{ cat.name }}">
                     {% endif %}

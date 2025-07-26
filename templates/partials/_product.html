@@ -29,7 +29,7 @@
     /* Main and hover images */
     .product-img {
         width: 100%;
-        height: 300px !important; /* fixed height */
+        height: 330px !important; /* fixed height */
         object-fit: contain !important;
         transition: opacity 0.3s ease;
         display: block;
@@ -221,11 +221,11 @@
         {% endif %}
         <a href="{{ product.get_absolute_url }}">
             {% if main_image %}
-                <img src="{{ main_image.image.url }}"
+                <img src="{{ main_image.image_resized.url }}"
                      alt="{{ product.name }}"
                      loading="lazy"
                      class="product-img">
-                <img src="{% if hover_image %}{{ hover_image.image.url }}{% else %}{{ main_image.image.url }}{% endif %}"
+                <img src="{% if hover_image %}{{ hover_image.image_resized.url }}{% else %}{{ main_image.image_resized.url }}{% endif %}"
                      alt="{{ product.name }}"
                      loading="lazy"
                      class="product-img hover-switch-img">
