@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/add-to-cart/', views.add_to_cart, name='add_to_cart'), # Renamed, consolidated all add-to-cart here
     path('api/add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'), # Renamed, consolidated all add-to-wishlist here
     path('api/get-counts/', views.get_cart_and_wishlist_counts, name='get_cart_and_wishlist_counts'), # GET for counts
+    path('api/get-available-sizes/', views.get_available_sizes_ajax, name='get_available_sizes_ajax'),
 
     # Account & Authentication
     path('account/', views.account_view, name='account'),

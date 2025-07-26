@@ -311,6 +311,8 @@ def product_detail(request, slug):
     }
 
     return render(request, 'shop/product_detail.html', context)
+
+
 # --- Search & API Endpoints ---
 @require_http_methods(["GET"])
 def search_products(request):
@@ -1122,3 +1124,20 @@ def order_history(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'shop/order_history.html', {'orders': page_obj})
+
+def get_available_sizes_ajax(request):
+    """
+    AJAX endpoint to get available sizes based on product and selected color.
+    """
+    if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        product_id = request.GET.get('product_id')
+        color_id = request.GET.get('color_id')
+
+        product = get_object_or_404(Product, id=product_id)
+        available_sizes_query = product.get_available_sizes(color_id=color_id)
+
+        # Convert queryset to a list of dictionaries for JSON response
+        available_sizes_data = list(available_sizes_query.values('id', 'name'))
+
+        return JsonResponse({'success': True, 'available_sizes': available_sizes_data})
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)

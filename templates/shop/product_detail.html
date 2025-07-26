@@ -89,17 +89,21 @@
             </div>
           </div>
           <!-- Collapsible Size Chart -->
-          <div class="mb-4">
+ <div class="row d-flex justify-content-start">
+          <div class="mb-4 col-12 col-lg-4">
             <button class="btn btn-light border rounded-pill text-body px-4 py-2 shadow-sm size-select"
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#sizeChartCollapse"
               aria-expanded="false"
+              id="size_btn"
               aria-controls="sizeChartCollapse"
               style="color: #000; background: transparent; border: none; font-weight: 500; font-size: 1rem; cursor: pointer;">
               <i class="fas fa-plus me-2"></i> {% trans "Size Chart" %}
             </button>
-            <div class="collapse mt-3" id="sizeChartCollapse">
+          </div>
+          <div class="col-12 pt-2 pb-2 d-none" id="size_container">
+                        <div class="collapse mt-3" id="sizeChartCollapse">
               <div class="table-responsive">
                 {% if product.size_chart %}
                 {{ product.size_chart|safe }}
@@ -126,6 +130,47 @@
                   </tbody>
                 </table>
                 {% endif %}
+              </div>
+            </div>
+          </div>
+     <div class="mb-4 col-12 col-lg-6">
+            <button class="btn btn-light border rounded-pill text-body px-4 py-2 shadow-sm"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#deliveryReturnModal"
+              style="color: #000; background: transparent; border: none; font-weight: 500; font-size: 1rem; cursor: pointer;">
+              <i class="fa-solid fa-truck-fast me-2"></i> {% trans "Delivery & Return" %} {# Changed icon to fa-solid fa-truck-fast #}
+            </button>
+     </div>
+
+ </div>
+          <div class="modal fade" id="deliveryReturnModal" tabindex="-1" aria-labelledby="deliveryReturnModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deliveryReturnModalLabel">{% trans "Delivery & Return Policy" %}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  {% if product.delivery_return %}
+                    {{ product.delivery_return|safe }}
+                  {% else %}
+                    <p>{% trans "Our standard delivery usually takes 3-5 business days. Returns are accepted within 30 days of purchase, provided the item is unused and in its original packaging. For more details, please contact our customer service." %}</p>
+                    <p><strong>{% trans "Important Notes:" %}</strong></p>
+                    <ul>
+                      <li>{% trans "Items must be returned in their original condition." %}</li>
+                      <li>{% trans "Refunds are processed within 7-10 business days after receiving the returned item." %}</li>
+                      <li>{% trans "Customized or personalized items are generally not eligible for return unless defective." %}</li>
+                    </ul>
+                    <p><strong>{% trans "For further assistance, please contact our support team:" %}</strong></p>
+                    <ul>
+                      <li>{% trans "Phone:" %} {{ config.WHATSAPP_NUMBER }}</li>
+                    </ul>
+                  {% endif %}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                </div>
               </div>
             </div>
           </div>
@@ -479,6 +524,15 @@
       });
     });
 
+      const sizeButtonToggle = document.getElementById('size_btn');
+  const sizeContainer = document.getElementById('size_container');
+
+  if (sizeButtonToggle && sizeContainer) {
+    sizeButtonToggle.addEventListener('click', function() {
+      sizeContainer.classList.toggle('d-none');
+    });
+  }
+
     document.querySelectorAll('.cart-btn').forEach(button => {
       button.addEventListener('click', function (e) {
         e.preventDefault();
@@ -533,5 +587,6 @@
       992: { slidesPerView: 4 },
     }
   });
+
 </script>
 {% endblock js %}

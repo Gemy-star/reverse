@@ -111,7 +111,6 @@ class Brand(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
-
 class Color(models.Model):
     name = models.CharField(max_length=50, unique=True)
     hex_code = ColorField(default='#FFFFFF', verbose_name=_("Color Code"), help_text="Color hex code (e.g., #FF0000)")
@@ -150,10 +149,10 @@ class Product(models.Model):
     description = models.TextField()
     short_description = models.CharField(max_length=300, blank=True)
 
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE)
-    fit_type = models.ForeignKey(FitType, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
-    brand = models.ForeignKey(Brand, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey('Category', related_name='products', on_delete=models.CASCADE) # Use string if not imported
+    subcategory = models.ForeignKey('SubCategory', related_name='products', on_delete=models.CASCADE) # Use string if not imported
+    fit_type = models.ForeignKey('FitType', related_name='products', on_delete=models.SET_NULL, null=True, blank=True) # Use string if not imported
+    brand = models.ForeignKey('Brand', related_name='products', on_delete=models.SET_NULL, null=True, blank=True) # Use string if not imported
 
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
@@ -166,7 +165,7 @@ class Product(models.Model):
     is_featured = models.BooleanField(default=False)
 
     # Stock status
-    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)]) # This might become less relevant with variants
     is_active = models.BooleanField(default=True)
     is_available = models.BooleanField(default=True)
 
@@ -178,10 +177,12 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # Many-to-many
+    # Many-to-many (through ProductColor/ProductSize/ProductVariant)
     colors = models.ManyToManyField(Color, through='ProductColor', blank=True)
     sizes = models.ManyToManyField(Size, through='ProductSize', blank=True)
     size_chart = RichTextField(blank=True, null=True, help_text="Add size chart content here (HTML supported)")
+    delivery_return = RichTextField(blank=True, null=True, help_text="Add Delivery and return policy (HTML supported)")
+
     class Meta:
         ordering = ['-created_at']
         indexes = [
@@ -225,8 +226,8 @@ class Product(models.Model):
 
     @property
     def is_in_stock(self):
-        """Return if total stock is above 0"""
-        return self.stock_quantity > 0 or self.variants.filter(stock_quantity__gt=0, is_available=True).exists()
+        """Return if total stock is above 0 from any variant"""
+        return self.variants.filter(stock_quantity__gt=0, is_available=True).exists()
 
     def get_main_image(self):
         """Return the main image or fallback to first image"""
@@ -239,12 +240,40 @@ class Product(models.Model):
         return hover_image or self.images.first()
 
     def get_available_colors(self):
-        """Return distinct active colors from variants"""
-        return self.colors.filter(is_active=True, product_images__product=self).distinct()
+        """Return distinct active colors that have at least one variant in stock."""
+        return Color.objects.filter(
+            is_active=True,
+            productvariant__product=self,
+            productvariant__stock_quantity__gt=0,
+            productvariant__is_available=True
+        ).distinct()
 
-    def get_available_sizes(self):
-        """Return distinct active sizes from variants"""
-        return self.sizes.filter(is_active=True, product=self).distinct()
+    def get_available_sizes(self, color_id=None):
+        """
+        Return distinct active sizes that have at least one variant in stock.
+        Optionally filter by a specific color.
+        """
+        filters = Q(is_active=True) & Q(productvariant__product=self) & \
+                  Q(productvariant__stock_quantity__gt=0) & Q(productvariant__is_available=True)
+
+        if color_id:
+            filters &= Q(productvariant__color_id=color_id)
+
+        return Size.objects.filter(filters).distinct().order_by('size_type', 'order', 'name')
+
+    @property
+    def get_all_product_sizes_by_type(self):
+        """
+        Return all active sizes that match the product's category's size_type.
+        Assumes Category model has a size_type field or you derive it.
+        For simplicity here, let's assume `self.category.size_type` exists.
+        If not, you'd need to explicitly set `size_type` on the Product or deduce it.
+        """
+        if hasattr(self.category, 'size_type') and self.category.size_type:
+            return Size.objects.filter(is_active=True, size_type=self.category.size_type).order_by('size_type', 'order', 'name')
+        else:
+            return Size.objects.filter(is_active=True).order_by('size_type', 'order', 'name')
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
@@ -345,8 +374,6 @@ class ProductVariant(models.Model):
         if not self.sku:
             self.sku = f"{self.product.slug}-{self.color.name.lower()}-{self.size.name.lower()}".replace(' ', '-')
         super().save(*args, **kwargs)
-
-
 # --- Cart Models ---
 class Cart(models.Model):
     session_key = models.CharField(max_length=40, null=True, blank=True, unique=True)  # For anonymous users
