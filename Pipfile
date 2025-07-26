@@ -23,5 +23,5 @@ crispy-bootstrap5 = "*"
 django-silk = "*"
 
 [requires]
-python_version = "3.11"
-python_full_version = "3.11.3"
+python_version = "3.13"
+python_full_version = "3.13.3"
