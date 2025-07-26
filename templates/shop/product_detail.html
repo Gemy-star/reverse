@@ -554,24 +554,43 @@
       1024: { slidesPerView: 7 },
     }
   });
-  const productMainSwiper = new Swiper('.product-detail-swiper', {
-    spaceBetween: 10,
-    zoom: {
-      maxRatio: 3,
-      toggle: true,
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-    thumbs: {
-      swiper: productThumbsSwiper,
-    },
+// Initialize Swiper with zoom enabled
+const productMainSwiper = new Swiper('.product-detail-swiper', {
+  spaceBetween: 10,
+  zoom: {
+    maxRatio: 3,
+    toggle: true,
+  },
+  navigation: {
+    nextEl: '.swiper-button-next',
+    prevEl: '.swiper-button-prev',
+  },
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true,
+  },
+  thumbs: {
+    swiper: productThumbsSwiper,
+  },
+});
+
+// Add click event to toggle zoom or open full screen
+document.querySelectorAll('.product-detail-swiper .swiper-slide img').forEach((img) => {
+  img.addEventListener('click', () => {
+    // Toggle zoom on click
+    if (productMainSwiper.zoom) {
+      // Check if zoom is enabled
+      if (productMainSwiper.zoom.isScaling) {
+        // If zoomed in, zoom out
+        productMainSwiper.zoom.out();
+      } else {
+        // Zoom in on the clicked image
+        productMainSwiper.zoom.in();
+      }
+    }
+    // Alternatively, open in a custom full-screen modal here
   });
+});
 
   const relatedProductsSwiper = new Swiper('.related_products-swiper', {
     slidesPerView: 2,
