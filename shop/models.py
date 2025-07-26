@@ -307,7 +307,7 @@ class ProductImage(models.Model):
     )
     thumb_resized = ImageSpecField(
         source='image',
-        processors=[ResizeToFill(409, 620)],
+        processors=[ResizeToFill(609, 820)],
         format='JPEG',
         options={'quality': 85}
     )
