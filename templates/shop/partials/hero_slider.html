@@ -74,7 +74,7 @@
     <div class="swiper-wrapper">
         {% for slider in sliders %}
         <div class="swiper-slide position-relative">
-            <img src="{{ slider.image_resized.url }}" alt="{{ slider.alt_text }}" class="img-fluid w-100 slider-image">
+            <img src="{{ slider.image_resized.url }}" alt="{{ slider.alt_text }}" class="img-fluid w-100 slider-image" loading="lazy">
 
             <!-- Overlay content -->
             <div class="container position-absolute top-50 start-50 translate-middle text-center text-md-start px-3 px-md-5" style="z-index: 2;">

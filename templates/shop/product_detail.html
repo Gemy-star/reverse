@@ -15,13 +15,13 @@
                 {% for image in product_images %}
                 <div class="swiper-slide">
                   <div class="swiper-zoom-container">
-                    <img src="{{ image.image.url }}" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid rounded">
+                    <img src="{{ image.image.url }}" loading="lazy" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid rounded">
                   </div>
                 </div>
                 {% empty %}
                 <div class="swiper-slide">
                   <div class="swiper-zoom-container">
-                    <img src="https://placehold.co/600x500/e0e0e0/555555?text=No+Image" alt="{% trans 'No image available' %}" class="img-fluid rounded">
+                    <img loading="lazy" src="https://placehold.co/600x500/e0e0e0/555555?text=No+Image" alt="{% trans 'No image available' %}" class="img-fluid rounded">
                   </div>
                 </div>
                 {% endfor %}

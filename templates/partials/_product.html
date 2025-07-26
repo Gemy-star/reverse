@@ -223,13 +223,16 @@
             {% if main_image %}
                 <img src="{{ main_image.image.url }}"
                      alt="{{ product.name }}"
+                     loading="lazy"
                      class="product-img">
                 <img src="{% if hover_image %}{{ hover_image.image.url }}{% else %}{{ main_image.image.url }}{% endif %}"
                      alt="{{ product.name }}"
+                     loading="lazy"
                      class="product-img hover-switch-img">
             {% else %}
                 <img src="{% static 'shop/images/no_image.png' %}"
                      alt="{% trans 'No Image' %}"
+                     loading="lazy"
                      class="product-img">
             {% endif %}
         </a>
