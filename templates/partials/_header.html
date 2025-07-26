@@ -64,7 +64,6 @@
     }
 }
 </style>
-
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm navbar-{{ nav_id }}">
     <div class="container d-flex align-items-center">
         <!-- Categories Dropdown -->
@@ -105,7 +104,7 @@
                     <a class="nav-link" href="{% url 'shop:cart_view' %}" title="{% trans 'Cart' %}">
                         <span class="icon-wrapper">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge" id="cart-count-{{ nav_id }}" id="cart_count">
+                            <span class="badge" id="cart-count-{{ nav_id }}">
                                 {{ request.session.cart_count|default:"0" }}
                             </span>
                         </span>
@@ -115,7 +114,7 @@
                     <a class="nav-link" href="{% url 'shop:wishlist_view' %}" title="{% trans 'Wishlist' %}">
                         <span class="icon-wrapper">
                             <i class="fas fa-heart"></i>
-                            <span class="badge" id="wishlist-count-{{ nav_id }}" id="wish_count">
+                            <span class="badge" id="wishlist-count-{{ nav_id }}">
                                 {{ request.session.wishlist_count|default:"0" }}
                             </span>
                         </span>
@@ -127,7 +126,7 @@
                         <i class="fas fa-user"></i>
                     </a>
                 </li>
-            {% endif %}
+                {% endif %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="languageDropdown-{{ nav_id }}"
                        role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans 'Language' %}">
@@ -150,4 +149,37 @@
         </div>
     </div>
 </nav>
+
+<script>
+// Refresh cart/wishlist count from server
+function updateGlobalCounts(nav_id = "nav1") {
+    fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const cartCountEl = document.getElementById(`cart-count-${nav_id}`);
+        const wishCountEl = document.getElementById(`wishlist-count-${nav_id}`);
+        if (cartCountEl && data.cart_count !== undefined) {
+            cartCountEl.textContent = data.cart_count;
+        }
+        if (wishCountEl && data.wishlist_count !== undefined) {
+            wishCountEl.textContent = data.wishlist_count;
+        }
+    })
+    .catch(error => {
+        console.error("Failed to fetch cart/wishlist counts:", error);
+    });
+}
+
+// Call immediately on page load
+updateGlobalCounts("nav1");
+
+// Then repeat every 30 seconds (30000 milliseconds)
+setInterval(() => {
+    updateGlobalCounts("nav1");
+}, 5000);
+
+</script>
 {% endwith %}

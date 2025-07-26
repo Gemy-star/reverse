@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db import transaction
-from django.utils.translation import gettext as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 from .forms import RegisterForm, LoginForm, ShippingAddressForm, PaymentForm
@@ -18,6 +17,7 @@ from .models import (
 from decimal import Decimal
 import uuid
 import logging
+from django.utils.translation import gettext as _
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -518,19 +518,14 @@ def wishlist_view(request):
     """Displays the user's wishlist with pagination."""
     products_qs = Product.objects.none()
     products_in_wishlist_ids = set()
-
     if request.user.is_authenticated:
-        # Try to get wishlist and products in it
         try:
             wishlist = Wishlist.objects.get(user=request.user)
             products_qs = Product.objects.filter(
                 wishlistitem__wishlist=wishlist
             ).select_related(
                 'category', 'subcategory', 'brand'
-            ).prefetch_related(
-                'images'
-            ).order_by('name')
-            # Get product IDs in wishlist from wishlist items
+            ).prefetch_related('images').order_by('name')
             products_in_wishlist_ids = set(
                 request.user.wishlist_items.values_list('product_id', flat=True)
             )
@@ -540,13 +535,9 @@ def wishlist_view(request):
     else:
         wishlist_session = request.session.get('wishlist', [])
         if wishlist_session:
-            products_qs = Product.objects.filter(
-                id__in=wishlist_session
-            ).select_related(
+            products_qs = Product.objects.filter(id__in=wishlist_session).select_related(
                 'category', 'subcategory', 'brand'
-            ).prefetch_related(
-                'images'
-            ).order_by('name')
+            ).prefetch_related('images').order_by('name')
             products_in_wishlist_ids = set(wishlist_session)
         else:
             products_qs = Product.objects.none()
@@ -555,7 +546,6 @@ def wishlist_view(request):
     # Pagination: 8 products per page
     paginator = Paginator(products_qs, 8)
     page = request.GET.get('page', 1)
-
     try:
         products = paginator.page(page)
     except PageNotAnInteger:
@@ -570,54 +560,65 @@ def wishlist_view(request):
         'products': products,
         'products_in_wishlist_ids': products_in_wishlist_ids,
     }
-
     return render(request, 'shop/wishlist_view.html', context)
+
+
 
 @require_POST
 def add_to_cart(request):
+    # Determine current language
+    lang = getattr(request, 'LANGUAGE_CODE', 'en')
+
     try:
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
             data = request.POST
-
         product_variant_id = data.get('product_variant_id')
         product_id = data.get('product_id')
         quantity = int(data.get('quantity', 1))
-
     except (ValueError, TypeError):
-        return JsonResponse({'success': False, 'message': _('Invalid data provided.')}, status=400)
+        message = 'Invalid data provided.' if lang == 'en' else 'بيانات غير صالحة.'
+        return JsonResponse({'success': False, 'message': message}, status=400)
 
     product_variant = None
     product = None
-
     if product_variant_id:
         try:
             product_variant = ProductVariant.objects.get(id=product_variant_id, is_available=True)
             product = product_variant.product
         except ProductVariant.DoesNotExist:
-            return JsonResponse({'success': False, 'message': _('Product variant not found or not available.')}, status=404)
+            message = 'Product variant not found or not available.' if lang == 'en' else 'النسخة المحددة من المنتج غير موجودة أو غير متوفرة.'
+            return JsonResponse({'success': False, 'message': message}, status=404)
     elif product_id:
         try:
             product = Product.objects.get(id=product_id, is_active=True, is_available=True)
             product_variant = ProductVariant.objects.filter(
-                product=product,
-                is_available=True,
-                stock_quantity__gt=0
+                product=product, is_available=True, stock_quantity__gt=0
             ).order_by('pk').first()
             if not product_variant:
-                return JsonResponse({'success': False, 'message': _(f'No available variants for {product.name} or out of stock.')}, status=400)
+                message = f'No available variants for {product.name} or out of stock.' if lang == 'en' else f'لا توجد نسخ متاحة لـ {product.name} أو نفدت الكمية.'
+                return JsonResponse({'success': False, 'message': message}, status=400)
         except Product.DoesNotExist:
-            return JsonResponse({'success': False, 'message': _('Product not found or not available.')}, status=404)
+            message = 'Product not found or not available.' if lang == 'en' else 'المنتج غير موجود أو غير متوفر.'
+            return JsonResponse({'success': False, 'message': message}, status=404)
     else:
-        return JsonResponse({'success': False, 'message': _('Product or variant not provided.')}, status=400)
+        message = 'Product or variant not provided.' if lang == 'en' else 'لم يتم تقديم منتج أو نسخة.'
+        return JsonResponse({'success': False, 'message': message}, status=400)
 
     if quantity <= 0:
-        return JsonResponse({'success': False, 'message': _('Quantity must be at least 1.')}, status=400)
+        message = 'Quantity must be at least 1.' if lang == 'en' else 'يجب أن تكون الكمية على الأقل 1.'
+        return JsonResponse({'success': False, 'message': message}, status=400)
 
     if product_variant.stock_quantity < quantity:
-        return JsonResponse({'success': False, 'message': _(
-            f'Not enough stock for {product.name} ({product_variant.color.name if product_variant.color else "N/A"}, {product_variant.size.name if product_variant.size else "N/A"}). Available: {product_variant.stock_quantity}.')}, status=400)
+        message = (
+            f'Not enough stock for {product.name} ({product_variant.color.name if product_variant.color else "N/A"}, '
+            f'{product_variant.size.name if product_variant.size else "N/A"}). Available: {product_variant.stock_quantity}.'
+        ) if lang == 'en' else (
+            f'الكمية غير كافية للمنتج {product.name} ({product_variant.color.name if product_variant.color else "غير متوفر"}, '
+            f'{product_variant.size.name if product_variant.size else "غير متوفر"}). المتوفر: {product_variant.stock_quantity}.'
+        )
+        return JsonResponse({'success': False, 'message': message}, status=400)
 
     with transaction.atomic():
         if request.user.is_authenticated:
@@ -638,218 +639,151 @@ def add_to_cart(request):
             cart_item.quantity += quantity
             cart_item.save()
 
-    request.session['cart_count'] = cart.total_items
-
-    return JsonResponse({'success': True, 'message': _('Item added to cart successfully!'), 'cart_total_items': cart.total_items})
-
+        request.session['cart_count'] = cart.total_items
+        message = 'Item added to cart successfully!' if lang == 'en' else 'تمت إضافة العنصر إلى السلة بنجاح!'
+        return JsonResponse({'success': True, 'message': message, 'cart_total_items': cart.total_items})
 
 @require_POST
 def add_to_wishlist(request):
+    lang = getattr(request, 'LANGUAGE_CODE', 'en')
     try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': _('Invalid JSON.')}, status=400)
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON.' if lang == 'en' else 'نص غير صالح.'}, status=400)
+        product_id = data.get('product_id')
+        if not product_id:
+            return JsonResponse({'success': False, 'message': 'Product ID not provided.' if lang == 'en' else 'معرف المنتج غير موجود.'}, status=400)
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found.' if lang == 'en' else 'المنتج غير موجود.'}, status=404)
 
-    product_id = data.get('product_id')
-    if not product_id:
-        return JsonResponse({'success': False, 'message': _('Product ID not provided.')}, status=400)
-
-    try:
-        product = Product.objects.get(id=product_id)
-    except Product.DoesNotExist:
-        return JsonResponse({'success': False, 'message': _('Product not found.')}, status=404)
-
-    if request.user.is_authenticated:
-        with transaction.atomic():
-            wishlist, created = Wishlist.objects.select_for_update().get_or_create(user=request.user)
-            wishlist_item, item_created = WishlistItem.objects.get_or_create(wishlist=wishlist, product=product)
-            if item_created:
-                message = _('Item added to wishlist successfully!')
-                status = 'added'
-            else:
-                message = _('Item is already in your wishlist.')
-                status = 'exists'
-            wishlist_count = wishlist.items.count()
-    else:
-        wishlist_session = request.session.get('wishlist', [])
-        if str(product_id) in wishlist_session:
-            message = _('Item is already in your wishlist.')
-            status = 'exists'
+        if request.user.is_authenticated:
+            with transaction.atomic():
+                wishlist, created = Wishlist.objects.select_for_update().get_or_create(user=request.user)
+                wishlist_item, item_created = WishlistItem.objects.get_or_create(wishlist=wishlist, product=product)
+                if item_created:
+                    message = 'Item added to wishlist successfully!' if lang == 'en' else 'تمت إضافة العنصر إلى قائمة الرغبات بنجاح!'
+                    status = 'added'
+                else:
+                    message = 'Item is already in your wishlist.' if lang == 'en' else 'العنصر موجود بالفعل في قائمة رغباتك.'
+                    status = 'exists'
+                wishlist_count = wishlist.items.count()
         else:
-            wishlist_session.append(str(product_id))
-            request.session['wishlist'] = wishlist_session
-            message = _('Item added to wishlist successfully!')
-            status = 'added'
-        wishlist_count = len(wishlist_session)
+            wishlist_session = request.session.get('wishlist', [])
+            if str(product_id) in wishlist_session:
+                message = 'Item is already in your wishlist.' if lang == 'en' else 'العنصر موجود بالفعل في قائمة رغباتك.'
+                status = 'exists'
+            else:
+                wishlist_session.append(str(product_id))
+                request.session['wishlist'] = wishlist_session
+                message = 'Item added to wishlist successfully!' if lang == 'en' else 'تمت إضافة العنصر إلى قائمة الرغبات بنجاح!'
+                status = 'added'
+            wishlist_count = len(wishlist_session)
 
-    request.session['wishlist_count'] = wishlist_count
-
-    return JsonResponse({'success': True, 'message': message, 'status': status, 'wishlist_total_items': wishlist_count})
-
+        request.session['wishlist_count'] = wishlist_count
+        return JsonResponse({'success': True, 'message': message, 'status': status, 'wishlist_total_items': wishlist_count})
+    except Exception:
+        message = 'An error occurred.' if lang == 'en' else 'حدث خطأ.'
+        return JsonResponse({'success': False, 'message': message}, status=500)
 
 @require_POST
 def remove_from_wishlist(request):
-    from django.utils.translation import gettext as _
+    lang = getattr(request, 'LANGUAGE_CODE', 'en')
     try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': _('Invalid JSON.')}, status=400)
-
-    product_id = data.get('product_id')
-    if not product_id:
-        return JsonResponse({'success': False, 'message': _('Product ID not provided.')}, status=400)
-
-    try:
-        product = Product.objects.get(id=product_id)
-    except Product.DoesNotExist:
-        return JsonResponse({'success': False, 'message': _('Product not found.')}, status=404)
-
-    if request.user.is_authenticated:
         try:
-            wishlist = Wishlist.objects.get(user=request.user)
-        except Wishlist.DoesNotExist:
-            return JsonResponse({'success': False, 'message': _('Wishlist not found for user.'), 'status': 'wishlist_missing'}, status=404)
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON.' if lang == 'en' else 'نص غير صالح.'}, status=400)
+        product_id = data.get('product_id')
+        if not product_id:
+            return JsonResponse({'success': False, 'message': 'Product ID not provided.' if lang == 'en' else 'معرف المنتج غير موجود.'}, status=400)
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found.' if lang == 'en' else 'المنتج غير موجود.'}, status=404)
 
-        with transaction.atomic():
-            deleted_count, _ = WishlistItem.objects.filter(wishlist=wishlist, product=product).delete()
-
-            if deleted_count > 0:
-                wishlist_count = wishlist.items.count()
-                request.session['wishlist_count'] = wishlist_count
-                return JsonResponse({'success': True, 'message': _('Item removed successfully!'), 'wishlist_total_items': wishlist_count, 'status': 'removed'})
-            else:
-                return JsonResponse({'success': False, 'message': _('Item not found in wishlist.'), 'status': 'not_found'}, status=404)
-    else:
-        wishlist_session = request.session.get('wishlist', [])
-        if str(product_id) in wishlist_session:
-            wishlist_session.remove(str(product_id))
-            request.session['wishlist'] = wishlist_session
-            wishlist_count = len(wishlist_session)
-            request.session['wishlist_count'] = wishlist_count
-            return JsonResponse({'success': True, 'message': _('Item removed successfully!'), 'wishlist_total_items': wishlist_count, 'status': 'removed'})
+        if request.user.is_authenticated:
+            try:
+                wishlist = Wishlist.objects.get(user=request.user)
+            except Wishlist.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'Wishlist not found for user.', 'status': 'wishlist_missing'}, status=404)
+            with transaction.atomic():
+                deleted_count, _ = WishlistItem.objects.filter(wishlist=wishlist, product=product).delete()
+                if deleted_count > 0:
+                    wishlist_count = wishlist.items.count()
+                    request.session['wishlist_count'] = wishlist_count
+                    message = 'Item removed successfully!' if lang == 'en' else 'تمت إزالة العنصر بنجاح!'
+                    return JsonResponse({'success': True, 'message': message, 'wishlist_total_items': wishlist_count, 'status': 'removed'})
+                else:
+                    message = 'Item not found in wishlist.' if lang == 'en' else 'العنصر غير موجود في قائمة الرغبات.'
+                    return JsonResponse({'success': False, 'message': message, 'status': 'not_found'}, status=404)
         else:
-            return JsonResponse({'success': False, 'message': _('Item not found in wishlist.'), 'status': 'not_found'}, status=404)
-
+            wishlist_session = request.session.get('wishlist', [])
+            if str(product_id) in wishlist_session:
+                wishlist_session.remove(str(product_id))
+                request.session['wishlist'] = wishlist_session
+                wishlist_count = len(wishlist_session)
+                request.session['wishlist_count'] = wishlist_count
+                message = 'Item removed successfully!' if lang == 'en' else 'تمت إزالة العنصر بنجاح!'
+                return JsonResponse({'success': True, 'message': message, 'wishlist_total_items': wishlist_count, 'status': 'removed'})
+            else:
+                message = 'Item not found in wishlist.' if lang == 'en' else 'العنصر غير موجود في قائمة الرغبات.'
+                return JsonResponse({'success': False, 'message': message, 'status': 'not_found'}, status=404)
+    except Exception:
+        message = 'An error occurred.' if lang == 'en' else 'حدث خطأ.'
+        return JsonResponse({'success': False, 'message': message}, status=500)
 
 @require_POST
 def remove_from_cart(request):
+    lang = getattr(request, 'LANGUAGE_CODE', 'en')
     try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': _('Invalid JSON.')}, status=HttpResponseBadRequest.status_code)
-
-    cart_item_id = data.get('cart_item_id')
-    if not cart_item_id:
-        return JsonResponse({'success': False, 'message': _('Cart item ID not provided.')}, status=HttpResponseBadRequest.status_code)
-
-    try:
-        cart_item_id = int(cart_item_id)
-    except ValueError:
-        return JsonResponse({'success': False, 'message': _('Invalid cart item ID format.')}, status=HttpResponseBadRequest.status_code)
-
-    try:
-        cart_item = get_object_or_404(CartItem.objects.select_related('cart'), id=cart_item_id)
-
-        if request.user.is_authenticated:
-            if cart_item.cart.user != request.user:
-                return JsonResponse({'success': False, 'message': _('Unauthorized action.')}, status=HttpResponseForbidden.status_code)
-        else:
-            if cart_item.cart.session_key != request.session.session_key:
-                return JsonResponse({'success': False, 'message': _('Unauthorized action.')}, status=HttpResponseForbidden.status_code)
-
-        cart = cart_item.cart
-
-        with transaction.atomic():
-            cart_item.delete()
-
-        request.session['cart_count'] = cart.total_items
-
-        return JsonResponse({
-            'success': True,
-            'message': _('Item removed from cart.'),
-            'cart_item_id': cart_item_id,
-            'cart_total_items': cart.total_items,
-            'cart_total_price': str(cart.total_price)
-        })
-
-    except CartItem.DoesNotExist:
-        return JsonResponse({'success': False, 'message': _('Cart item not found.')}, status=404)
-    except Exception as e:
-        logger.error(f"Error removing from cart: {e}", exc_info=True)
-        return JsonResponse({'success': False, 'message': _(f'An unexpected error occurred: {str(e)}')}, status=500)
-
-@require_POST
-def update_cart_quantity(request):
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': _('Invalid JSON.')}, status=HttpResponseBadRequest.status_code)
-
-    cart_item_id = data.get('cart_item_id')
-    new_quantity = data.get('quantity')
-
-    if not cart_item_id or new_quantity is None:
-        return JsonResponse({'success': False, 'message': _('Cart item ID or quantity not provided.')}, status=HttpResponseBadRequest.status_code)
-
-    try:
-        cart_item_id = int(cart_item_id)
-        new_quantity = int(new_quantity)
-    except ValueError:
-        return JsonResponse({'success': False, 'message': _('Invalid quantity or item ID format.')}, status=HttpResponseBadRequest.status_code)
-
-    try:
-        cart_item = get_object_or_404(CartItem.objects.select_related('cart', 'product_variant'), id=cart_item_id)
-
-        if request.user.is_authenticated:
-            if cart_item.cart.user != request.user:
-                return JsonResponse({'success': False, 'message': _('Unauthorized action.')}, status=HttpResponseForbidden.status_code)
-        else:
-            if cart_item.cart.session_key != request.session.session_key:
-                return JsonResponse({'success': False, 'message': _('Unauthorized action.')}, status=HttpResponseForbidden.status_code)
-
-        if new_quantity <= 0:
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON.' if lang == 'en' else 'نص غير صالح.'}, status=HttpResponseBadRequest.status_code)
+        cart_item_id = data.get('cart_item_id')
+        if not cart_item_id:
+            return JsonResponse({'success': False, 'message': 'Cart item ID not provided.' if lang == 'en' else 'معرف عنصر السلة غير موجود.'}, status=HttpResponseBadRequest.status_code)
+        try:
+            cart_item_id = int(cart_item_id)
+        except ValueError:
+            return JsonResponse({'success': False, 'message': 'Invalid cart item ID format.' if lang == 'en' else 'تنسيق معرف عنصر السلة غير صالح.'}, status=HttpResponseBadRequest.status_code)
+        try:
+            cart_item = get_object_or_404(CartItem.objects.select_related('cart'), id=cart_item_id)
+            if request.user.is_authenticated:
+                if cart_item.cart.user != request.user:
+                    return JsonResponse({'success': False, 'message': 'Unauthorized action.' if lang == 'en' else 'إجراء غير مصرح به.'}, status=HttpResponseForbidden.status_code)
+            else:
+                if cart_item.cart.session_key != request.session.session_key:
+                    return JsonResponse({'success': False, 'message': 'Unauthorized action.' if lang == 'en' else 'إجراء غير مصرح به.'}, status=HttpResponseForbidden.status_code)
+            cart = cart_item.cart
             with transaction.atomic():
                 cart_item.delete()
-            message = _('Item removed from cart.')
-            status = 'removed'
-            item_total_price = Decimal('0.00')
-        else:
-            if cart_item.product_variant.stock_quantity < new_quantity:
-                new_quantity = cart_item.product_variant.stock_quantity
-
-            with transaction.atomic():
-                cart_item.quantity = new_quantity
-                cart_item.save()
-
-            message = _('Cart quantity updated.')
-            status = 'updated'
-            item_total_price = cart_item.get_total_price()
-
-        request.session['cart_count'] = cart_item.cart.total_items
-
-        return JsonResponse({
-            'success': True,
-            'message': message,
-            'status': status,
-            'cart_item_id': cart_item_id,
-            'new_quantity': cart_item.quantity if status == 'updated' else 0,
-            'item_total_price': str(item_total_price),
-            'cart_total_items': cart_item.cart.total_items,
-            'cart_total_price': str(cart_item.cart.total_price)
-        })
-
-    except CartItem.DoesNotExist:
-        return JsonResponse({'success': False, 'message': _('Cart item not found.')}, status=404)
-    except Exception as e:
-        print(f"Error updating cart quantity: {e}")
-        return JsonResponse({'success': False, 'message': _(f'An unexpected error occurred: {str(e)}')}, status=500)
+                request.session['cart_count'] = cart.total_items
+                message = 'Item removed from cart.' if lang == 'en' else 'تمت إزالة العنصر من السلة.'
+                return JsonResponse({
+                    'success': True,
+                    'message': message,
+                    'cart_item_id': cart_item_id,
+                    'cart_total_items': cart.total_items,
+                    'cart_total_price': str(cart.total_price)
+                })
+        except CartItem.DoesNotExist:
+            message = 'Cart item not found.' if lang == 'en' else 'لم يتم العثور على عنصر في السلة.'
+            return JsonResponse({'success': False, 'message': message}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'An unexpected error occurred: {str(e)}'}, status=500)
+    except Exception:
+        message = 'An error occurred.' if lang == 'en' else 'حدث خطأ.'
+        return JsonResponse({'success': False, 'message': message}, status=500)
 
 # --- Cart Views ---
 def cart_view(request):
     cart_items_data = []
     total_cart_price = Decimal('0.00')
     cart = None
-
     if request.user.is_authenticated:
         try:
             cart = Cart.objects.get(user=request.user)
@@ -862,29 +796,22 @@ def cart_view(request):
                 cart = Cart.objects.get(session_key=session_key)
             except Cart.DoesNotExist:
                 pass
-
     if cart:
         cart_items = cart.items.select_related(
-            'product_variant__product',
-            'product_variant__color',
-            'product_variant__size'
+            'product_variant__product', 'product_variant__color', 'product_variant__size'
         ).order_by('pk')
-
         for item in cart_items:
             current_stock = item.product_variant.stock_quantity if item.product_variant else 0
             display_quantity = min(item.quantity, current_stock)
-
             if item.quantity > current_stock:
                 item.quantity = current_stock
                 item.save()
-                messages.warning(request,
-                                 _(f"Quantity for {item.product_variant.product.name} was adjusted to {current_stock} due to limited stock."))
-                if current_stock == 0:
-                    item.delete()
-                    messages.error(request,
-                                   _(f"{item.product_variant.product.name} removed from cart as it is out of stock."))
-                    continue
-
+                # Assuming messages is imported and used
+                # messages.warning(request, f"Quantity for {item.product_variant.product.name} was adjusted to {current_stock} due to limited stock.")
+            if current_stock == 0:
+                item.delete()
+                # messages.error(request, f"{item.product_variant.product.name} removed from cart as it is out of stock.")
+                continue
             item_total = item.get_total_price()
             total_cart_price += item_total
             cart_items_data.append({
@@ -894,17 +821,93 @@ def cart_view(request):
                 'total': item_total,
                 'stock_available': current_stock
             })
-
         cart.update_totals()
         total_cart_price = cart.total_price_field
-
-    request.session['cart_count'] = cart.total_items_field if cart else 0
+        request.session['cart_count'] = cart.total_items_field
+    else:
+        request.session['cart_count'] = 0
 
     return render(request, 'shop/cart_view.html', {
         'items': cart_items_data,
         'total': total_cart_price,
         'cart': cart
     })
+
+@require_POST
+def update_cart_quantity(request):
+    try:
+        lang = getattr(request, 'LANGUAGE_CODE', 'en')  # Default to 'en' if not set
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            message = 'Invalid JSON.' if lang == 'en' else 'نص غير صالح.'
+            return JsonResponse({'success': False, 'message': message}, status=HttpResponseBadRequest.status_code)
+
+        cart_item_id = data.get('cart_item_id')
+        new_quantity = data.get('quantity')
+
+        if not cart_item_id or new_quantity is None:
+            message = 'Cart item ID or quantity not provided.' if lang == 'en' else 'معرف عنصر السلة أو الكمية غير موجود.'
+            return JsonResponse({'success': False, 'message': message}, status=HttpResponseBadRequest.status_code)
+
+        try:
+            cart_item_id = int(cart_item_id)
+            new_quantity = int(new_quantity)
+        except ValueError:
+            message = 'Invalid quantity or item ID format.' if lang == 'en' else 'تنسيق معرف العنصر أو الكمية غير صالح.'
+            return JsonResponse({'success': False, 'message': message}, status=HttpResponseBadRequest.status_code)
+
+        try:
+            cart_item = get_object_or_404(CartItem.objects.select_related('cart', 'product_variant'), id=cart_item_id)
+            if request.user.is_authenticated:
+                if cart_item.cart.user != request.user:
+                    message = 'Unauthorized action.' if lang == 'en' else 'إجراء غير مصرح به.'
+                    return JsonResponse({'success': False, 'message': message}, status=HttpResponseForbidden.status_code)
+            else:
+                if cart_item.cart.session_key != request.session.session_key:
+                    message = 'Unauthorized action.' if lang == 'en' else 'إجراء غير مصرح به.'
+                    return JsonResponse({'success': False, 'message': message}, status=HttpResponseForbidden.status_code)
+
+            if new_quantity <= 0:
+                with transaction.atomic():
+                    cart_item.delete()
+                message = 'Item removed from cart.' if lang == 'en' else 'تمت إزالة العنصر من السلة.'
+                status = 'removed'
+                item_total_price = Decimal('0.00')
+            else:
+                if cart_item.product_variant.stock_quantity < new_quantity:
+                    new_quantity = cart_item.product_variant.stock_quantity
+                with transaction.atomic():
+                    cart_item.quantity = new_quantity
+                    cart_item.save()
+                message = 'Cart quantity updated.' if lang == 'en' else 'تم تحديث كمية السلة.'
+                status = 'updated'
+                item_total_price = cart_item.get_total_price()
+
+            request.session['cart_count'] = cart_item.cart.total_items
+            return JsonResponse({
+                'success': True,
+                'message': message,
+                'status': status,
+                'cart_item_id': cart_item_id,
+                'new_quantity': cart_item.quantity if status == 'updated' else 0,
+                'item_total_price': str(item_total_price),
+                'cart_total_items': cart_item.cart.total_items,
+                'cart_total_price': str(cart_item.cart.total_price)
+            })
+
+        except CartItem.DoesNotExist:
+            message = 'Cart item not found.' if lang == 'en' else 'لم يتم العثور على عنصر في السلة.'
+            return JsonResponse({'success': False, 'message': message}, status=404)
+
+        except Exception as e:
+            print(f"Error updating cart quantity: {e}")
+            message = f'An unexpected error occurred: {str(e)}' if lang == 'en' else f'حدث خطأ غير متوقع: {str(e)}'
+            return JsonResponse({'success': False, 'message': message}, status=500)
+
+    except Exception as e:
+        message = 'An error occurred.' if lang == 'en' else 'حدث خطأ.'
+        return JsonResponse({'success': False, 'message': message}, status=500)
 
 
 # --- Checkout & Order Views ---
