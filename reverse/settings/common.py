@@ -137,7 +137,7 @@ LANGUAGES = [
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'staticfiles', # Look for static files in the 'static' directory at project root
+    BASE_DIR / 'static', # Look for static files in the 'static' directory at project root
 ]
 
 # Media files (User-uploaded content, like product images)
