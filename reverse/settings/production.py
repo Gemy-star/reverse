@@ -1,7 +1,7 @@
 from .common import *
 import os
 
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = [
     'reverse-eg.com',
     'www.reverse-eg.com',
