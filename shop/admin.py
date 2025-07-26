@@ -193,7 +193,7 @@ class ProductAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Size Chart', {
-            'fields': ('size_chart',),
+            'fields': ('size_chart','delivery_return',),
             'classes': ('collapse',)
         }),
     )
