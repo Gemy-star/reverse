@@ -33,6 +33,7 @@
     </head>
 <body>
     {% include 'partials/_header.html' %}
+    {% include 'partials/_loader.html' %}
     {% include 'partials/_messages.html' %}
     {% include "partials/_toast.html" %}
         {% block content %}
@@ -85,7 +86,7 @@
                 }
             });
         }
-        
+
 
         $(document).ready(function() {
             // Initial call to update counts on page load
@@ -105,7 +106,7 @@
             // }
         });
 
-        
+
     </script>
 {% block js %}
 
