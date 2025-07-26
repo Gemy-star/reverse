@@ -307,9 +307,9 @@ class ProductImage(models.Model):
     )
     thumb_resized = ImageSpecField(
         source='image',
-        processors=[ResizeToFill(609, 820)],
+        processors=[ResizeToFill(709, 920)],
         format='JPEG',
-        options={'quality': 85}
+        options={'quality': 70}
     )
     class Meta:
         ordering = ['order', 'created_at']
