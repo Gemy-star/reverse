@@ -15,7 +15,7 @@
                 {% for image in product_images %}
                 <div class="swiper-slide">
                   <div class="swiper-zoom-container">
-                    <img src="{{ image.image.url }}" loading="lazy" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid rounded">
+                    <img src="{{ image.thumb_resized.url }}" loading="lazy" alt="{{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid rounded">
                   </div>
                 </div>
                 {% empty %}
@@ -37,7 +37,7 @@
               <div class="swiper-wrapper">
                 {% for image in product_images %}
                 <div class="swiper-slide">
-                  <img src="{{ image.image.url }}" alt="{% trans "Thumbnail of" %} {{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid rounded">
+                  <img src="{{ image.thumb_resized.url }}" alt="{% trans "Thumbnail of" %} {{ product.name }} - {% if image.color %}{{ image.color.name }}{% else %}{% trans "Image" %}{% endif %}" class="img-fluid rounded">
                 </div>
                 {% endfor %}
               </div>
