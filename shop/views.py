@@ -522,14 +522,14 @@ def wishlist_view(request):
     products_in_wishlist_ids = set()
     if request.user.is_authenticated:
         try:
-            wishlist = Wishlist.objects.get(user=request.user)
+            wishlist = request.user.wishlist
             products_qs = Product.objects.filter(
                 wishlistitem__wishlist=wishlist
             ).select_related(
                 'category', 'subcategory', 'brand'
             ).prefetch_related('images').order_by('name')
             products_in_wishlist_ids = set(
-                request.user.wishlist_items.values_list('product_id', flat=True)
+                wishlist.items.values_list('product_id', flat=True)
             )
         except Wishlist.DoesNotExist:
             products_qs = Product.objects.none()
@@ -563,7 +563,6 @@ def wishlist_view(request):
         'products_in_wishlist_ids': products_in_wishlist_ids,
     }
     return render(request, 'shop/wishlist_view.html', context)
-
 
 
 @require_POST
