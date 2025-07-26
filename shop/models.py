@@ -305,12 +305,6 @@ class ProductImage(models.Model):
         format='JPEG',
         options={'quality': 85}
     )
-    full_image_resized = ImageSpecField(
-        source='image',
-        processors=[ResizeToFill(1400, 650)],
-        format='JPEG',
-        options={'quality': 85}
-    )
     class Meta:
         ordering = ['order', 'created_at']
         constraints = [
