@@ -150,7 +150,6 @@
 </nav>
 
 <script>
-// Refresh cart/wishlist count from server
 function updateGlobalCounts(nav_id = "nav1") {
     fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
         method: 'GET',
@@ -172,13 +171,10 @@ function updateGlobalCounts(nav_id = "nav1") {
     });
 }
 
-// Call immediately on page load
-updateGlobalCounts("nav1");
-
-// Then repeat every 30 seconds (30000 milliseconds)
-setInterval(() => {
+// Call once DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
     updateGlobalCounts("nav1");
-}, 5000);
+});
 
 </script>
 {% endwith %}

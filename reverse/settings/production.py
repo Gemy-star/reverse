@@ -17,21 +17,20 @@ CSRF_COOKIE_SECURE = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/srv/reverse/django-error.log',
+            'filename': '/var/log/django/reverse.log',
         },
     },
     'loggers': {
-        'django': {
+        'django.request': {
             'handlers': ['file'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'propagate': True,
         },
     },
@@ -54,3 +53,4 @@ DATABASES = {
 }
 
 STATIC_ROOT = os.path.join(BASE_DIR , 'staticfiles')
+FILE_UPLOAD_TEMP_DIR = '/var/tmp/reverse'

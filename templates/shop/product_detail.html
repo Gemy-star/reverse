@@ -320,21 +320,26 @@
 {% block js %}
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-      function updateGlobalCounts() {
+         function updateGlobalCounts(nav_id = "nav1") {
     fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
         method: 'GET',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(res => res.json())
     .then(data => {
-        const cartCountEl = document.getElementById('cart-_count');
-        const wishCountEl = document.getElementById('wishlist_count');
-        if (cartCountEl && data.cart_count !== undefined) cartCountEl.textContent = data.cart_count;
-        if (wishCountEl && data.wishlist_count !== undefined) wishCountEl.textContent = data.wishlist_count;
+        const cartCountEl = document.getElementById(`cart-count-${nav_id}`);
+        const wishCountEl = document.getElementById(`wishlist-count-${nav_id}`);
+        if (cartCountEl && data.cart_count !== undefined) {
+            cartCountEl.textContent = data.cart_count;
+        }
+        if (wishCountEl && data.wishlist_count !== undefined) {
+            wishCountEl.textContent = data.wishlist_count;
+        }
     })
-    .catch(console.error);
+    .catch(error => {
+        console.error("Failed to fetch cart/wishlist counts:", error);
+    });
 }
-    updateGlobalCounts()
     const increaseBtn = document.getElementById('increase-quantity');
     const decreaseBtn = document.getElementById('decrease-quantity');
     const quantityInput = document.getElementById('quantity-input');
@@ -418,7 +423,7 @@
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-              updateGlobalCounts();
+              updateGlobalCounts("nav1");
             isWishlisted = !isWishlisted;
             const icon = wishlistBtn.querySelector('i');
             if (isWishlisted) {
@@ -465,7 +470,7 @@
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-              updateGlobalCounts()
+                  updateGlobalCounts("nav1");
             showToast(data.message || '{% trans "Added to cart." %}', 'success');
           } else {
             showToast(data.message || '{% trans "Failed to add to cart." %}', 'error');
@@ -512,7 +517,7 @@
           .then(res => res.json())
           .then(data => {
             if (data.success) {
-                updateGlobalCounts();
+                    updateGlobalCounts("nav1");
               showToast('{% trans "Added to Wishlist" %}', 'success');
             } else {
               showToast(data.message || '{% trans "Action failed." %}', 'error');
