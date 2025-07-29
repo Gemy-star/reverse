@@ -18,7 +18,7 @@ from decimal import Decimal
 import uuid
 import logging
 from django.utils.translation import gettext as _
-
+from constance import config
 # Set up logger
 logger = logging.getLogger(__name__)
 
@@ -784,7 +784,9 @@ def remove_from_cart(request):
 def cart_view(request):
     cart_items_data = []
     total_cart_price = Decimal('0.00')
+    shipping_fee = Decimal(config.SHIPPING_RATE_CAIRO)
     cart = None
+
     if request.user.is_authenticated:
         try:
             cart = Cart.objects.get(user=request.user)
@@ -797,22 +799,22 @@ def cart_view(request):
                 cart = Cart.objects.get(session_key=session_key)
             except Cart.DoesNotExist:
                 pass
+
     if cart:
         cart_items = cart.items.select_related(
             'product_variant__product', 'product_variant__color', 'product_variant__size'
         ).order_by('pk')
+
         for item in cart_items:
             current_stock = item.product_variant.stock_quantity if item.product_variant else 0
-            display_quantity = min(item.quantity, current_stock)
             if item.quantity > current_stock:
                 item.quantity = current_stock
                 item.save()
-                # Assuming messages is imported and used
-                # messages.warning(request, f"Quantity for {item.product_variant.product.name} was adjusted to {current_stock} due to limited stock.")
+
             if current_stock == 0:
                 item.delete()
-                # messages.error(request, f"{item.product_variant.product.name} removed from cart as it is out of stock.")
                 continue
+
             item_total = item.get_total_price()
             total_cart_price += item_total
             cart_items_data.append({
@@ -822,18 +824,22 @@ def cart_view(request):
                 'total': item_total,
                 'stock_available': current_stock
             })
+
         cart.update_totals()
         total_cart_price = cart.total_price_field
         request.session['cart_count'] = cart.total_items_field
     else:
         request.session['cart_count'] = 0
 
+    grand_total = total_cart_price + shipping_fee
+
     return render(request, 'shop/cart_view.html', {
         'items': cart_items_data,
         'total': total_cart_price,
+        'shipping_fee': shipping_fee,
+        'grand_total': grand_total,
         'cart': cart
     })
-
 @require_POST
 def update_cart_quantity(request):
     try:
@@ -943,9 +949,7 @@ def checkout_view(request):
     user_shipping_addresses = ShippingAddress.objects.none()
 
     if request.user.is_authenticated:
-        # Fetch orders related to the user
         user_orders = Order.objects.filter(user=request.user)
-        # Fetch shipping addresses linked to these orders
         user_shipping_addresses = ShippingAddress.objects.filter(order__in=user_orders)
         if user_shipping_addresses.exists():
             default_address = user_shipping_addresses.filter(is_default=True).first() or user_shipping_addresses.order_by('-id').first()
@@ -964,6 +968,7 @@ def checkout_view(request):
     shipping_form = ShippingAddressForm(request.POST or None, initial=initial_shipping_data)
     payment_form = PaymentForm(request.POST or None)
 
+    shipping_fee = Decimal(config.SHIPPING_RATE_CAIRO)  # <-- Add this
     if request.method == 'POST':
         selected_address_id = request.POST.get('selected_address')
         if selected_address_id == 'new' or not user_shipping_addresses.exists():
@@ -993,6 +998,8 @@ def checkout_view(request):
         'shipping_form': shipping_form,
         'payment_form': payment_form,
         'user_shipping_addresses': user_shipping_addresses,
+        'shipping_fee': shipping_fee,  # <-- Pass to template
+        'grand_total': cart.total_price_field + shipping_fee  # <-- Optional precomputed total
     }
     return render(request, 'shop/checkout.html', context)
 @transaction.atomic
@@ -1006,20 +1013,20 @@ def process_order(request, cart, shipping_form=None, payment_form=None, existing
             messages.error(request, _("Payment information is required."))
             return redirect('shop:checkout')
 
-        # Create order first (without shipping address)
+        # Create order
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             full_name=shipping_form.cleaned_data['full_name'] if shipping_form else existing_address.full_name,
-            email=request.user.email if request.user.is_authenticated else '',  # Adjust as needed
+            email=request.user.email if request.user.is_authenticated else '',  # Optional
             phone_number=shipping_form.cleaned_data['phone_number'] if shipping_form else existing_address.phone_number,
             subtotal=Decimal('0.00'),
-            shipping_cost=Decimal('0.00'),  # Adjust if you calculate shipping cost
+            shipping_cost=Decimal(config.SHIPPING_RATE_CAIRO),  # Using your config
             grand_total=Decimal('0.00'),
             status='pending',
             payment_status='pending',
         )
 
-        # Create or use existing shipping address, assign order, then save
+        # Save shipping address
         if existing_address:
             shipping_address = existing_address
             shipping_address.order = order
@@ -1027,15 +1034,14 @@ def process_order(request, cart, shipping_form=None, payment_form=None, existing
         else:
             shipping_address = shipping_form.save(commit=False)
             if hasattr(shipping_address, 'user') and request.user.is_authenticated:
-                shipping_address.user = request.user  # If you have user field in ShippingAddress
+                shipping_address.user = request.user
             shipping_address.order = order
             shipping_address.save()
 
-        # Update order with shipping address info if needed
         order.shipping_address = shipping_address
         order.save()
 
-        # Create payment linked to order manually from payment_form.cleaned_data
+        # Create payment
         payment_data = payment_form.cleaned_data
         payment = Payment.objects.create(
             order=order,
@@ -1056,7 +1062,8 @@ def process_order(request, cart, shipping_form=None, payment_form=None, existing
                     f"{variant.size.name if variant.size else 'N/A'}). "
                     f"Available: {variant.stock_quantity}, Requested: {cart_item.quantity}"
                 )
-            price = variant.get_price  # Access property, not method
+
+            price = variant.get_price  # property
             OrderItem.objects.create(
                 order=order,
                 product_variant=variant,
@@ -1067,18 +1074,17 @@ def process_order(request, cart, shipping_form=None, payment_form=None, existing
             variant.save()
             subtotal += price * cart_item.quantity
 
-        # Update order totals
+        # Update totals
         order.subtotal = subtotal
-        # Add shipping cost if you have it, e.g. order.shipping_cost = Decimal('10.00')
-        order.grand_total = order.subtotal + order.shipping_cost
+        order.grand_total = subtotal + order.shipping_cost
         order.save()
 
-        # Update payment amount and mark as success (simulate)
+        # Update payment
         payment.amount = order.grand_total
         payment.is_success = True
         payment.save()
 
-        # Update order status
+        # Finalize order
         order.status = 'processing'
         order.payment_status = 'paid'
         order.save()
@@ -1100,6 +1106,7 @@ def process_order(request, cart, shipping_form=None, payment_form=None, existing
         logger.exception(f"Order processing failed for user {request.user}: {e}")
         messages.error(request, _(f"An unexpected error occurred during checkout: {e}"))
         return redirect('shop:checkout')
+
 def order_confirmation(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
 

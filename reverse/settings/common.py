@@ -188,9 +188,8 @@ CONSTANCE_CONFIG = {
     'ENABLE_SALE_FLAG': (True, 'Enable "On Sale" flag display for products'),
     'ENABLE_ALL_FLAG': (True, 'Enable "All" flag display for products'),
      'ENABLE_USER_LOG': (False, 'Enable User System -- not completed yet --'),
-    'SHIPPING_THRESHOLD': (50.00, 'Amount for free shipping eligibility.', float),
-    'SHIPPING_RATE_CAIRO': (5.00, 'Flat shipping rate for orders inside Cairo.', float),
-    'SHIPPING_RATE_OUTSIDE_CAIRO': (15.00, 'Flat shipping rate for orders outside Cairo.', float)
+    'SHIPPING_RATE_CAIRO': (60.00, 'Flat shipping rate for orders inside Cairo.', float),
+    'SHIPPING_RATE_OUTSIDE_CAIRO': (100.00, 'Flat shipping rate for orders outside Cairo.', float)
 }
 
 
@@ -207,7 +206,6 @@ CONSTANCE_CONFIG_FIELDSETS = {
         'TIKTOK_URL'
     ),
     'Shipping': (
-        'SHIPPING_THRESHOLD',
         'SHIPPING_RATE_CAIRO',
         'SHIPPING_RATE_OUTSIDE_CAIRO',
     ),

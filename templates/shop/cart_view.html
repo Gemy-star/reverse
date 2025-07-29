@@ -49,19 +49,19 @@
           </div>
           <div class="card-body">
             <ul class="list-unstyled mb-4" id="order-summary">
-              <li class="d-flex justify-content-between py-2 border-bottom">
-                <span>{% trans "Subtotal" %}</span>
-                <span id="cart-subtotal">{{ total|floatformat:2 }}</span>
-              </li>
-              <li class="d-flex justify-content-between py-2 border-bottom">
-                <span>{% trans "Shipping" %}</span>
-                <span>{% trans "Free" %}</span>
-              </li>
-              <li class="d-flex justify-content-between py-2 border-bottom">
-                <span class="fw-bold">{% trans "Total" %}</span>
-                <span class="fw-bold" id="cart-total">{{ total|floatformat:2 }}</span>
-              </li>
-            </ul>
+  <li class="d-flex justify-content-between py-2 border-bottom">
+    <span>{% trans "Subtotal" %}</span>
+    <span id="cart-subtotal">{{ total|floatformat:2 }}</span>
+  </li>
+  <li class="d-flex justify-content-between py-2 border-bottom">
+    <span>{% trans "Shipping" %}</span>
+    <span id="cart-shipping">{{ shipping_fee|floatformat:2 }}</span>
+  </li>
+  <li class="d-flex justify-content-between py-2 border-bottom">
+    <span class="fw-bold">{% trans "Total" %}</span>
+    <span class="fw-bold" id="cart-total">{{ grand_total|floatformat:2 }}</span>
+  </li>
+</ul>
             <a href="{% url 'shop:checkout' %}" class="btn btn-lg bg-black w-100 text-white">
               {% trans "Proceed to Checkout" %} <i class="fas fa-arrow-right ms-1"></i>
             </a>
