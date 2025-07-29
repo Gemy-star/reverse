@@ -959,9 +959,7 @@ def checkout_view(request):
                     'address_line1': default_address.address_line1,
                     'address_line2': default_address.address_line2,
                     'city': default_address.city,
-                    'state_province_region': default_address.state_province_region,
-                    'postal_code': default_address.postal_code,
-                    'country': default_address.country,
+                    'email': default_address.email,
                     'phone_number': default_address.phone_number,
                 }
 
