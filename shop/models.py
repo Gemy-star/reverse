@@ -636,7 +636,7 @@ class ShippingAddress(models.Model):
     email = models.EmailField(null=True,blank=True, verbose_name=_("Email"))
     address_line1 = models.TextField(verbose_name=_("Address Line 1"))
     address_line2 = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Address Line 2"))
-    city = models.CharField(max_length=100, choices=CITY_CHOICE, verbose_name=_("City"))
+    city = models.CharField(max_length=100, verbose_name=_("City"))
     phone_number = models.CharField(max_length=20, verbose_name=_("Phone Number"))
     is_default = models.BooleanField(default=False, verbose_name=_("Is Default Address"))
 

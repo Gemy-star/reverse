@@ -192,6 +192,9 @@
             <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6 flex-grow-1" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>
               <i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}
             </button>
+             <button class="btn btn-outline-success rounded-pill px-3"  title="{% trans 'Buy Now' %}">
+               <i class="fas fa-solid fa-bolt"></i> {% trans 'Buy Now' %}
+            </button>
             <button class="btn btn-outline-danger rounded-pill px-3" id="add-to-wishlist-btn" data-product-id="{{ product.id }}" title="{% if is_in_wishlist %}{% trans 'Remove from Wishlist' %}{% else %}{% trans 'Add to Wishlist' %}{% endif %}">
               <i class="fas {% if is_in_wishlist %}fa-times{% else %}fa-heart{% endif %}"></i>
             </button>
