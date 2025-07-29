@@ -609,26 +609,57 @@ class OrderItem(models.Model):
     def get_total_price(self):
         return self.quantity * self.price_at_purchase
 
-
 class ShippingAddress(models.Model):
-    order = models.OneToOneField(Order, related_name='shipping_address', on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255)
-    address_line1 = models.CharField(max_length=255)
-    address_line2 = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100)
-    state_province_region = models.CharField(max_length=100, blank=True, null=True)
-    postal_code = models.CharField(max_length=20, blank=True, null=True)
-    country = CountryField(blank_label='(select country)')
-    phone_number = models.CharField(max_length=20)
+    """Stores shipping address details, optionally linked to an order or user."""
+    CITY_CHOICE = (
+        ('OUTSIDE_CAIRO', _('Outside Cairo')),
+        ('INSIDE_CAIRO', _('Inside Cairo')),
+    )
 
-    is_default = models.BooleanField(default=False)  # For users to save multiple addresses
+    order = models.OneToOneField(
+        'Order',  # Use string if Order is defined later or import it
+        related_name='shipping_address',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Order")
+    )
+    user = models.ForeignKey(
+        'ReverseUser',  # Use string if ReverseUser is defined later or import it
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='shipping_addresses',
+        verbose_name=_("User")
+    )
+    full_name = models.CharField(max_length=255, verbose_name=_("Full Name"))
+    email = models.EmailField(null=True,blank=True, verbose_name=_("Email"))
+    address_line1 = models.TextField(verbose_name=_("Address Line 1"))
+    address_line2 = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Address Line 2"))
+    city = models.CharField(max_length=100, choices=CITY_CHOICE, verbose_name=_("City"))
+    phone_number = models.CharField(max_length=20, verbose_name=_("Phone Number"))
+    is_default = models.BooleanField(default=False, verbose_name=_("Is Default Address"))
 
     class Meta:
-        verbose_name = "Shipping Address"
-        verbose_name_plural = "Shipping Addresses"
+        verbose_name = _("Shipping Address")
+        verbose_name_plural = _("Shipping Addresses")
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user'],
+                condition=models.Q(is_default=True),
+                name='unique_default_address_per_user'
+            )
+        ]
 
     def __str__(self):
-        return f"Shipping Address for Order {self.order.order_number}"
+        return f"Shipping Address for {self.full_name}, {self.city}"
+
+    def save(self, *args, **kwargs):
+        if self.is_default and self.user:
+            # Unset other default addresses for this user
+            ShippingAddress.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
+
 
 
 class Payment(models.Model):

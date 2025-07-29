@@ -3,8 +3,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import ReverseUser, ShippingAddress, Payment, Order  # Import Order for payment choices
-from django_countries.fields import CountryField
-from django_countries.widgets import CountrySelectWidget
+from django.utils.translation import gettext_lazy as _
 
 class RegisterForm(UserCreationForm):
     """
@@ -53,44 +52,39 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         self.fields['username'].required = True
         self.fields['password'].required = True
-
-
 class ShippingAddressForm(forms.ModelForm):
-    """
-    Form for collecting shipping address details.
-    Includes a checkbox to save the address as default for the user.
-    Country is fixed to Egypt.
-    """
-    country = forms.CharField(
-        widget=forms.HiddenInput(),
-        initial='EG'  # Egypt country code
-    )
-
-    save_as_default = forms.BooleanField(
-        required=False,
-        initial=False,
-        label="Save this address as my default for future orders",
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
-    )
-
     class Meta:
         model = ShippingAddress
-        exclude = ('order', 'is_default')
+        fields = [
+            'full_name', 'address_line1', 'address_line2', 'city', 'phone_number', 'is_default' , 'email'
+        ]
         widgets = {
-            'full_name': forms.TextInput(attrs={'placeholder': 'Full Name', 'class': 'form-control'}),
-            'address_line1': forms.TextInput(attrs={'placeholder': 'Address Line 1', 'class': 'form-control'}),
-            'address_line2': forms.TextInput(attrs={'placeholder': 'Address Line 2 (Optional)', 'class': 'form-control'}),
-            'city': forms.TextInput(attrs={'placeholder': 'City', 'class': 'form-control'}),
-            'state_province_region': forms.TextInput(attrs={'placeholder': 'State/Province/Region (Optional)', 'class': 'form-control'}),
-            'postal_code': forms.TextInput(attrs={'placeholder': 'Postal Code (Optional)', 'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'placeholder': 'Phone Number', 'class': 'form-control'}),
+            'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Full Name')}),
+            'address_line1': forms.Textarea(attrs={'class': 'form-control', 'placeholder': _('Address Line 1')}),
+            'address_line2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Address Line 2 (Optional)')}),
+            'city': forms.Select(attrs={'class': 'form-select'}),
+            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter your email')}),
+
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Phone Number')}),
+            'is_default': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'full_name': _('Full Name'),
+            'address_line1': _('Address Line 1'),
+            'address_line2': _('Address Line 2'),
+            'city': _('City'),
+            'phone_number': _('Phone Number'),
+            'is_default': _('Set as default address'),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Apply 'form-control' class to all fields if not already set
         for field_name, field in self.fields.items():
-            if field_name not in ['save_as_default', 'country']:
-                field.widget.attrs.setdefault('class', 'form-control')
+            if 'class' not in field.widget.attrs:
+                field.widget.attrs['class'] = 'form-control'
+        # Ensure choices are localized
+        self.fields['city'].choices = ShippingAddress.CITY_CHOICE
 
 
 class PaymentForm(forms.Form):

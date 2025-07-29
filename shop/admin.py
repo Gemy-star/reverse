@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-
+from django.utils.translation import gettext_lazy as _
 from shop.models import (
     Category, SubCategory, FitType, Brand, Color, Size,
     Product, ProductImage, ProductColor, ProductSize, ProductVariant,
@@ -272,19 +272,21 @@ class OrderItemAdmin(admin.ModelAdmin):
     get_total.short_description = 'Total'
 
 
+
 @admin.register(ShippingAddress)
 class ShippingAddressAdmin(admin.ModelAdmin):
     list_display = [
-        'order', 'full_name', 'address_line1', 'city', 'country',
-        'phone_number', 'is_default'
+        'user_display', 'full_name', 'address_line1', 'city', 'phone_number', 'is_default'
     ]
-    list_filter = ['country', 'is_default']
+    list_filter = ['city', 'is_default']
     search_fields = [
-        'order__order_number', 'full_name', 'address_line1',
-        'city', 'postal_code', 'phone_number'
+        'user__username', 'full_name', 'address_line1', 'city', 'phone_number'
     ]
-    readonly_fields = ['order']  # Shipping address is tied to an order, usually created with it.
+    readonly_fields = ['user']
 
+    def user_display(self, obj):
+        return obj.user.username if obj.user else _("N/A")
+    user_display.short_description = _("User")
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
