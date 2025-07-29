@@ -246,6 +246,9 @@
                <i class="fas {% if product_in_cart %}fa-trash{% else %}fa-shopping-cart{% endif %}"></i>
             </a>
             {% endwith %}
+         <a  href="{% url 'shop:buy_now' product.variants.first.pk %}">
+            <i class="fa-solid fa-bolt"></i>
+         </a>
         </div>
     </div>
     {% endwith %}

@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'ckeditor',
     'django_countries',
-    # 'widget_tweaks',
+    'widget_tweaks',
 ]
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 

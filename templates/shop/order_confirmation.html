@@ -1,35 +1,121 @@
 {% extends "base.html" %}
-{% load i18n math_filters %}
+{% load i18n static %} {# Added static for potential future use #}
+{% load math_filters %} {# Load your custom filter #}
 
-{% block title %}{% trans "Order Confirmation" %}{% endblock %}
+{% block title %}{% trans "Order Confirmation" %} - #{{ order.order_number }}{% endblock %}
 
 {% block content %}
-<section class="section pt-4">
-  <div class="container my-5 pt-4">
-    <h2 class="fw-bold mb-4">{% trans "Order Confirmation" %}</h2>
+<div class="container my-5">
+    <h1 class="mb-4">{% trans "Order Confirmation" %}</h1>
 
-    <p>{% trans "Thank you for your order!" %}</p>
-    <p>{% trans "Order Number:" %} <strong>{{ order.order_number }}</strong></p>
+    {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-    <h4>{% trans "Order Details" %}</h4>
-    <ul class="list-group mb-4">
-      {% for item in order_items %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{ item.product_variant.product.name }}
-        ({{ item.product_variant.color.name }}, {{ item.product_variant.size.name }})
-        <span>{{ item.quantity }} x {{ item.price_at_purchase|floatformat:2 }} =
-        {{ item.quantity|mul:item.price_at_purchase|floatformat:2 }}</span>
-      </li>
-      {% endfor %}
-      <li class="list-group-item d-flex justify-content-between fw-bold">
-        <span>{% trans "Total" %}</span>
-        <span>{{ order.grand_total|floatformat:2 }} EGP</span>
-      </li>
-    </ul>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{% trans "Order" %} #{{ order.order_number }}</h4>
+            {% if is_anonymous_access %}
+                <small class="text-white-50">{% trans "Anonymous Access" %}</small>
+                <p class="text-white-50 small mb-0">{% trans "Please save this link for future reference:" %}
+                    <br><code>{{ request.build_absolute_uri }}</code></p>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>{% trans "Order Summary" %}</h5>
+                    <p><strong>{% trans "Date:" %}</strong> {{ order.created_at|date:"F d, Y" }}</p>
+                    <p><strong>{% trans "Status:" %}</strong> <span class="badge bg-info">{{ order.get_status_display }}</span></p>
+                    <p><strong>{% trans "Payment Status:" %}</strong> <span class="badge bg-{% if order.payment_status == 'paid' %}success{% elif order.payment_status == 'failed' %}danger{% else %}warning{% endif %}">{{ order.get_payment_status_display }}</span></p>
+                    <p><strong>{% trans "Payment Method:" %}</strong> {{ order.get_payment_method_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>{% trans "Contact Information" %}</h5>
+                    <p><strong>{% trans "Name:" %}</strong> {{ order.full_name }}</p>
+                    <p><strong>{% trans "Email:" %}</strong> {{ order.email }}</p>
+                    <p><strong>{% trans "Phone:" %}</strong> {{ order.phone_number }}</p>
+                </div>
+            </div>
 
-    <a href="{% url 'shop:home' %}" class="btn btn-dark">{% trans "Continue Shopping" %}</a>
-  </div>
-</section>
+            <h5 class="mb-3">{% trans "Shipping Address" %}</h5>
+            {% if order.shipping_address %}
+                <div class="card card-body bg-light mb-4">
+                    <p class="mb-1">{{ order.shipping_address.full_name }}</p>
+                    <p class="mb-1">{{ order.shipping_address.address_line1 }}</p>
+                    {% if order.shipping_address.address_line2 %}
+                        <p class="mb-1">{{ order.shipping_address.address_line2 }}</p>
+                    {% endif %}
+                    <p class="mb-1">{{ order.shipping_address.city }}, {{ order.shipping_address.state_province_region }} {{ order.shipping_address.postal_code }}</p>
+                    <p class="mb-1">{{ order.shipping_address.country.name }}</p>
+                    <p class="mb-0">{% trans "Phone:" %} {{ order.shipping_address.phone_number }}</p>
+                </div>
+            {% else %}
+                <p class="alert alert-warning">{% trans "Shipping address not available for this order." %}</p>
+            {% endif %}
+
+            <h5 class="mb-3">{% trans "Items Ordered" %}</h5>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>{% trans "Product" %}</th>
+                            <th>{% trans "Variant" %}</th>
+                            <th>{% trans "Quantity" %}</th>
+                            <th>{% trans "Price (ea)" %}</th>
+                            <th>{% trans "Total" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product_variant.product.name }}</td>
+                            <td>
+                                {% if item.product_variant.color %}{{ item.product_variant.color.name }}{% endif %}
+                                {% if item.product_variant.size %}{% if item.product_variant.color %} / {% endif %}{{ item.product_variant.size.name }}{% endif %}
+                            </td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.price_at_purchase|floatformat:2 }} EGP</td>
+                            <td>{{ item.quantity|mul:item.price_at_purchase|floatformat:2 }} EGP</td> {# Using your mul filter #}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row justify-content-end mt-4">
+                <div class="col-md-5">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{% trans "Subtotal:" %}</span>
+                            <strong>{{ order.subtotal|floatformat:2 }} EGP</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{% trans "Shipping Cost:" %}</span>
+                            <strong>{{ order.shipping_cost|floatformat:2 }} EGP</strong>
+                        </li>
+                        {% if order.coupon %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center text-success">
+                                <span>{% trans "Coupon Discount" %} ({{ order.coupon.code }}):</span>
+                                <strong>-{{ order.discount_amount|floatformat:2 }} EGP</strong>
+                            </li>
+                        {% endif %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white">
+                            <h4>{% trans "Grand Total:" %}</h4>
+                            <h4><strong>{{ order.grand_total|floatformat:2 }} EGP</strong></h4> {# Corrected to grand_total #}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="{% url 'shop:home' %}" class="btn btn-secondary btn-lg">{% trans "Continue Shopping" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
-
-

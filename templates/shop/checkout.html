@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load widget_tweaks %}
+{% load mathfilters %}
+{% load dict_filters %}
 
 {% block title %}{% trans "Checkout" %}{% endblock %}
 
@@ -8,100 +11,438 @@
   <div class="container my-5 pt-4">
     <h2 class="fw-bold mb-4">{% trans "Checkout" %}</h2>
 
+    {# Display Django messages #}
+    {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-7">
         <h4>{% trans "Shipping Address" %}</h4>
-        <form method="post" action="{% url 'shop:checkout' %}" novalidate>
+        <form method="post" action="{% url 'shop:checkout' %}" novalidate id="checkoutForm">
           {% csrf_token %}
+
           {% if user_shipping_addresses %}
             <div class="mb-3">
-              <label for="selected_address" class="form-label">{% trans "Select Address" %}</label>
-              <select name="selected_address" id="selected_address" class="form-select">
-                <option value="new">{% trans "Add New Address" %}</option>
+              <label for="id_selected_address" class="form-label">{% trans "Select Address" %}</label>
+              <select name="selected_address" id="id_selected_address" class="form-select">
+                <option value="new" {% if selected_address_id == 'new' %}selected{% endif %}>{% trans "Add New Address" %}</option>
                 {% for address in user_shipping_addresses %}
-                <option value="{{ address.id }}">{{ address.full_name }}, {{ address.address_line1 }}, {{ address.city }}</option>
+                  <option value="{{ address.id }}" {% if selected_address_id|stringformat:"s" == address.id|stringformat:"s" %}selected{% endif %}>
+                    {{ address.full_name }}, {{ address.address_line1 }}, {{ address.city }}, {{ address.country.name }}
+                    {% if address.is_default %}({% trans "Default" %}){% endif %}
+                  </option>
                 {% endfor %}
               </select>
             </div>
+            {# The 'style' attribute for initial hide/show will be controlled by JS. #}
+            {# Initially hide if an existing address is selected, show if 'new' is selected or no addresses exist. #}
+            <div id="newAddressFormFields" {% if selected_address_id != 'new' %}style="display: none;"{% endif %}>
           {% else %}
             <input type="hidden" name="selected_address" value="new">
+            {# If no user shipping addresses, always show the new address form fields initially #}
+            <div id="newAddressFormFields">
           {% endif %}
 
-          {{ shipping_form.non_field_errors }}
-          <div class="mb-3">
-            {{ shipping_form.full_name.label_tag }}
-            {{ shipping_form.full_name }}
-            {{ shipping_form.full_name.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.address_line1.label_tag }}
-            {{ shipping_form.address_line1 }}
-            {{ shipping_form.address_line1.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.address_line2.label_tag }}
-            {{ shipping_form.address_line2 }}
-            {{ shipping_form.address_line2.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.city.label_tag }}
-            {{ shipping_form.city }}
-            {{ shipping_form.city.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.state_province_region.label_tag }}
-            {{ shipping_form.state_province_region }}
-            {{ shipping_form.state_province_region.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.postal_code.label_tag }}
-            {{ shipping_form.postal_code }}
-            {{ shipping_form.postal_code.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.phone_number.label_tag }}
-            {{ shipping_form.phone_number }}
-            {{ shipping_form.phone_number.errors }}
-          </div>
-          {{ shipping_form.country }} {# Hidden field #}
-          <div class="form-check mb-3">
-            {{ shipping_form.save_as_default }}
-            {{ shipping_form.save_as_default.label_tag }}
-            {{ shipping_form.save_as_default.errors }}
-          </div>
+            {# Shipping Form Fields #}
+            {{ shipping_form.non_field_errors }}
+            {% for field in shipping_form %}
+                {# Ensure 'save_as_default' is not rendered twice if handled specially #}
+                {% if field.name != 'is_default' %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {% if field.field.widget.input_type == 'select' %}
+                        {% render_field field class="form-select" %}
+                    {% else %}
+                        {% render_field field class="form-control" %}
+                    {% endif %}
+                    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                    {# Django-widget-tweaks automatically adds 'is-invalid' class, but d-block helps visibility #}
+                    {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors }}</div>{% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            {% if request.user.is_authenticated %}
+                {% if shipping_form.save_as_default %}
+                <div class="form-check mb-3">
+                    {% render_field shipping_form.save_as_default class="form-check-input" %}
+                    <label class="form-check-label" for="{{ shipping_form.save_as_default.id_for_label }}">
+                        {% trans "Save this address as my default for future orders" %}
+                    </label>
+                    {% if shipping_form.save_as_default.errors %}<div class="invalid-feedback d-block">{{ shipping_form.save_as_default.errors }}</div>{% endif %}
+                </div>
+                {% endif %}
+            {% endif %}
+
+          </div> {# End newAddressFormFields div #}
 
           <h4 class="mt-4">{% trans "Payment Details" %}</h4>
           {{ payment_form.non_field_errors }}
+          {% for field in payment_form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {% if field.field.widget.input_type == 'radio' %}
+                    {% for radio in field %}
+                      <div class="form-check">
+                        {{ radio.tag }} {# Class is set in forms.py on the widget directly #}
+                        <label class="form-check-label" for="{{ radio.id_for_label }}">
+                            {{ radio.choice_label }}
+                        </label>
+                      </div>
+                    {% endfor %}
+                {% else %}
+                    {% render_field field class="form-control" %}
+                {% endif %}
+                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors }}</div>{% endif %}
+            </div>
+          {% endfor %}
+
+          {# Coupon Section #}
+          <h4 class="mt-4">{% trans "Coupon" %}</h4>
           <div class="mb-3">
-            {{ payment_form.payment_method.label_tag }}
-            {% for radio in payment_form.payment_method %}
-              <div class="form-check">
-                {{ radio.tag }} {{ radio.choice_label }}
+              {{ coupon_form.non_field_errors }}
+              <div class="input-group">
+                  {# Placeholder is now set directly on the form field's widget in forms.py or views.py #}
+                  {% render_field coupon_form.code class="form-control" %}
+                  <button type="button" class="btn btn-outline-secondary" id="applyCouponBtn">{% trans "Apply Coupon" %}</button>
               </div>
-            {% endfor %}
-            {{ payment_form.payment_method.errors }}
+              {% if coupon_form.code.errors %}<div class="invalid-feedback d-block">{{ coupon_form.code.errors }}</div>{% endif %}
+              <div id="couponStatusMessage" class="mt-2">
+                  {% if applied_coupon_code %}
+                      <p class="text-success">{% trans "Coupon applied:" %} <strong>{{ applied_coupon_code }}</strong> <a href="#" id="removeCouponLink" class="text-danger small">({% trans "Remove" %})</a></p>
+                  {% endif %}
+              </div>
           </div>
 
-          <button type="submit" class="btn btn-dark mt-3">{% trans "Place Order" %}</button>
+          {# Hidden input to differentiate "Place Order" from other form submissions #}
+          <input type="hidden" name="place_order_action" value="false" id="placeOrderActionInput">
+          <button type="submit" class="btn btn-dark mt-3" id="placeOrderBtn">{% trans "Place Order" %}</button>
         </form>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-5">
         <h4>{% trans "Order Summary" %}</h4>
-        <ul class="list-group">
-          {% for item in cart.items.all %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ item.product_variant.product.name }} ({{ item.product_variant.color.name }}, {{ item.product_variant.size.name }})
-            <span>{{ item.quantity }} x {{ item.product_variant.get_price|floatformat:2 }} = {{ item.total|floatformat:2 }}</span>
-          </li>
-          {% endfor %}
-          <li class="list-group-item d-flex justify-content-between fw-bold">
-            <span>{% trans "Total" %}</span>
-            <span>{{ cart.total_price|floatformat:2 }}</span>
-          </li>
-        </ul>
+        <div id="orderSummary"> {# Wrap order summary in a div for AJAX updates #}
+            <ul class="list-group mb-3">
+              {% for item in cart.items.all %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    {{ item.product_variant.product.name }}
+                    {% if item.product_variant.color and item.product_variant.size %}
+                        ({{ item.product_variant.color.name }}, {{ item.product_variant.size.name }})
+                    {% elif item.product_variant.color %}({{ item.product_variant.color.name }})
+                    {% elif item.product_variant.size %}({{ item.product_variant.size.name }})
+                    {% endif %}
+                </div>
+                <span>{{ item.quantity }} x {{ item.product_variant.get_price|floatformat:2 }} = {{ item.get_total_price|floatformat:2 }} EGP</span>
+              </li>
+              {% empty %}
+              <li class="list-group-item">{% trans "No items in cart." %}</li>
+              {% endfor %}
+            </ul>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>{% trans "Subtotal" %}</span>
+                <span>{{ subtotal|floatformat:2 }} EGP</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>{% trans "Shipping Cost" %}</span>
+                <span>{{ shipping_cost|floatformat:2 }} EGP <span class="text-muted small">({{ shipping_status_message }})</span></span>
+              </li>
+              {% if discount_amount > 0 %}
+              <li class="list-group-item d-flex justify-content-between text-success">
+                <span>{% trans "Discount" %} (<strong class="text-uppercase">{{ applied_coupon_code }}</strong>)</span>
+                <span>- {{ discount_amount|floatformat:2 }} EGP</span>
+              </li>
+              {% endif %}
+              <li class="list-group-item d-flex justify-content-between fw-bold bg-light">
+                <span>{% trans "Grand Total" %}</span>
+                <span>{{ grand_total|floatformat:2 }} EGP</span>
+              </li>
+            </ul>
+        </div> {# End orderSummary div #}
       </div>
     </div>
   </div>
 </section>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedAddressSelect = document.getElementById('id_selected_address');
+    const newAddressFormFields = document.getElementById('newAddressFormFields');
+    const checkoutForm = document.getElementById('checkoutForm');
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponCodeInput = document.getElementById('id_code');
+    const couponStatusMessageDiv = document.getElementById('couponStatusMessage');
+    const orderSummaryDiv = document.getElementById('orderSummary');
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
+    const placeOrderActionInput = document.getElementById('placeOrderActionInput');
+
+    // Helper to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Show toast
+    function showLocalToast(container, message, type='info') {
+        let toast = container.querySelector('.local-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = `local-toast local-toast-${type}`;
+            container.appendChild(toast);
+        }
+        toast.innerText = message;
+        toast.className = `local-toast local-toast-${type}`;
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Toggle address form display only on address change
+    function toggleNewAddressFields() {
+        if (selectedAddressSelect && selectedAddressSelect.value === 'new') {
+            newAddressFormFields.style.display = 'block';
+            newAddressFormFields.querySelectorAll('input, select, textarea').forEach(field => {
+                if (field.dataset.originalRequired === 'true') {
+                    field.required = true;
+                }
+                field.disabled = false;
+            });
+        } else {
+            newAddressFormFields.style.display = 'none';
+            newAddressFormFields.querySelectorAll('input, select, textarea').forEach(field => {
+                field.required = false;
+                field.disabled = true;
+            });
+        }
+    }
+
+    // Initialize form required attributes
+    if (checkoutForm) {
+        checkoutForm.querySelectorAll('input, select, textarea').forEach(field => {
+            if (field.hasAttribute('required')) {
+                field.dataset.originalRequired = 'true';
+            }
+        });
+    }
+
+    // Call toggle only on address change
+    if (selectedAddressSelect) {
+        selectedAddressSelect.addEventListener('change', () => {
+            // Only update totals if address changed
+            updateOrderSummary();
+        });
+    }
+
+    // --- AJAX coupon logic ---
+    if (applyCouponBtn) {
+        applyCouponBtn.addEventListener('click', () => {
+            const code = couponCodeInput.value.trim();
+            if (!code) {
+                showLocalToast(couponStatusMessageDiv, '{% trans "Please enter a coupon code." %}', 'warning');
+                return;
+            }
+            applyCouponBtn.disabled = true;
+            const formData = new FormData();
+            formData.append('code', code);
+            formData.append('apply_coupon', 'true');
+            formData.append('csrfmiddlewaretoken', csrftoken);
+            fetch("{% url 'shop:checkout' %}", {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    updateOrderSummary();
+                    couponStatusMessageDiv.innerHTML = `<p class="text-success">{% trans "Coupon applied:" %} <strong>${code}</strong> <a href="#" id="removeCouponLink" class="text-danger small">({% trans "Remove" %})</a></p>`;
+                    document.getElementById('removeCouponLink').addEventListener('click', handleRemoveCoupon);
+                } else {
+                    couponStatusMessageDiv.innerHTML = `<p class="text-danger">${data.message}</p>`;
+                }
+            })
+            .catch(err => {
+                console.error('Error applying coupon:', err);
+                showLocalToast(couponStatusMessageDiv, '{% trans "Error applying coupon." %}', 'danger');
+            })
+            .finally(() => { applyCouponBtn.disabled = false; });
+        });
+    }
+
+    function handleRemoveCoupon(e) {
+        e.preventDefault();
+        if (couponCodeInput) couponCodeInput.value = '';
+        const formData = new FormData();
+        formData.append('remove_coupon_action', 'true');
+        formData.append('csrfmiddlewaretoken', csrftoken);
+        fetch("{% url 'shop:checkout' %}", {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                updateOrderSummary();
+                couponStatusMessageDiv.innerHTML = '';
+                showLocalToast(couponStatusMessageDiv, '{% trans "Coupon removed." %}', 'info');
+            } else {
+                showLocalToast(couponStatusMessageDiv, data.message || '{% trans "Failed to remove coupon." %}', 'danger');
+            }
+        })
+        .catch(err => {
+            console.error('Error removing coupon:', err);
+            showLocalToast(couponStatusMessageDiv, '{% trans "Error removing coupon." %}', 'danger');
+        });
+    }
+    const initialRemoveLink = document.getElementById('removeCouponLink');
+    if (initialRemoveLink) initialRemoveLink.addEventListener('click', handleRemoveCoupon);
+
+    // --- AJAX update order summary ---
+    function updateOrderSummary() {
+        const addressId = selectedAddressSelect ? selectedAddressSelect.value : 'new';
+        const couponCode = couponCodeInput ? couponCodeInput.value.trim() : '';
+        const formData = new FormData();
+        formData.append('selected_address', addressId);
+        formData.append('code', couponCode);
+        formData.append('csrfmiddlewaretoken', csrftoken);
+        fetch("{% url 'shop:checkout' %}", {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(res => res.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newSummary = doc.getElementById('orderSummary');
+            if (newSummary) orderSummaryDiv.innerHTML = newSummary.innerHTML;
+            const newCouponMsg = doc.getElementById('couponStatusMessage');
+            if (newCouponMsg) {
+                couponStatusMessageDiv.innerHTML = newCouponMsg.innerHTML;
+                const removeLink = couponStatusMessageDiv.querySelector('#removeCouponLink');
+                if (removeLink) removeLink.addEventListener('click', handleRemoveCoupon);
+            }
+            // Re-render address form if needed
+            const newAddressFields = doc.getElementById('newAddressFormFields');
+            if (newAddressFields) {
+                newAddressFormFields.innerHTML = newAddressFields.innerHTML;
+                // No toggle here, only on address change
+            }
+            // Re-render messages
+            const newMessages = doc.querySelector('.messages');
+            if (newMessages) {
+                document.querySelector('.messages').innerHTML = newMessages.innerHTML;
+            }
+        }).catch(e => {
+            console.error('Error updating order summary:', e);
+            location.reload(); // fallback
+        });
+    }
+
+    // --- Final order submission ---
+    if (placeOrderBtn) {
+        placeOrderBtn.addEventListener('click', () => {
+            placeOrderActionInput.value = 'true';
+        });
+    }
+
+    // --- Cart button logic ---
+    document.querySelectorAll('.quick-add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const productId = btn.dataset.productId;
+            const inCart = btn.dataset.inCart === 'true';
+            const toastContainer = btn.closest('.product-card').querySelector('.local-toast-container');
+            const icon = btn.querySelector('i');
+
+            // Debug: check cart_item_id
+            console.log('cart_item_id:', btn.dataset.cartItemId);
+
+            btn.disabled = true;
+            if (inCart) {
+                // Remove from cart
+                icon.className = 'fa-solid fa-spinner fa-spin';
+                fetch('{% url "shop:remove_from_cart" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ cart_item_id: btn.dataset.cartItemId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showLocalToast(toastContainer, '{% trans "Removed from Cart" %}', 'success');
+                        btn.dataset.inCart = 'false';
+                        icon.className = 'fas fa-shopping-cart';
+                        updateGlobalCounts("nav1");
+                    } else {
+                        showLocalToast(toastContainer, data.message || '{% trans "Failed to remove from cart." %}', 'danger');
+                    }
+                })
+                .catch(e => {
+                    console.error('Remove from cart error:', e);
+                    showLocalToast(toastContainer, '{% trans "Error removing from cart." %}', 'danger');
+                })
+                .finally(() => { btn.disabled = false; });
+            } else {
+                // Add to cart
+                icon.className = 'fa-solid fa-spinner fa-spin';
+                fetch('{% url "shop:add_to_cart" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showLocalToast(toastContainer, '{% trans "Added to Cart!" %}', 'success');
+                        btn.dataset.inCart = 'true';
+                        icon.className = 'fas fa-trash'; // or fa-check
+                        updateGlobalCounts("nav1");
+                    } else {
+                        showLocalToast(toastContainer, data.message || '{% trans "Failed to add to cart." %}', 'danger');
+                    }
+                })
+                .catch(e => {
+                    console.error('Add to cart error:', e);
+                    showLocalToast(toastContainer, '{% trans "Error adding to cart." %}', 'danger');
+                })
+                .finally(() => { btn.disabled = false; });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

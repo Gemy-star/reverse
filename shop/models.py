@@ -4,40 +4,55 @@ from django.db import models
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.text import slugify
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from decimal import Decimal
-from django.conf import settings  # Import settings to get AUTH_USER_MODEL
 from django.contrib.auth.models import AbstractUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils.translation import gettext_lazy as _
 from colorfield.fields import ColorField
-import uuid  
+from django.conf import settings
+import uuid
 from django_countries.fields import CountryField
 from ckeditor.fields import RichTextField
+from django.utils import timezone
+
 
 class ReverseUser(AbstractUser):
-    phone = models.CharField(max_length=15, blank=True, null=True)
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    is_customer = models.BooleanField(default=True)
+    """
+    Custom User model extending Django's AbstractUser.
+    Includes additional fields for e-commerce functionality.
+    """
+    # Removed 'phone' to avoid redundancy with 'phone_number'.
+    # If you prefer 'phone', rename 'phone_number' to 'phone'.
+    phone_number = models.CharField(max_length=15, blank=True, null=True,
+                                    verbose_name=_("Phone Number"))
+    is_customer = models.BooleanField(default=True, verbose_name=_("Is Customer"))
+
+    class Meta:
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
-    description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='categories/', blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    """Represents a product category."""
+    name = models.CharField(max_length=100, unique=True, verbose_name=_("Name"))
+    slug = models.SlugField(max_length=100, unique=True, blank=True, verbose_name=_("Slug"))
+    description = models.TextField(blank=True, verbose_name=_("Description"))
+    image = models.ImageField(upload_to='categories/', blank=True, null=True, verbose_name=_("Image"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
     image_resized = ImageSpecField(
         source='image',
         processors=[ResizeToFill(376, 477)],
         format='JPEG',
         options={'quality': 85}
     )
+
     class Meta:
-        verbose_name_plural = "Categories"
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
         ordering = ['name']
 
     def __str__(self):
@@ -53,22 +68,25 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    category = models.ForeignKey(Category, related_name='subcategories', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, blank=True)
-    description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='subcategories/', blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    """Represents a product sub-category belonging to a main category."""
+    category = models.ForeignKey(Category, related_name='subcategories', on_delete=models.CASCADE, verbose_name=_("Category"))
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
+    slug = models.SlugField(max_length=100, blank=True, verbose_name=_("Slug"))
+    description = models.TextField(blank=True, verbose_name=_("Description"))
+    image = models.ImageField(upload_to='subcategories/', blank=True, null=True, verbose_name=_("Image"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
     image_resized = ImageSpecField(
         source='image',
         processors=[ResizeToFill(376, 477)],
         format='JPEG',
         options={'quality': 85}
     )
+
     class Meta:
-        verbose_name_plural = "Sub Categories"
+        verbose_name = _("Sub Category")
+        verbose_name_plural = _("Sub Categories")
         unique_together = ['category', 'slug']
         ordering = ['name']
 
@@ -85,12 +103,15 @@ class SubCategory(models.Model):
 
 
 class FitType(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=50, unique=True, blank=True)
-    description = models.TextField(blank=True)
-    is_active = models.BooleanField(default=True)
+    """Defines product fit types (e.g., Slim Fit, Regular Fit)."""
+    name = models.CharField(max_length=50, unique=True, verbose_name=_("Name"))
+    slug = models.SlugField(max_length=50, unique=True, blank=True, verbose_name=_("Slug"))
+    description = models.TextField(blank=True, verbose_name=_("Description"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
 
     class Meta:
+        verbose_name = _("Fit Type")
+        verbose_name_plural = _("Fit Types")
         ordering = ['name']
 
     def __str__(self):
@@ -103,19 +124,23 @@ class FitType(models.Model):
 
 
 class Brand(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
-    logo = models.ImageField(upload_to='brands/', blank=True, null=True)
-    description = models.TextField(blank=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    """Represents a product brand."""
+    name = models.CharField(max_length=100, unique=True, verbose_name=_("Name"))
+    slug = models.SlugField(max_length=100, unique=True, blank=True, verbose_name=_("Slug"))
+    logo = models.ImageField(upload_to='brands/', blank=True, null=True, verbose_name=_("Logo"))
+    description = models.TextField(blank=True, verbose_name=_("Description"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
     logo_resized = ImageSpecField(
         source='logo',
         processors=[ResizeToFill(376, 477)],
         format='JPEG',
         options={'quality': 85}
     )
+
     class Meta:
+        verbose_name = _("Brand")
+        verbose_name_plural = _("Brands")
         ordering = ['name']
 
     def __str__(self):
@@ -126,12 +151,16 @@ class Brand(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+
 class Color(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    hex_code = ColorField(default='#FFFFFF', verbose_name=_("Color Code"), help_text="Color hex code (e.g., #FF0000)")
-    is_active = models.BooleanField(default=True)
+    """Represents a product color."""
+    name = models.CharField(max_length=50, unique=True, verbose_name=_("Name"))
+    hex_code = ColorField(default='#FFFFFF', verbose_name=_("Color Code"), help_text=_("Color hex code (e.g., #FF0000)"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
 
     class Meta:
+        verbose_name = _("Color")
+        verbose_name_plural = _("Colors")
         ordering = ['name']
 
     def __str__(self):
@@ -139,66 +168,74 @@ class Color(models.Model):
 
 
 class Size(models.Model):
+    """Represents a product size."""
     SIZE_TYPES = [
-        ('clothing', 'Clothing'),
-        ('shoes', 'Shoes'),
-        ('accessories', 'Accessories'),
+        ('clothing', _('Clothing')),
+        ('shoes', _('Shoes')),
+        ('accessories', _('Accessories')),
     ]
 
-    name = models.CharField(max_length=20)
-    size_type = models.CharField(max_length=20, choices=SIZE_TYPES, default='clothing')
-    order = models.IntegerField(default=0)
-    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=20, verbose_name=_("Name"))
+    size_type = models.CharField(max_length=20, choices=SIZE_TYPES, default='clothing', verbose_name=_("Size Type"))
+    order = models.IntegerField(default=0, verbose_name=_("Order"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
 
     class Meta:
+        verbose_name = _("Size")
+        verbose_name_plural = _("Sizes")
         ordering = ['size_type', 'order', 'name']
         unique_together = ['name', 'size_type']
 
     def __str__(self):
+        # The type: ignore comment is often used for MyPy or other type checkers
+        # If your IDE gives a warning for get_size_type_display, this is fine.
         return f"{self.name} ({self.get_size_type_display()})"  # type: ignore
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
-    description = models.TextField()
-    short_description = models.CharField(max_length=300, blank=True)
+    """Represents a single product in the shop."""
+    name = models.CharField(max_length=200, verbose_name=_("Name"))
+    slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name=_("Slug"))
+    description = models.TextField(verbose_name=_("Description"))
+    short_description = models.CharField(max_length=300, blank=True, verbose_name=_("Short Description"))
 
-    category = models.ForeignKey('Category', related_name='products', on_delete=models.CASCADE) # Use string if not imported
-    subcategory = models.ForeignKey('SubCategory', related_name='products', on_delete=models.CASCADE) # Use string if not imported
-    fit_type = models.ForeignKey('FitType', related_name='products', on_delete=models.SET_NULL, null=True, blank=True) # Use string if not imported
-    brand = models.ForeignKey('Brand', related_name='products', on_delete=models.SET_NULL, null=True, blank=True) # Use string if not imported
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE, verbose_name=_("Category"))
+    subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE, verbose_name=_("Subcategory"))
+    fit_type = models.ForeignKey(FitType, related_name='products', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Fit Type"))
+    brand = models.ForeignKey(Brand, related_name='products', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Brand"))
 
-    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))], verbose_name=_("Price"))
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
-                                     validators=[MinValueValidator(Decimal('0.01'))])
+                                     validators=[MinValueValidator(Decimal('0.01'))], verbose_name=_("Sale Price"))
 
     # Flags
-    is_best_seller = models.BooleanField(default=False)
-    is_new_arrival = models.BooleanField(default=False)
-    is_on_sale = models.BooleanField(default=False)  # Will be auto-set in save()
-    is_featured = models.BooleanField(default=False)
+    is_best_seller = models.BooleanField(default=False, verbose_name=_("Is Best Seller"))
+    is_new_arrival = models.BooleanField(default=False, verbose_name=_("Is New Arrival"))
+    is_on_sale = models.BooleanField(default=False, verbose_name=_("Is On Sale"))  # Will be auto-set in save()
+    is_featured = models.BooleanField(default=False, verbose_name=_("Is Featured"))
 
     # Stock status
-    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)]) # This might become less relevant with variants
-    is_active = models.BooleanField(default=True)
-    is_available = models.BooleanField(default=True)
+    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)], verbose_name=_("Stock Quantity")) # This might become less relevant with variants
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    is_available = models.BooleanField(default=True, verbose_name=_("Is Available"))
 
     # SEO fields
-    meta_title = models.CharField(max_length=200, blank=True)
-    meta_description = models.CharField(max_length=300, blank=True)
+    meta_title = models.CharField(max_length=200, blank=True, verbose_name=_("Meta Title"))
+    meta_description = models.CharField(max_length=300, blank=True, verbose_name=_("Meta Description"))
 
     # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
     # Many-to-many (through ProductColor/ProductSize/ProductVariant)
-    colors = models.ManyToManyField(Color, through='ProductColor', blank=True)
-    sizes = models.ManyToManyField(Size, through='ProductSize', blank=True)
-    size_chart = RichTextField(blank=True, null=True, help_text="Add size chart content here (HTML supported)")
-    delivery_return = RichTextField(blank=True, null=True, help_text="Add Delivery and return policy (HTML supported)")
+    colors = models.ManyToManyField(Color, through='ProductColor', blank=True, verbose_name=_("Colors"))
+    sizes = models.ManyToManyField(Size, through='ProductSize', blank=True, verbose_name=_("Sizes"))
+    size_chart = RichTextField(blank=True, null=True, help_text=_("Add size chart content here (HTML supported)"), verbose_name=_("Size Chart"))
+    delivery_return = RichTextField(blank=True, null=True, help_text=_("Add Delivery and return policy (HTML supported)"), verbose_name=_("Delivery & Return"))
 
     class Meta:
+        verbose_name = _("Product")
+        verbose_name_plural = _("Products")
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['slug']),
@@ -235,8 +272,10 @@ class Product(models.Model):
     def get_discount_percentage(self):
         """Return discount percentage if on sale"""
         if self.is_on_sale and self.sale_price:
-            discount = (self.price - self.sale_price) / self.price
-            return round(discount * 100)
+            # Avoid division by zero if price is 0 (though MinValueValidator prevents this)
+            if self.price > 0:
+                discount = (self.price - self.sale_price) / self.price
+                return round(discount * 100)
         return 0
 
     @property
@@ -245,12 +284,13 @@ class Product(models.Model):
         return self.variants.filter(stock_quantity__gt=0, is_available=True).exists()
 
     def get_main_image(self):
-        """Return the main image or fallback to first image"""
+        """Return the main image or fallback to first image for the product."""
+        # Consider adding a default image if no images are found
         main_image = self.images.filter(is_main=True).first()
         return main_image or self.images.first()
 
     def get_hover_image(self):
-        """Return the hover image or fallback to first image"""
+        """Return the hover image or fallback to first image for the product."""
         hover_image = self.images.filter(is_hover=True).first()
         return hover_image or self.images.first()
 
@@ -279,26 +319,36 @@ class Product(models.Model):
     @property
     def get_all_product_sizes_by_type(self):
         """
-        Return all active sizes that match the product's category's size_type.
-        Assumes Category model has a size_type field or you derive it.
-        For simplicity here, let's assume `self.category.size_type` exists.
-        If not, you'd need to explicitly set `size_type` on the Product or deduce it.
+        Return all active sizes relevant to the product.
+        Since Category doesn't have a 'size_type' field, this method needs a clear logic
+        to determine what 'size_type' to filter by.
+        Possibilities:
+        1. Add a `size_type` field to Category or SubCategory.
+        2. Infer `size_type` from a related attribute (e.g., if a category is "T-shirts", its size_type is 'clothing').
+        3. Simply return all active sizes if a type-specific filter isn't truly necessary.
+
+        For now, this will default to returning all active sizes if a category-specific type isn't defined.
+        Consider how you intend to associate size types with categories or products.
         """
-        if hasattr(self.category, 'size_type') and self.category.size_type:
-            return Size.objects.filter(is_active=True, size_type=self.category.size_type).order_by('size_type', 'order', 'name')
-        else:
-            return Size.objects.filter(is_active=True).order_by('size_type', 'order', 'name')
+        # Example of inferring size_type (you'd need to implement this logic)
+        # For instance, if your Category model has a `size_type` field:
+        # if hasattr(self.category, 'size_type') and self.category.size_type:
+        #     return Size.objects.filter(is_active=True, size_type=self.category.size_type).order_by('size_type', 'order', 'name')
+        # else:
+        # Fallback if no specific size_type can be determined or assigned
+        return Size.objects.filter(is_active=True).order_by('size_type', 'order', 'name')
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='products/')
-    alt_text = models.CharField(max_length=200, blank=True)
-    is_main = models.BooleanField(default=False)
-    is_hover = models.BooleanField(default=False)
-    order = models.IntegerField(default=0)
-    color = models.ForeignKey(Color, related_name='product_images', on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    """Stores images for a product, optionally linked to a specific color."""
+    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE, verbose_name=_("Product"))
+    image = models.ImageField(upload_to='products/', verbose_name=_("Image"))
+    alt_text = models.CharField(max_length=200, blank=True, verbose_name=_("Alt Text"))
+    is_main = models.BooleanField(default=False, verbose_name=_("Is Main Image"))
+    is_hover = models.BooleanField(default=False, verbose_name=_("Is Hover Image"))
+    order = models.IntegerField(default=0, verbose_name=_("Order"))
+    color = models.ForeignKey(Color, related_name='product_images', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Color"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
     image_resized = ImageSpecField(
         source='image',
         processors=[ResizeToFill(376, 477)],
@@ -311,7 +361,10 @@ class ProductImage(models.Model):
         format='JPEG',
         options={'quality': 70}
     )
+
     class Meta:
+        verbose_name = _("Product Image")
+        verbose_name_plural = _("Product Images")
         ordering = ['order', 'created_at']
         constraints = [
             models.UniqueConstraint(
@@ -346,14 +399,18 @@ class ProductImage(models.Model):
             ).exclude(pk=self.pk).update(is_hover=False)
         super().save(*args, **kwargs)
 
+
 class ProductColor(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE)
-    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    is_available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    """Intermediate model for Product-Color Many-to-Many relationship."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_("Product"))
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, verbose_name=_("Color"))
+    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)], verbose_name=_("Stock Quantity"))
+    is_available = models.BooleanField(default=True, verbose_name=_("Is Available"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
 
     class Meta:
+        verbose_name = _("Product Color")
+        verbose_name_plural = _("Product Colors")
         unique_together = ['product', 'color']
 
     def __str__(self):
@@ -361,13 +418,16 @@ class ProductColor(models.Model):
 
 
 class ProductSize(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    size = models.ForeignKey(Size, on_delete=models.CASCADE)
-    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    is_available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    """Intermediate model for Product-Size Many-to-Many relationship."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_("Product"))
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, verbose_name=_("Size"))
+    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)], verbose_name=_("Stock Quantity"))
+    is_available = models.BooleanField(default=True, verbose_name=_("Is Available"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
 
     class Meta:
+        verbose_name = _("Product Size")
+        verbose_name_plural = _("Product Sizes")
         unique_together = ['product', 'size']
 
     def __str__(self):
@@ -375,16 +435,19 @@ class ProductSize(models.Model):
 
 
 class ProductVariant(models.Model):
-    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE)
-    size = models.ForeignKey(Size, on_delete=models.CASCADE)
-    sku = models.CharField(max_length=100, unique=True, blank=True)
-    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    price_adjustment = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    is_available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    """Represents a specific combination of product, color, and size."""
+    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE, verbose_name=_("Product"))
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, verbose_name=_("Color"))
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, verbose_name=_("Size"))
+    sku = models.CharField(max_length=100, unique=True, blank=True, verbose_name=_("SKU"))
+    stock_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)], verbose_name=_("Stock Quantity"))
+    price_adjustment = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Price Adjustment"))
+    is_available = models.BooleanField(default=True, verbose_name=_("Is Available"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
 
     class Meta:
+        verbose_name = _("Product Variant")
+        verbose_name_plural = _("Product Variants")
         unique_together = ['product', 'color', 'size']
 
     def __str__(self):
@@ -392,7 +455,7 @@ class ProductVariant(models.Model):
 
     @property
     def get_price(self):
-        """Get the price for this variant"""
+        """Get the effective price for this variant (base product price + adjustment)."""
         base_price = self.product.get_price
         return base_price + self.price_adjustment
 
@@ -400,25 +463,28 @@ class ProductVariant(models.Model):
         if not self.sku:
             self.sku = f"{self.product.slug}-{self.color.name.lower()}-{self.size.name.lower()}".replace(' ', '-')
         super().save(*args, **kwargs)
+
 # --- Cart Models ---
 class Cart(models.Model):
-    session_key = models.CharField(max_length=40, null=True, blank=True, unique=True)  # For anonymous users
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    """Represents a shopping cart, linked to a user or session."""
+    session_key = models.CharField(max_length=40, null=True, blank=True, unique=True, verbose_name=_("Session Key"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
     user = models.OneToOneField(
-        ReverseUser,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='cart'
+        related_name='cart',
+        verbose_name=_("User")
     )
 
-    total_items_field = models.PositiveIntegerField(default=0)
-    total_price_field = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    total_items_field = models.PositiveIntegerField(default=0, verbose_name=_("Total Items (Cached)"))
+    total_price_field = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), verbose_name=_("Total Price (Cached)"))
 
     class Meta:
-        verbose_name = "Shopping Cart"
-        verbose_name_plural = "Shopping Carts"
+        verbose_name = _("Shopping Cart")
+        verbose_name_plural = _("Shopping Carts")
 
     def __str__(self):
         if self.user:
@@ -427,13 +493,26 @@ class Cart(models.Model):
 
     @property
     def total_items(self):
-        return self.items.aggregate(total_quantity=models.Sum('quantity'))['total_quantity'] or 0
+        """Returns the number of items in the cart (cached value)."""
+        return self.total_items_field
 
     @property
     def total_price(self):
-        return sum(item.get_total_price() for item in self.items.all())
+        """Returns the total price of all items in the cart (cached value)."""
+        return self.total_price_field
+
+    def get_subtotal(self):
+        """
+        Returns the total price of items in the cart (the subtotal).
+        This method is added to resolve AttributeError for existing code that
+        might call cart.get_subtotal(). It returns the cached total_price_field.
+        """
+        return self.total_price_field
 
     def update_totals(self):
+        """
+        Calculates and updates the cached total_items_field and total_price_field.
+        """
         total_quantity = self.items.aggregate(total_quantity=models.Sum('quantity'))['total_quantity'] or 0
         total_price = sum(item.get_total_price() for item in self.items.all())
         self.total_items_field = total_quantity
@@ -443,58 +522,68 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
-    product_variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
-    added_at = models.DateTimeField(auto_now_add=True)
+    """Represents a single item within a shopping cart."""
+    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE, verbose_name=_("Cart"))
+    product_variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, verbose_name=_("Product Variant"))
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)], verbose_name=_("Quantity"))
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Added At"))
 
     class Meta:
+        verbose_name = _("Cart Item")
+        verbose_name_plural = _("Cart Items")
         unique_together = ('cart', 'product_variant')
-        verbose_name = "Cart Item"
-        verbose_name_plural = "Cart Items"
 
     def __str__(self):
-        return f"{self.quantity} x {self.product_variant.product.name} ({self.product_variant.color.name}, {self.product_variant.size.name})"
+        product_name = self.product_variant.product.name if hasattr(self.product_variant, 'product') and self.product_variant.product else 'N/A'
+        color_name = self.product_variant.color.name if hasattr(self.product_variant, 'color') and self.product_variant.color else 'N/A'
+        size_name = self.product_variant.size.name if hasattr(self.product_variant, 'size') and self.product_variant.size else 'N/A'
+        return f"{self.quantity} x {product_name} ({color_name}, {size_name})"
 
     def get_total_price(self):
-        price = self.product_variant.get_price() if callable(getattr(self.product_variant, 'get_price', None)) else self.product_variant.get_price
-        return self.quantity * price
+        """
+        Calculates the total price for this cart item (quantity * variant price).
+        Assumes product_variant has a 'get_price' property.
+        """
+        return self.quantity * self.product_variant.get_price
+
 
 # --- Wishlist Models ---
 class Wishlist(models.Model):
-    user = models.OneToOneField(ReverseUser, on_delete=models.CASCADE, related_name='wishlist')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    """Represents a user's wishlist."""
+    user = models.OneToOneField(ReverseUser, on_delete=models.CASCADE, related_name='wishlist', verbose_name=_("User"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
     class Meta:
-        verbose_name = "Wishlist"
-        verbose_name_plural = "Wishlists"
+        verbose_name = _("Wishlist")
+        verbose_name_plural = _("Wishlists")
 
     def __str__(self):
         return f"Wishlist of {self.user.username}"
 
 
 class WishlistItem(models.Model):
-    wishlist = models.ForeignKey(Wishlist, related_name='items', on_delete=models.CASCADE)
+    """Represents a single product in a wishlist."""
+    wishlist = models.ForeignKey(Wishlist, related_name='items', on_delete=models.CASCADE, verbose_name=_("Wishlist"))
     product = models.ForeignKey(Product,
-                                on_delete=models.CASCADE)  # Wishlist can be for a product, not necessarily a variant
-    added_at = models.DateTimeField(auto_now_add=True)
+                                on_delete=models.CASCADE, verbose_name=_("Product")) # Wishlist can be for a product, not necessarily a variant
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Added At"))
 
     class Meta:
+        verbose_name = _("Wishlist Item")
+        verbose_name_plural = _("Wishlist Items")
         unique_together = ('wishlist', 'product')  # A product can only be in a wishlist once
-        verbose_name = "Wishlist Item"
-        verbose_name_plural = "Wishlist Items"
 
     def __str__(self):
         return f"{self.product.name} in {self.wishlist.user.username}'s Wishlist"
 
 
 class HomeSlider(models.Model):
+    """Model for managing home page slider images and content."""
     image = models.ImageField(upload_to='slider/', verbose_name=_("Slider Image"))
-    # Processed image (1920x600)
     image_resized = ImageSpecField(
         source='image',
-        processors=[ResizeToFill(1400, 650)],
+        processors=[ResizeToFill(1400, 650)], # Adjusted from 1920x600 comment
         format='JPEG',
         options={'quality': 85}
     )
@@ -512,77 +601,150 @@ class HomeSlider(models.Model):
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
 
     class Meta:
-        ordering = ['order']
         verbose_name = _("Home Slider")
         verbose_name_plural = _("Home Sliders")
+        ordering = ['order']
 
     def __str__(self):
         return self.heading
 
 
-# --- Order Models ---
+class Coupon(models.Model):
+    """Represents a discount coupon."""
+    code = models.CharField(max_length=50, unique=True, verbose_name=_("Coupon Code"))
+    discount_type = models.CharField(
+        max_length=20,
+        choices=[('percentage', _('Percentage')), ('fixed', _('Fixed Amount'))],
+        default='fixed',
+        verbose_name=_("Discount Type")
+    )
+    value = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.01'))],
+        help_text=_("If percentage, enter 0-100. If fixed, enter the amount."),
+        verbose_name=_("Discount Value")
+    )
+    minimum_order_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        validators=[MinValueValidator(Decimal('0.00'))],
+        verbose_name=_("Minimum Order Amount")
+    )
+    valid_from = models.DateTimeField(verbose_name=_("Valid From"))
+    valid_to = models.DateTimeField(verbose_name=_("Valid To"))
+    active = models.BooleanField(default=True, verbose_name=_("Active"))
+    usage_limit = models.PositiveIntegerField(null=True, blank=True, verbose_name=_("Usage Limit"))
+    used_count = models.PositiveIntegerField(default=0, verbose_name=_("Used Count"))
+
+    class Meta:
+        verbose_name = _("Coupon")
+        verbose_name_plural = _("Coupons")
+        ordering = ['-valid_from']
+
+    def __str__(self):
+        return self.code
+
+    def is_valid(self, cart_subtotal, user=None):
+        """Checks if the coupon is currently valid for the given subtotal and user."""
+        now = timezone.now()
+        if not self.active:
+            return False, _("Coupon is not active.")
+        if now < self.valid_from:
+            return False, _("Coupon is not yet valid.")
+        if now > self.valid_to:
+            return False, _("Coupon has expired.")
+        if cart_subtotal < self.minimum_order_amount:
+            # Using f-string for translatable message with a variable
+            return False, _("Minimum order amount of %(amount)s required.") % {'amount': self.minimum_order_amount}
+        if self.usage_limit is not None and self.used_count >= self.usage_limit:
+            return False, _("Coupon usage limit exceeded.")
+
+        # Optionally add per-user usage limit here if needed
+        # e.g., if self.user_coupon_uses.filter(user=user).count() >= 1: return False, _("Coupon already used by this user.")
+
+        return True, _("Coupon is valid.")
+
+    def get_discount_amount(self, subtotal):
+        """Calculates the discount amount based on the coupon type and value."""
+        if self.discount_type == 'percentage':
+            discount = subtotal * (self.value / 100)
+        else: # fixed amount
+            discount = self.value
+        # Ensure discount does not exceed subtotal (e.g., a $10 fixed discount on a $5 item)
+        return min(discount, subtotal)
+
 
 class Order(models.Model):
+    """Represents a customer order."""
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('processing', 'Processing'),
-        ('shipped', 'Shipped'),
-        ('delivered', 'Delivered'),
-        ('cancelled', 'Cancelled'),
-        ('refunded', 'Refunded'),
+        ('pending', _('Pending')),
+        ('processing', _('Processing')),
+        ('shipped', _('Shipped')),
+        ('delivered', _('Delivered')),
+        ('cancelled', _('Cancelled')),
+        ('refunded', _('Refunded')),
     ]
 
     PAYMENT_STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('paid', 'Paid'),
-        ('failed', 'Failed'),
-        ('refunded', 'Refunded'),
+        ('pending', _('Pending')),
+        ('paid', _('Paid')),
+        ('failed', _('Failed')),
+        ('refunded', _('Refunded')),
     ]
 
-    order_number = models.CharField(max_length=32, null=False, editable=False, unique=True)
-    user = models.ForeignKey(ReverseUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    order_number = models.CharField(max_length=32, null=False, editable=False, unique=True, verbose_name=_("Order Number"))
+    user = models.ForeignKey(ReverseUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders', verbose_name=_("User"))
+    anonymous_access_token = models.UUIDField(default=uuid.uuid4, editable=False, null=True, blank=True, verbose_name=_("Anonymous Access Token"))
 
-    # Billing Information (can be same as shipping or separate)
-    full_name = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
-    phone_number = models.CharField(max_length=20)
+    # Billing Information (copied from shipping for historical record)
+    full_name = models.CharField(max_length=255, verbose_name=_("Full Name"))
+    email = models.EmailField(max_length=255, verbose_name=_("Email"))
+    phone_number = models.CharField(max_length=20, verbose_name=_("Phone Number"))
 
     # Order Totals
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,
-                                   validators=[MinValueValidator(Decimal('0.00'))])
+                                   validators=[MinValueValidator(Decimal('0.00'))], verbose_name=_("Subtotal"))
     shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00,
-                                        validators=[MinValueValidator(Decimal('0.00'))])
+                                        validators=[MinValueValidator(Decimal('0.00'))], verbose_name=_("Shipping Cost"))
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,
+                                          validators=[MinValueValidator(Decimal('0.00'))], verbose_name=_("Discount Amount"))
     grand_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,
-                                      validators=[MinValueValidator(Decimal('0.00'))])
+                                      validators=[MinValueValidator(Decimal('0.00'))], verbose_name=_("Grand Total"))
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
+    # Coupon relation
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Applied Coupon"))
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name=_("Status"))
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending', verbose_name=_("Payment Status"))
 
     # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
     # Stripe Payment Intent ID (for processing payments)
-    stripe_pid = models.CharField(max_length=255, null=True, blank=True)
+    stripe_pid = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("Stripe Payment ID"))
 
     class Meta:
+        verbose_name = _("Order")
+        verbose_name_plural = _("Orders")
         ordering = ['-created_at']
-        verbose_name = "Order"
-        verbose_name_plural = "Orders"
 
     def _generate_order_number(self):
-        """
-        Generate a random, unique order number using UUID
-        """
+        """Generates a unique order number using UUID."""
         return uuid.uuid4().hex.upper()
 
     def save(self, *args, **kwargs):
-        """
-        Override the original save method to set the order number
-        if it hasn't been set already.
-        """
         if not self.order_number:
             self.order_number = self._generate_order_number()
+        # Ensure grand_total is always calculated based on subtotal, shipping, and discount
+        self.grand_total = (self.subtotal + self.shipping_cost) - self.discount_amount
+        if self.grand_total < 0: # Ensure grand_total doesn't go negative
+            self.grand_total = Decimal('0.00')
+        if not self.user and not self.anonymous_access_token:
+            # Only generate an anonymous token if no user is linked and no token exists
+            self.anonymous_access_token = uuid.uuid4()
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -593,21 +755,27 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    """Represents a single item within an order."""
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name=_("Order"))
     product_variant = models.ForeignKey(ProductVariant,
-                                        on_delete=models.PROTECT)  # Protect from deletion if order exists
-    quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2)  # Price at the time of purchase
+                                        on_delete=models.PROTECT, verbose_name=_("Product Variant"))
+    quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("Quantity"))
+    price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Price at Purchase"))
 
     class Meta:
-        verbose_name = "Order Item"
-        verbose_name_plural = "Order Items"
+        verbose_name = _("Order Item")
+        verbose_name_plural = _("Order Items")
 
     def __str__(self):
-        return f"{self.quantity} x {self.product_variant.product.name} ({self.product_variant.color.name}, {self.product_variant.size.name}) in Order {self.order.order_number}"
+        product_name = self.product_variant.product.name if hasattr(self.product_variant, 'product') else 'N/A'
+        color_name = self.product_variant.color.name if hasattr(self.product_variant, 'color') and self.product_variant.color else 'N/A'
+        size_name = self.product_variant.size.name if hasattr(self.product_variant, 'size') and self.product_variant.size else 'N/A'
+        return f"{self.quantity} x {product_name} ({color_name}, {size_name}) in Order {self.order.order_number}"
 
     def get_total_price(self):
+        """Calculates the total price for this order item."""
         return self.quantity * self.price_at_purchase
+
 
 class ShippingAddress(models.Model):
     """Stores shipping address details, optionally linked to an order or user."""
@@ -636,7 +804,7 @@ class ShippingAddress(models.Model):
     email = models.EmailField(null=True,blank=True, verbose_name=_("Email"))
     address_line1 = models.TextField(verbose_name=_("Address Line 1"))
     address_line2 = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Address Line 2"))
-    city = models.CharField(max_length=100, verbose_name=_("City"))
+    city = models.CharField(max_length=100, choices=CITY_CHOICE, verbose_name=_("City"))
     phone_number = models.CharField(max_length=20, verbose_name=_("Phone Number"))
     is_default = models.BooleanField(default=False, verbose_name=_("Is Default Address"))
 
@@ -660,30 +828,26 @@ class ShippingAddress(models.Model):
             ShippingAddress.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
         super().save(*args, **kwargs)
 
-
-
 class Payment(models.Model):
+    """Records payment details for an order."""
     PAYMENT_METHOD_CHOICES = [
-        ('credit_card', 'Credit Card'),
-        ('paypal', 'PayPal'),
-        ('bank_transfer', 'Bank Transfer'),
-        ('cash_on_delivery', 'Cash on Delivery'),
-        # Add more as needed
+        ('credit_card', _('Credit Card')),
+        ('paypal', _('PayPal')),
+        ('bank_transfer', _('Bank Transfer')),
+        ('cash_on_delivery', _('Cash on Delivery')),
     ]
 
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
-    transaction_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
-    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES)
-    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
-    timestamp = models.DateTimeField(auto_now_add=True)
-    is_success = models.BooleanField(default=False)
-
-    # Store additional payment details (e.g., last 4 digits of card, PayPal email)
-    payment_details = models.JSONField(blank=True, null=True)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment', verbose_name=_("Order"))
+    transaction_id = models.CharField(max_length=255, unique=True, blank=True, null=True, verbose_name=_("Transaction ID"))
+    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES, verbose_name=_("Payment Method"))
+    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))], verbose_name=_("Amount"))
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_("Timestamp"))
+    is_success = models.BooleanField(default=False, verbose_name=_("Is Success"))
+    payment_details = models.JSONField(blank=True, null=True, verbose_name=_("Payment Details"))
 
     class Meta:
-        verbose_name = "Payment"
-        verbose_name_plural = "Payments"
+        verbose_name = _("Payment")
+        verbose_name_plural = _("Payments")
         ordering = ['-timestamp']
 
     def __str__(self):

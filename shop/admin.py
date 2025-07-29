@@ -1,19 +1,27 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from decimal import Decimal
+from django.conf import settings # <--- IMPORT SETTINGS HERE
+
 from shop.models import (
     Category, SubCategory, FitType, Brand, Color, Size,
     Product, ProductImage, ProductColor, ProductSize, ProductVariant,
     HomeSlider, Cart, CartItem, Wishlist, WishlistItem,
-    Order, OrderItem, ShippingAddress, Payment, ReverseUser  # Import new models
+    Order, OrderItem, ShippingAddress, Payment, Coupon
+    # No need to import ReverseUser directly here if all FKs/OnetoOnes use settings.AUTH_USER_MODEL
+    # However, for registering ReverseUserAdmin, you still need it.
+    # So keep: ReverseUser
 )
+# Assuming ReverseUser is your custom user model located in shop.models
+from shop.models import ReverseUser # Keep this for registering ReverseUserAdmin
 
 
 @admin.register(ReverseUser)
 class ReverseUserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email', 'phone', 'is_customer', 'is_staff', 'date_joined']
+    list_display = ['username', 'email', 'is_customer', 'is_staff', 'date_joined']
     list_filter = ['is_customer', 'is_staff', 'is_active']
-    search_fields = ['username', 'email', 'phone']
+    search_fields = ['username', 'email',]
 
 
 @admin.register(Cart)
@@ -21,8 +29,13 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ['id', 'user_or_session', 'total_items', 'total_price', 'created_at', 'updated_at']
     list_filter = ['created_at', 'updated_at']
     search_fields = ['user__username', 'session_key']
+    # If Cart.user is a ForeignKey/OneToOneField to settings.AUTH_USER_MODEL,
+    # then 'user' here correctly references that relation. No change needed.
+    raw_id_fields = ['user']
+
 
     def user_or_session(self, obj):
+        # This will correctly access the user object if it exists
         return obj.user.username if obj.user else f"Session: {obj.session_key}"
 
     user_or_session.short_description = 'Owner'
@@ -32,16 +45,21 @@ class CartAdmin(admin.ModelAdmin):
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ['cart', 'product_name', 'variant_color', 'variant_size', 'quantity', 'added_at']
     list_filter = ['added_at']
-    search_fields = ['cart__user__username', 'product_variant__product__name']
+    search_fields = ['cart__user__username', 'product_variant__product__name', 'cart__session_key']
+    raw_id_fields = ['cart', 'product_variant']
+
 
     def product_name(self, obj):
-        return obj.product_variant.product.name
+        return obj.product_variant.product.name if obj.product_variant and obj.product_variant.product else _("N/A")
+    product_name.short_description = _("Product")
 
     def variant_color(self, obj):
-        return obj.product_variant.color.name
+        return obj.product_variant.color.name if obj.product_variant and obj.product_variant.color else _("N/A")
+    variant_color.short_description = _("Color")
 
     def variant_size(self, obj):
-        return obj.product_variant.size.name
+        return obj.product_variant.size.name if obj.product_variant and obj.product_variant.size else _("N/A")
+    variant_size.short_description = _("Size")
 
 
 @admin.register(Wishlist)
@@ -49,6 +67,9 @@ class WishlistAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'created_at', 'updated_at']
     list_filter = ['created_at', 'updated_at']
     search_fields = ['user__username']
+    # If Wishlist.user is a ForeignKey/OneToOneField to settings.AUTH_USER_MODEL,
+    # then 'user' here correctly references that relation. No change needed.
+    raw_id_fields = ['user']
 
 
 @admin.register(WishlistItem)
@@ -56,9 +77,12 @@ class WishlistItemAdmin(admin.ModelAdmin):
     list_display = ['wishlist', 'product_name', 'added_at']
     list_filter = ['added_at']
     search_fields = ['wishlist__user__username', 'product__name']
+    raw_id_fields = ['wishlist', 'product']
+
 
     def product_name(self, obj):
-        return obj.product.name
+        return obj.product.name if obj.product else _("N/A")
+    product_name.short_description = _("Product")
 
 
 @admin.register(HomeSlider)
@@ -81,7 +105,7 @@ class HomeSliderAdmin(admin.ModelAdmin):
                                obj.image_resized.url)
         return "-"
 
-    preview_image.short_description = "Preview"
+    preview_image.short_description = _("Preview")
 
 
 @admin.register(Category)
@@ -98,6 +122,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
     list_filter = ['category', 'is_active', 'created_at']
     search_fields = ['name', 'description']
     prepopulated_fields = {'slug': ('name',)}
+    raw_id_fields = ['category']
 
 
 @admin.register(FitType)
@@ -134,21 +159,25 @@ class SizeAdmin(admin.ModelAdmin):
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
+    raw_id_fields = ['color']
 
 
 class ProductColorInline(admin.TabularInline):
     model = ProductColor
     extra = 1
+    raw_id_fields = ['color']
 
 
 class ProductSizeInline(admin.TabularInline):
     model = ProductSize
     extra = 1
+    raw_id_fields = ['size']
 
 
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 1
+    raw_id_fields = ['color', 'size']
 
 
 @admin.register(Product)
@@ -167,33 +196,35 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     readonly_fields = ['created_at', 'updated_at']
     inlines = [ProductImageInline, ProductColorInline, ProductSizeInline, ProductVariantInline]
+    raw_id_fields = ['category', 'subcategory', 'fit_type', 'brand']
+
 
     fieldsets = (
-        ('Basic Information', {
+        (_('Basic Information'), {
             'fields': ('name', 'slug', 'description', 'short_description')
         }),
-        ('Categorization', {
+        (_('Categorization'), {
             'fields': ('category', 'subcategory', 'fit_type', 'brand')
         }),
-        ('Pricing', {
+        (_('Pricing'), {
             'fields': ('price', 'sale_price')
         }),
-        ('Flags', {
+        (_('Flags'), {
             'fields': ('is_best_seller', 'is_new_arrival', 'is_on_sale', 'is_featured')
         }),
-        ('Inventory', {
+        (_('Inventory'), {
             'fields': ('stock_quantity', 'is_active', 'is_available')
         }),
-        ('SEO', {
+        (_('SEO'), {
             'fields': ('meta_title', 'meta_description'),
             'classes': ('collapse',)
         }),
-        ('Timestamps', {
+        (_('Timestamps'), {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
-        ('Size Chart', {
-            'fields': ('size_chart','delivery_return',),
+        (_('Size Chart & Delivery/Return'), {
+            'fields': ('size_chart','delivery_return'),
             'classes': ('collapse',)
         }),
     )
@@ -204,6 +235,7 @@ class ProductImageAdmin(admin.ModelAdmin):
     list_display = ['product', 'alt_text', 'is_main', 'order', 'color', 'created_at']
     list_filter = ['is_main', 'color', 'created_at']
     search_fields = ['product__name', 'alt_text']
+    raw_id_fields = ['product', 'color']
 
 
 @admin.register(ProductVariant)
@@ -211,66 +243,100 @@ class ProductVariantAdmin(admin.ModelAdmin):
     list_display = ['product', 'color', 'size', 'sku', 'stock_quantity', 'is_available']
     list_filter = ['color', 'size', 'is_available']
     search_fields = ['product__name', 'sku']
+    raw_id_fields = ['product', 'color', 'size']
 
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
-    # Make these fields read-only for existing items, but allow them to be set for new ones via JavaScript
-    # For initial creation, we need to allow price_at_purchase to be set
-    readonly_fields = ['get_total_price'] # Keep get_total_price readonly as it's a calculated property
-    fields = ['product_variant', 'quantity', 'price_at_purchase'] # Explicitly list fields for adding/editing
+    fields = ['product_variant', 'quantity', 'price_at_purchase', 'get_total_price']
+    readonly_fields = ['get_total_price']
     can_delete = False
+    raw_id_fields = ['product_variant']
 
     def get_total_price(self, obj):
-        # Ensure quantity and price_at_purchase are not None before multiplication
         quantity = obj.quantity if obj.quantity is not None else Decimal('0.00')
         price_at_purchase = obj.price_at_purchase if obj.price_at_purchase is not None else Decimal('0.00')
         return quantity * price_at_purchase
-    get_total_price.short_description = "Total Price"
+    get_total_price.short_description = _("Total Price")
+
+
+# Define ShippingAddressInline for use in OrderAdmin
+class ShippingAddressInline(admin.StackedInline):
+    model = ShippingAddress
+    extra = 0
+    max_num = 1
+    # raw_id_fields is removed if ShippingAddress.user uses settings.AUTH_USER_MODEL
+    # as Django's admin might implicitly handle it better.
+    # If you still want the raw ID widget for user on ShippingAddress, keep this line.
+    # The actual fix should be in models.py
+    # raw_id_fields = ['user'] # Keep if user field is on ShippingAddress model and you want raw_id
+
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
-        'order_number', 'user', 'full_name', 'grand_total',
-        'status', 'payment_status', 'created_at'
+        'order_number', 'user_display', 'full_name', 'grand_total',
+        'status', 'payment_status', 'created_at', 'coupon_code_display'
     ]
-    list_filter = ['status', 'payment_status', 'created_at', 'updated_at']
+    list_filter = ['status', 'payment_status', 'created_at', 'updated_at', 'coupon']
     search_fields = ['order_number', 'user__username', 'full_name', 'email', 'phone_number']
     readonly_fields = [
         'order_number', 'created_at', 'updated_at',
-        'subtotal', 'shipping_cost', 'grand_total', 'stripe_pid'
+        'subtotal', 'shipping_cost', 'discount_amount', 'grand_total', 'stripe_pid'
     ]
-    inlines = [OrderItemInline]
+    inlines = [OrderItemInline, ShippingAddressInline]
+    # If Order.user is a ForeignKey to settings.AUTH_USER_MODEL,
+    # then 'user' here correctly references that relation. No change needed.
+    raw_id_fields = ['user', 'coupon']
 
     fieldsets = (
-        ('Order Details', {
+        (_('Order Details'), {
             'fields': ('order_number', 'user', 'status', 'payment_status', 'stripe_pid')
         }),
-        ('Customer Information', {
+        (_('Customer Information'), {
             'fields': ('full_name', 'email', 'phone_number')
         }),
-        ('Financials', {
-            'fields': ('subtotal', 'shipping_cost', 'grand_total')
+        (_('Financials'), {
+            'fields': ('subtotal', 'shipping_cost', 'discount_amount', 'grand_total', 'coupon')
         }),
-        ('Timestamps', {
+        (_('Timestamps'), {
             'fields': ('created_at', 'updated_at')
         }),
     )
 
+    def user_display(self, obj):
+        # This will correctly access the user object if it exists
+        return obj.user.username if obj.user else _("Guest")
+    user_display.short_description = _("User")
+
+    def coupon_code_display(self, obj):
+        return obj.coupon.code if obj.coupon else _("N/A")
+    coupon_code_display.short_description = _("Coupon Code")
+
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ['order', 'product_variant', 'quantity', 'price_at_purchase', 'get_total']
+    list_display = ['order_number', 'product_variant_display', 'quantity', 'price_at_purchase', 'get_total']
     list_filter = ['order__status', 'product_variant__product__name']
     search_fields = ['order__order_number', 'product_variant__product__name']
     readonly_fields = ['get_total']
+    raw_id_fields = ['order', 'product_variant']
 
     def get_total(self, obj):
         return obj.get_total_price()
 
-    get_total.short_description = 'Total'
+    get_total.short_description = _('Total')
 
+    def order_number(self, obj):
+        return obj.order.order_number if obj.order else _("N/A")
+    order_number.short_description = _("Order")
+
+    def product_variant_display(self, obj):
+        if obj.product_variant:
+            return f"{obj.product_variant.product.name} ({obj.product_variant.color.name}, {obj.product_variant.size.name})"
+        return _("N/A")
+    product_variant_display.short_description = _("Product Variant")
 
 
 @admin.register(ShippingAddress)
@@ -291,16 +357,43 @@ class ShippingAddressAdmin(admin.ModelAdmin):
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = [
-        'order', 'transaction_id', 'payment_method', 'amount',
+        'order_number', 'transaction_id', 'payment_method', 'amount',
         'is_success', 'timestamp'
     ]
     list_filter = ['payment_method', 'is_success', 'timestamp']
     search_fields = ['order__order_number', 'transaction_id']
     readonly_fields = ['order', 'transaction_id', 'payment_method', 'amount', 'timestamp', 'payment_details']
+    raw_id_fields = ['order']
+
+    def order_number(self, obj):
+        return obj.order.order_number if obj.order else _("N/A")
+    order_number.short_description = _("Order")
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        # Make transaction_id, payment_method, amount, timestamp, payment_details read-only
-        # as these should ideally be set by the payment gateway integration.
-        # This is already covered by readonly_fields, but a reminder if you customize forms.
         return form
+
+
+# --- Coupon Admin Registration ---
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = [
+        'code', 'discount_type', 'value', 'minimum_order_amount',
+        'valid_from', 'valid_to', 'active', 'usage_limit', 'used_count'
+    ]
+    list_filter = ['active', 'discount_type', 'valid_from', 'valid_to']
+    search_fields = ['code']
+    list_editable = ['active', 'usage_limit']
+    ordering = ('-valid_from',)
+
+    fieldsets = (
+        (_('Coupon Details'), {
+            'fields': ('code', 'discount_type', 'value', 'active')
+        }),
+        (_('Validity Period'), {
+            'fields': ('valid_from', 'valid_to')
+        }),
+        (_('Usage Restrictions'), {
+            'fields': ('minimum_order_amount', 'usage_limit', 'used_count') # REMOVED 'applies_to_users'
+        }),
+    )

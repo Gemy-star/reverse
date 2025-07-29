@@ -12,28 +12,28 @@
       <p class="text-muted">{% trans "Review the items in your cart before checkout." %}</p>
     </div>
 
-    {% if items %}
+    {% if cart_total_items > 0 %}
     <div class="row pt-4" id="cart-items-container">
       <!-- Product list -->
       <div class="col-lg-8">
         <div class="row">
           {% for item in items %}
-          <div class="col col-lg-4 mb-4 cart-item" data-item-id="{{ item.id }}">
+          <div class="col-lg-4 col-md-6 mb-4 cart-item" data-item-id="{{ item.id }}">
             <div class="card h-100 shadow-sm border-0">
               <div class="card-body">
-                {% include "partials/_product.html" with product=item.variant.product section="cart" %}
+                {% include "partials/_product.html" with product=item.product_variant.product section="cart" %}
 
                 <div class="mt-2 small text-muted">
-                  <div><strong>{% trans "Color" %}:</strong> {{ item.variant.color.name }}</div>
-                  <div><strong>{% trans "Size" %}:</strong> {{ item.variant.size.name }}</div>
+                  <div><strong>{% trans "Color" %}:</strong> {{ item.product_variant.color.name }}</div>
+                  <div><strong>{% trans "Size" %}:</strong> {{ item.product_variant.size.name }}</div>
                   <div><strong>{% trans "Quantity" %}:</strong> {{ item.quantity }}</div>
-                  <div><strong>{% trans "Total" %}:</strong> {{ item.total|floatformat:2 }}</div>
+                  <div><strong>{% trans "Item Total" %}:</strong> {{ item.get_total_price|floatformat:2 }}</div>
                 </div>
               </div>
               <div class="card-footer bg-white border-0 text-end">
-                <a href="#" class="remove-from-cart btn btn-danger btn-lg" data-id="{{ item.id }}" title="{% trans 'Remove from cart' %}">
+                <button type="button" class="remove-from-cart btn btn-danger btn-lg" data-id="{{ item.id }}" title="{% trans 'Remove from cart' %}">
                   <i class="fas fa-trash-alt text-white"></i>
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -47,19 +47,26 @@
           <div class="card-header bg-light border-0">
             <h5 class="mb-0 fw-bold">{% trans "Order Summary" %}</h5>
           </div>
-          <div class="card-body">
+          <div class="card-body" role="status" aria-live="polite">
             <ul class="list-unstyled mb-4" id="order-summary">
               <li class="d-flex justify-content-between py-2 border-bottom">
                 <span>{% trans "Subtotal" %}</span>
-                <span id="cart-subtotal">{{ total|floatformat:2 }}</span>
+                <span id="cart-subtotal">{{ cart_total_price|floatformat:2 }}</span>
               </li>
               <li class="d-flex justify-content-between py-2 border-bottom">
                 <span>{% trans "Shipping" %}</span>
-                <span>{% trans "Free" %}</span>
+                <span id="cart-shipping">
+                  {% if shipping_cost > 0 %}
+                    {{ shipping_cost|floatformat:2 }}
+                  {% else %}
+                    {# Use the status message from backend for clarity #}
+                    {{ shipping_status_message }}
+                  {% endif %}
+                </span>
               </li>
               <li class="d-flex justify-content-between py-2 border-bottom">
                 <span class="fw-bold">{% trans "Total" %}</span>
-                <span class="fw-bold" id="cart-total">{{ total|floatformat:2 }}</span>
+                <span class="fw-bold" id="cart-grand-total">{{ grand_total|floatformat:2 }}</span>
               </li>
             </ul>
             <a href="{% url 'shop:checkout' %}" class="btn btn-lg bg-black w-100 text-white">
@@ -71,7 +78,7 @@
     </div>
 
     {% else %}
-    <div class="text-center text-muted mt-5" id="empty-cart-message" style="display:none;">
+    <div class="text-center text-muted mt-5" id="empty-cart-message">
       <h5>{% trans "Your cart is empty." %}</h5>
       <a href="{% url 'shop:home' %}" class="btn btn-outline-primary mt-3">
         {% trans "Continue Shopping" %}
@@ -103,63 +110,84 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   const csrftoken = getCookie('csrftoken');
 
-  // Event delegation for dynamically updated cart items
-  document.getElementById('cart-items-container').addEventListener('click', function(e) {
-    if (e.target.closest('.remove-from-cart')) {
-      e.preventDefault();
-      const btn = e.target.closest('.remove-from-cart');
-      const itemId = btn.dataset.id;
-      const cartItemElem = document.querySelector(`.cart-item[data-item-id="${itemId}"]`);
+  const cartItemsContainer = document.getElementById('cart-items-container');
+  const emptyCartMessage = document.getElementById('empty-cart-message');
 
-      alertify.confirm(
-        '{% trans "Confirm Deletion" %}',
-        '{% trans "Are you sure you want to remove this item?" %}',
-        function() {
-          fetch("{% url 'shop:remove_from_cart' %}", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": csrftoken,
-              "X-Requested-With": "XMLHttpRequest"
-            },
-            body: JSON.stringify({ cart_item_id: itemId })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              alertify.success('{% trans "Item removed from cart." %}');
-              if (cartItemElem) cartItemElem.remove();
+  // Initially hide the empty cart message if items are present
+  if (cartItemsContainer && cartItemsContainer.querySelector('.cart-item')) {
+      if (emptyCartMessage) emptyCartMessage.style.display = 'none';
+  } else {
+      // If no items initially, show the empty cart message
+      if (emptyCartMessage) emptyCartMessage.style.display = 'block';
+  }
 
-              // Update totals if returned
-              if (data.cart_total_items !== undefined) {
-                const cartCountElem = document.getElementById('cart-count');
-                if (cartCountElem) cartCountElem.textContent = data.cart_total_items;
-              }
-              if (data.cart_total_price !== undefined) {
+
+  if (cartItemsContainer) {
+    cartItemsContainer.addEventListener('click', function(e) {
+      if (e.target.closest('.remove-from-cart')) {
+        e.preventDefault();
+        const btn = e.target.closest('.remove-from-cart');
+        const itemId = btn.dataset.id;
+        const cartItemElem = document.querySelector(`.cart-item[data-item-id="${itemId}"]`);
+
+        alertify.confirm(
+          '{% trans "Confirm Deletion" %}',
+          '{% trans "Are you sure you want to remove this item?" %}',
+          function() {
+            fetch("{% url 'shop:remove_from_cart' %}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+                "X-Requested-With": "XMLHttpRequest"
+              },
+              body: JSON.stringify({ cart_item_id: itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alertify.success(data.message); // Use message from backend for consistency
+                if (cartItemElem) cartItemElem.remove();
+
+                if (data.cart_total_items !== undefined) {
+                  const cartCountElem = document.getElementById('cart-count');
+                  if (cartCountElem) cartCountElem.textContent = data.cart_total_items;
+                }
+
                 const subtotalElem = document.getElementById('cart-subtotal');
-                const totalElem = document.getElementById('cart-total');
-                if (subtotalElem) subtotalElem.textContent = parseFloat(data.cart_total_price).toFixed(2);
-                if (totalElem) totalElem.textContent = parseFloat(data.cart_total_price).toFixed(2);
-              }
+                const shippingElem = document.getElementById('cart-shipping');
+                const grandTotalElem = document.getElementById('cart-grand-total');
 
-              // If no items left, show empty message
-              if (data.cart_total_items === 0) {
-                document.getElementById('cart-items-container').style.display = 'none';
-                const emptyMsg = document.getElementById('empty-cart-message');
-                if (emptyMsg) emptyMsg.style.display = 'block';
+                if (subtotalElem) subtotalElem.textContent = parseFloat(data.cart_total_price).toFixed(2);
+
+                if (shippingElem) {
+                    if (data.shipping_cost > 0) {
+                        shippingElem.textContent = parseFloat(data.shipping_cost).toFixed(2);
+                    } else {
+                        // Use the status message from backend for clarity
+                        shippingElem.textContent = data.shipping_status_message;
+                    }
+                }
+                if (grandTotalElem) grandTotalElem.textContent = parseFloat(data.grand_total).toFixed(2);
+
+
+                if (data.cart_total_items === 0) {
+                  if (cartItemsContainer) cartItemsContainer.style.display = 'none';
+                  if (emptyCartMessage) emptyCartMessage.style.display = 'block';
+                }
+              } else {
+                alertify.error(data.message || "{% trans 'Failed to remove item.' %}");
               }
-            } else {
-              alertify.error(data.message || "{% trans 'Failed to remove item.' %}");
-            }
-          })
-          .catch(() => alertify.error("{% trans 'An error occurred. Please try again.' %}"));
-        },
-        function() {
-          alertify.message('{% trans "Action cancelled" %}');
-        }
-      );
-    }
-  });
+            })
+            .catch(() => alertify.error("{% trans 'An error occurred. Please try again.' %}"));
+          },
+          function() {
+            alertify.message('{% trans "Action cancelled" %}');
+          }
+        );
+      }
+    });
+  }
 });
 </script>
 {% endblock %}

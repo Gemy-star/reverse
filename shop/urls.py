@@ -18,7 +18,7 @@ urlpatterns = [
     path('api/add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'), # Renamed, consolidated all add-to-wishlist here
     path('api/get-counts/', views.get_cart_and_wishlist_counts, name='get_cart_and_wishlist_counts'), # GET for counts
     path('api/get-available-sizes/', views.get_available_sizes_ajax, name='get_available_sizes_ajax'),
-    # path('api/apply-coupon/', views.apply_coupon, name='apply_coupon'),
+    path('api/apply-coupon/', views.apply_coupon, name='apply_coupon'),
 
     # Account & Authentication
     path('account/', views.account_view, name='account'),
@@ -40,7 +40,7 @@ urlpatterns = [
     # Checkout & Order Views
     path('checkout/', views.checkout_view, name='checkout'),
     path('checkout/process/', views.process_order, name='process_order'),
-    path('order/confirmation/<str:order_number>/', views.order_confirmation, name='order_confirmation'),
+    path('order/confirmation/<int:order_id>/', views.order_confirmation_view, name='order_confirmation'),
     # path('order/anonymous_confirmation/<int:order_id>/<uuid:token>/', views.order_confirmation_anonymous_view,
     #      name='order_confirmation_anonymous'),
     path('orders/', views.order_history, name='order_history'),
