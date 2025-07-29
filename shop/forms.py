@@ -62,7 +62,7 @@ class ShippingAddressForm(forms.ModelForm):
             'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Full Name')}),
             'address_line1': forms.Textarea(attrs={'class': 'form-control', 'placeholder': _('Address Line 1')}),
             'address_line2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Address Line 2 (Optional)')}),
-            'city': forms.Select(attrs={'class': 'form-control', 'placeholder': _('Enter your City')}),
+            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter your City')}),
             'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter your email')}),
 
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Phone Number')}),
