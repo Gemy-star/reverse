@@ -40,7 +40,7 @@ urlpatterns = [
     # Checkout & Order Views
     path('checkout/', views.checkout_view, name='checkout'),
     path('checkout/process/', views.process_order, name='process_order'),
-    path('order/confirmation/<int:order_id>/', views.order_confirmation, name='order_confirmation'),
+    path('order/confirmation/<str:order_number>/', views.order_confirmation, name='order_confirmation'),
     # path('order/anonymous_confirmation/<int:order_id>/<uuid:token>/', views.order_confirmation_anonymous_view,
     #      name='order_confirmation_anonymous'),
     path('orders/', views.order_history, name='order_history'),

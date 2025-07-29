@@ -1101,15 +1101,21 @@ def process_order(request, cart, shipping_form=None, payment_form=None, existing
         messages.error(request, _(f"An unexpected error occurred during checkout: {e}"))
         return redirect('shop:checkout')
 def order_confirmation(request, order_number):
-    if request.user.is_authenticated:
-        order = get_object_or_404(Order, order_number=order_number, user=request.user)
-    else:
-        order = get_object_or_404(Order, order_number=order_number, user=None)
-    order_items = order.items.select_related(
-        'product_variant__product', 'product_variant__color', 'product_variant__size'
-    ).all()
-    return render(request, 'shop/order_confirmation.html', {'order': order, 'order_items': order_items})
+    order = get_object_or_404(Order, order_number=order_number)
 
+    if order.user != request.user and order.user is not None:
+        return render(request, 'shop/order_not_found.html', status=403)
+
+    order_items = order.items.select_related(
+        'product_variant__product',
+        'product_variant__color',
+        'product_variant__size'
+    )
+
+    return render(request, 'shop/order_confirmation.html', {
+        'order': order,
+        'order_items': order_items
+    })
 
 def order_detail(request, order_number):
     if request.user.is_authenticated:
