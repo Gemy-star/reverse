@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from shop.models import ProductVariant, CartItem
-from .utils import get_or_create_cart  # assuming your helper is in cart_utils.py
+from .utils import get_or_create_cart
 from django.utils.translation import gettext_lazy as _
 
 def buy_now_view(request, variant_id):
