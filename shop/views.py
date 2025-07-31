@@ -282,12 +282,12 @@ def product_detail(request, slug):
     available_colors = Color.objects.filter(
         productvariant__in=variants,
         is_active=True
-    ).distinct().order_by('name')
+    ).distinct().order_by('name') # Keep this if you want colors sorted alphabetically by name
 
     available_sizes = Size.objects.filter(
         productvariant__in=variants,
         is_active=True
-    ).distinct().order_by('name')
+    ).distinct() # REMOVE .order_by('name') to use Size model's Meta.ordering
 
     product_images = product.images.all().order_by('order')
 
@@ -304,15 +304,13 @@ def product_detail(request, slug):
         'related_products': related_products,
         'variants': variants,
         'available_colors': available_colors,
-        'available_sizes': available_sizes,
+        'available_sizes': available_sizes, # This will now be ordered by size_type, then 'order', then 'name'
         'product_images': product_images,
         'categories': categories,
         'is_in_wishlist': is_in_wishlist,
     }
 
     return render(request, 'shop/product_detail.html', context)
-
-
 # --- Search & API Endpoints ---
 @require_http_methods(["GET"])
 def search_products(request):
