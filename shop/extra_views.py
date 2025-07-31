@@ -1,28 +1,43 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.utils.translation import gettext as _
-from .models import ProductVariant, CartItem, Cart  # Assuming Cart and CartItem are in .models
+from .models import ProductVariant, CartItem, Cart, Product  # Assuming Cart and CartItem are in .models
 from .utils import get_or_create_cart  # Assuming this is a utility function you have
+from django.db import transaction
 
 
 def buy_now_view(request):
     if request.method == 'POST':
-        # Get product_id, color_id, and size_id from the POST request
         product_id = request.POST.get('product_id')
         color_id = request.POST.get('color_id')
         size_id = request.POST.get('size_id')
+        quantity_str = request.POST.get('quantity', '1') # Get quantity from POST, default to '1'
+
+        try:
+            quantity = int(quantity_str)
+            if quantity <= 0:
+                messages.error(request, _("Quantity must be a positive number."))
+                # Attempt to redirect back to the product detail page
+                if product_id:
+                    product = get_object_or_404(Product, id=product_id)
+                    return redirect('shop:product_detail', slug=product.slug)
+                return redirect('shop:product_list') # Fallback
+        except ValueError:
+            messages.error(request, _("Invalid quantity provided."))
+            # Attempt to redirect back to the product detail page
+            if product_id:
+                product = get_object_or_404(Product, id=product_id)
+                return redirect('shop:product_detail', slug=product.slug)
+            return redirect('shop:product_list') # Fallback
 
         if not product_id or not color_id or not size_id:
             messages.error(request, _("Please select a product, color, and size."))
-            # You might need to redirect to a product detail page based on the product_id
-            # For now, let's assume you have a way to get the product slug
-            # You'll need to fetch the Product based on product_id to get its slug
-            # This is a placeholder, adjust according to your Product model structure
-            from .models import Product  # Import Product model
-            product = get_object_or_404(Product, id=product_id)
-            return redirect('shop:product_detail', slug=product.slug)
+            # Attempt to redirect back to the product detail page if product_id is known
+            if product_id:
+                product = get_object_or_404(Product, id=product_id)
+                return redirect('shop:product_detail', slug=product.slug)
+            return redirect('shop:product_list') # Fallback if product_id is missing
 
-        # Find the specific ProductVariant based on product_id, color_id, and size_id
         try:
             variant = get_object_or_404(
                 ProductVariant,
@@ -32,30 +47,38 @@ def buy_now_view(request):
             )
         except ProductVariant.DoesNotExist:
             messages.error(request, _("The selected product variant does not exist."))
+            # Redirect to the product detail if the variant is invalid
             product = get_object_or_404(Product, id=product_id)
             return redirect('shop:product_detail', slug=product.slug)
 
-        if variant.stock_quantity < 1:
-            messages.error(request, _("This product is currently out of stock."))
+        # Check stock for the requested quantity
+        if variant.stock_quantity < quantity:
+            messages.error(request, _(f"Not enough stock. Only {variant.stock_quantity} available for {variant.product.name} ({variant.color.name}, {variant.size.name})."))
             return redirect('shop:product_detail', slug=variant.product.slug)
 
         cart = get_or_create_cart(request)
-        cart.items.all().delete()  # Clear existing cart items for "Buy Now"
 
-        cart_item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            product_variant=variant,
-            defaults={'quantity': 1}
-        )
-        if not created:
-            cart_item.quantity = 1
-            cart_item.save()
+        # Use a transaction for critical cart operations
+        with transaction.atomic():
+            # IMPORTANT: Clear existing cart items for "Buy Now" flow.
+            # This ensures only the 'buy now' item is in the cart for checkout.
+            cart.items.all().delete()
 
-        cart.update_totals()
+            # Add the single item with the selected quantity
+            cart_item, created = CartItem.objects.get_or_create(
+                cart=cart,
+                product_variant=variant,
+                defaults={'quantity': quantity} # Set the quantity from the POST request
+            )
+            if not created:
+                # If item already existed (shouldn't if cart was just cleared, but for robustness)
+                cart_item.quantity = quantity
+                cart_item.save()
 
+            cart.update_totals() # Recalculate cart totals after modification
+
+        messages.success(request, _(f"{quantity} x {variant.product.name} ({variant.color.name}, {variant.size.name}) added to cart for direct purchase."))
         return redirect('shop:checkout')
     else:
-        # If someone tries to access it via GET, redirect them or show an error
         messages.error(request, _("Invalid request for buy now."))
-        # Redirect to a sensible default, maybe the shop home or product list
-        return redirect('shop:product_list')  # Assuming you have a product_list URL
+        return redirect('shop:product_list')

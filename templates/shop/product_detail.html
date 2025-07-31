@@ -188,12 +188,12 @@
             <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6 flex-grow-1" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>
               <i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}
             </button>
-            <form id="buy-now-form" action="{% url 'shop:buy_now' %}" method="post">
+         <form id="buy-now-form" action="{% url 'shop:buy_now' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <input type="hidden" name="color_id" id="buy-now-color-id">
                 <input type="hidden" name="size_id" id="buy-now-size-id">
-                <input type="hidden" name="quantity" id="buy-now-quantity-input" value="1"> {# ADDED: Hidden input for quantity #}
+                <input type="hidden" name="quantity" id="buy-now-quantity-input" value="1"> {# Added value="1" #}
                 <button type="submit" class="btn btn-outline-success rounded-pill px-3" title="{% trans 'Buy Now' %}">
                    <i class="fas fa-solid fa-bolt"></i> {% trans 'Buy Now' %}
                 </button>
@@ -320,7 +320,6 @@
   }
 </style>
 {% endblock %}
-
 {% block js %}
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -347,7 +346,7 @@
 
     const increaseBtn = document.getElementById('increase-quantity');
     const decreaseBtn = document.getElementById('decrease-quantity');
-    const quantityInput = document.getElementById('quantity-input');
+    const quantityInput = document.getElementById('quantity-input'); // This is your primary quantity input for "Add to Cart"
     const quantityDisplay = document.getElementById('quantity-display');
     const wishlistBtn = document.getElementById('add-to-wishlist-btn');
     const toastElement = document.getElementById('toast-popup');
@@ -356,18 +355,22 @@
     const buyNowForm = document.getElementById('buy-now-form');
     const buyNowColorInput = document.getElementById('buy-now-color-id');
     const buyNowSizeInput = document.getElementById('buy-now-size-id');
-    const buyNowQuantityInput = document.getElementById('buy-now-quantity-input'); // Get the new quantity input
-
+    const buyNowQuantityInput = document.getElementById('buy-now-quantity-input'); // Correctly target the specific "Buy Now" quantity input
 
     let isWishlisted = wishlistBtn.querySelector('i').classList.contains('fa-times');
     let selectedColorId = null;
     let selectedSizeId = null;
 
     function updateDisplay(value) {
+      // Update both the visible display and the hidden quantity inputs
       quantityInput.value = value;
       quantityDisplay.textContent = value;
-      buyNowQuantityInput.value = value; // Update the buy now quantity input as well
+      buyNowQuantityInput.value = value; // This ensures the buy now quantity is always in sync
     }
+
+    // Initialize the buyNowQuantityInput with the initial value of quantityInput
+    // This is important because the "buy-now-quantity-input" might be empty initially.
+    buyNowQuantityInput.value = quantityInput.value;
 
     increaseBtn?.addEventListener('click', () => {
       let current = parseInt(quantityInput.value) || 1;
@@ -521,7 +524,8 @@
             e.preventDefault(); // Prevent form submission
             showToast("{% trans 'Please select color and size first for Buy Now.' %}", 'error');
         } else {
-            // Ensure the quantity input is set before submission
+            // This line is technically redundant if updateDisplay always keeps it in sync,
+            // but it's harmless as a final check before submission.
             buyNowQuantityInput.value = quantityInput.value;
         }
     });
