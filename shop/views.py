@@ -1000,6 +1000,7 @@ def checkout_view(request):
         'grand_total': cart.total_price_field + shipping_fee  # <-- Optional precomputed total
     }
     return render(request, 'shop/checkout.html', context)
+
 @transaction.atomic
 def process_order(request, cart, shipping_form=None, payment_form=None, existing_address=None):
     try:

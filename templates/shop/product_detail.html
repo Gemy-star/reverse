@@ -7,7 +7,6 @@
   <section class="section pb-4" style="height: fit-content !important;">
     <div class="container-fluid">
       <div class="row pt-4 gx-4 gy-4">
-        <!-- Product Images (Swiper Carousel) -->
         <div class="col-md-6">
           <div class="col-12">
             <div class="swiper product-detail-swiper mb-3">
@@ -32,7 +31,6 @@
             </div>
           </div>
           <div class="col-12">
-            <!-- Thumbnail Swiper -->
             <div class="swiper product-detail-thumbs mt-2">
               <div class="swiper-wrapper">
                 {% for image in product_images %}
@@ -45,7 +43,6 @@
           </div>
         </div>
 
-        <!-- Product Details -->
         <div class="col-md-6 pt-5">
           <h1 class="mb-3">{{ product.name }}</h1>
           <p class="lead">{{ product.short_description }}</p>
@@ -88,8 +85,7 @@
               {% endfor %}
             </div>
           </div>
-          <!-- Collapsible Size Chart -->
- <div class="row d-flex justify-content-start">
+          <div class="row d-flex justify-content-start">
           <div class="mb-4 col-12 col-lg-4">
             <button class="btn btn-light border rounded-pill text-body px-4 py-2 shadow-sm size-select"
               type="button"
@@ -192,9 +188,15 @@
             <button class="btn btn-outline-dark rounded-pill py-2 px-3 fw-bold fs-6 flex-grow-1" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>
               <i class="fas fa-cart-plus me-2"></i> {% trans "Add to Cart" %}
             </button>
-             <button onclick="location.href='{% url 'shop:buy_now' product.variants.first.pk %}'" class="btn btn-outline-success rounded-pill px-3"  title="{% trans 'Buy Now' %}">
-               <i class="fas fa-solid fa-bolt"></i> {% trans 'Buy Now' %}
-            </button>
+            <form id="buy-now-form" action="{% url 'shop:buy_now' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="color_id" id="buy-now-color-id">
+                <input type="hidden" name="size_id" id="buy-now-size-id">
+                <button type="submit" class="btn btn-outline-success rounded-pill px-3" title="{% trans 'Buy Now' %}">
+                   <i class="fas fa-solid fa-bolt"></i> {% trans 'Buy Now' %}
+                </button>
+            </form>
             <button class="btn btn-outline-danger rounded-pill px-3" id="add-to-wishlist-btn" data-product-id="{{ product.id }}" title="{% if is_in_wishlist %}{% trans 'Remove from Wishlist' %}{% else %}{% trans 'Add to Wishlist' %}{% endif %}">
               <i class="fas {% if is_in_wishlist %}fa-times{% else %}fa-heart{% endif %}"></i>
             </button>
@@ -204,7 +206,6 @@
     </div>
   </section>
 
-  <!-- Related Products Swiper -->
   <section class="section pt-5 mt-5" style="position: relative; z-index: 1; background: #fff;">
     <div class="container-fluid pt-5">
       <div class="section-header d-flex justify-content-between align-items-center mb-3">
@@ -228,7 +229,6 @@
     </div>
   </section>
 
-  <!-- Toast -->
   <div id="toast-popup" class="toast align-items-center text-white border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index:1055;">
     <div class="d-flex">
       <div class="toast-body" id="toast-message"></div>
@@ -323,26 +323,27 @@
 {% block js %}
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-         function updateGlobalCounts(nav_id = "nav1") {
-    fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
-        method: 'GET',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => res.json())
-    .then(data => {
-        const cartCountEl = document.getElementById(`cart-count-${nav_id}`);
-        const wishCountEl = document.getElementById(`wishlist-count-${nav_id}`);
-        if (cartCountEl && data.cart_count !== undefined) {
-            cartCountEl.textContent = data.cart_count;
-        }
-        if (wishCountEl && data.wishlist_count !== undefined) {
-            wishCountEl.textContent = data.wishlist_count;
-        }
-    })
-    .catch(error => {
-        console.error("Failed to fetch cart/wishlist counts:", error);
-    });
-}
+    function updateGlobalCounts(nav_id = "nav1") {
+      fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
+          method: 'GET',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(res => res.json())
+      .then(data => {
+          const cartCountEl = document.getElementById(`cart-count-${nav_id}`);
+          const wishCountEl = document.getElementById(`wishlist-count-${nav_id}`);
+          if (cartCountEl && data.cart_count !== undefined) {
+              cartCountEl.textContent = data.cart_count;
+          }
+          if (wishCountEl && data.wishlist_count !== undefined) {
+              wishCountEl.textContent = data.wishlist_count;
+          }
+      })
+      .catch(error => {
+          console.error("Failed to fetch cart/wishlist counts:", error);
+      });
+    }
+
     const increaseBtn = document.getElementById('increase-quantity');
     const decreaseBtn = document.getElementById('decrease-quantity');
     const quantityInput = document.getElementById('quantity-input');
@@ -351,6 +352,10 @@
     const toastElement = document.getElementById('toast-popup');
     const toastMessage = document.getElementById('toast-message');
     const addToCartBtn = document.getElementById('add-to-cart-btn');
+    const buyNowForm = document.getElementById('buy-now-form');
+    const buyNowColorInput = document.getElementById('buy-now-color-id');
+    const buyNowSizeInput = document.getElementById('buy-now-size-id');
+
 
     let isWishlisted = wishlistBtn.querySelector('i').classList.contains('fa-times');
     let selectedColorId = null;
@@ -395,18 +400,20 @@
     }
     const csrftoken = getCookie('csrftoken');
 
-    // Auto-select first color if available
+    // Auto-select first color if available and set input
     const firstColorBtn = document.querySelector('.color-select');
     if (firstColorBtn) {
       firstColorBtn.classList.add('active');
       selectedColorId = firstColorBtn.getAttribute('data-color-id');
+      buyNowColorInput.value = selectedColorId; // Set for buy now form
     }
 
-    // Auto-select first size if available
+    // Auto-select first size if available and set input
     const firstSizeBtn = document.querySelector('.size-select');
     if (firstSizeBtn) {
       firstSizeBtn.classList.add('active');
       selectedSizeId = firstSizeBtn.getAttribute('data-size-id');
+      buyNowSizeInput.value = selectedSizeId; // Set for buy now form
     }
 
     wishlistBtn?.addEventListener('click', function () {
@@ -454,10 +461,10 @@
 
     addToCartBtn?.addEventListener('click', () => {
       if (!selectedColorId || !selectedSizeId) {
-        alert("{% trans 'Please select color and size first.' %}");
+        showToast("{% trans 'Please select color and size first.' %}", 'error');
         return;
       }
-      const productId = wishlistBtn.dataset.productId;
+      const productId = wishlistBtn.dataset.productId; // Assuming product.id is in data-product-id
       const quantity = quantityInput.value;
       addToCartBtn.disabled = true;
 
@@ -492,6 +499,7 @@
         document.querySelectorAll('.color-select').forEach(btn => btn.classList.remove('active'));
         this.classList.add('active');
         selectedColorId = this.getAttribute('data-color-id');
+        buyNowColorInput.value = selectedColorId; // Update hidden input
       });
     });
 
@@ -500,7 +508,16 @@
         document.querySelectorAll('.size-select').forEach(btn => btn.classList.remove('active'));
         this.classList.add('active');
         selectedSizeId = this.getAttribute('data-size-id');
+        buyNowSizeInput.value = selectedSizeId; // Update hidden input
       });
+    });
+
+    // Handle Buy Now form submission
+    buyNowForm?.addEventListener('submit', function(e) {
+        if (!selectedColorId || !selectedSizeId) {
+            e.preventDefault(); // Prevent form submission
+            showToast("{% trans 'Please select color and size first for Buy Now.' %}", 'error');
+        }
     });
 
     // Related product quick add buttons

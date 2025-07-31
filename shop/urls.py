@@ -46,7 +46,7 @@ urlpatterns = [
     path('orders/', views.order_history, name='order_history'),
     path('orders/<str:order_number>/', views.order_detail, name='order_detail'),
     # Buy Now
-    path('buy-now/<int:variant_id>/', extra_views.buy_now_view, name='buy_now'),
+    path('buy-now/', extra_views.buy_now_view, name='buy_now'),
 
 ]
 

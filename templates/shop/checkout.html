@@ -88,21 +88,45 @@
 
       <div class="col-md-6">
         <h4>{% trans "Order Summary" %}</h4>
-         <ul class="list-group mb-4">
-  <li class="list-group-item d-flex justify-content-between">
-    <span>{% trans "Subtotal" %}</span>
-    <span>{{ cart.total_price_field|floatformat:2 }}</span>
-  </li>
-  <li class="list-group-item d-flex justify-content-between">
-    <span>{% trans "Shipping" %}</span>
-    <span>{{ shipping_fee|floatformat:2 }}</span>
-  </li>
-  <li class="list-group-item d-flex justify-content-between fw-bold">
-    <span>{% trans "Total" %}</span>
-    <span>{{ grand_total|floatformat:2 }}</span>
-  </li>
-</ul>
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">{% trans "Items in your cart" %}</h5>
+            <ul class="list-group list-group-flush">
+              {% for item in cart.items.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{{ item.product_variant.product.name }}</strong>
+                    {% if item.product_variant.color %}
+                      <br><small>{% trans "Color" %}: {{ item.product_variant.color.name }}</small>
+                    {% endif %}
+                    {% if item.product_variant.size %}
+                      <br><small>{% trans "Size" %}: {{ item.product_variant.size.name }}</small>
+                    {% endif %}
+                    <br><small>{% trans "Qty" %}: {{ item.quantity }} x {{ item.product_variant.price|floatformat:2 }} EGP</small>
+                  </div>
+                  <span class="fw-bold">{{ cart.total_price_field|floatformat:2 }} EGP</span>
+                </li>
+              {% empty %}
+                <li class="list-group-item text-muted">{% trans "Your cart is empty." %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
 
+        <ul class="list-group mb-4">
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{% trans "Subtotal" %}</span>
+                <span>{{ cart.total_price_field|floatformat:2 }} EGP</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{% trans "Shipping" %}</span>
+                <span>{{ shipping_fee|floatformat:2 }} EGP</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between fw-bold">
+                <span>{% trans "Total" %}</span>
+                <span>{{ grand_total|floatformat:2 }} EGP</span>
+            </li>
+        </ul>
       </div>
     </div>
   </div>
