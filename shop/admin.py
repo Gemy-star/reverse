@@ -1,11 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from decimal import Decimal # Import Decimal for financial calculations
+from django.urls import reverse
+
 from shop.models import (
     Category, SubCategory, FitType, Brand, Color, Size,
     Product, ProductImage, ProductColor, ProductSize, ProductVariant,
     HomeSlider, Cart, CartItem, Wishlist, WishlistItem,
-    Order, OrderItem, ShippingAddress, Payment, ReverseUser  # Import new models
+    Order, OrderItem, ShippingAddress, Payment, ReverseUser
 )
 
 
@@ -216,30 +219,28 @@ class ProductVariantAdmin(admin.ModelAdmin):
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
-    # Make these fields read-only for existing items, but allow them to be set for new ones via JavaScript
-    # For initial creation, we need to allow price_at_purchase to be set
-    readonly_fields = ['get_total_price'] # Keep get_total_price readonly as it's a calculated property
-    fields = ['product_variant', 'quantity', 'price_at_purchase'] # Explicitly list fields for adding/editing
-    can_delete = False
+    readonly_fields = ['get_total_price']
+    fields = ['product_variant', 'quantity', 'price_at_purchase', 'get_total_price'] # Added get_total_price here
+    can_delete = False # Usually you don't want to delete order items
 
     def get_total_price(self, obj):
-        # Ensure quantity and price_at_purchase are not None before multiplication
         quantity = obj.quantity if obj.quantity is not None else Decimal('0.00')
         price_at_purchase = obj.price_at_purchase if obj.price_at_purchase is not None else Decimal('0.00')
         return quantity * price_at_purchase
-    get_total_price.short_description = "Total Price"
+    get_total_price.short_description = "Item Total"
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
         'order_number', 'user', 'full_name', 'grand_total',
-        'status', 'payment_status', 'created_at'
+        'status', 'payment_status', 'created_at', 'view_shipping_address', 'view_payment_info'
     ]
     list_filter = ['status', 'payment_status', 'created_at', 'updated_at']
     search_fields = ['order_number', 'user__username', 'full_name', 'email', 'phone_number']
     readonly_fields = [
         'order_number', 'created_at', 'updated_at',
-        'subtotal', 'shipping_cost', 'grand_total', 'stripe_pid'
+        'subtotal', 'shipping_cost', 'grand_total', 'stripe_pid',
+        'display_shipping_address', 'display_payment_info' # Add new display fields as readonly
     ]
     inlines = [OrderItemInline]
 
@@ -250,6 +251,16 @@ class OrderAdmin(admin.ModelAdmin):
         ('Customer Information', {
             'fields': ('full_name', 'email', 'phone_number')
         }),
+        ('Shipping Information', { # New section for shipping details
+            'fields': ('display_shipping_address',),
+            'classes': ('collapse',), # Make it collapsable
+            'description': _("Details of the shipping address for this order.")
+        }),
+        ('Payment Information', { # New section for payment details
+            'fields': ('display_payment_info',),
+            'classes': ('collapse',), # Make it collapsable
+            'description': _("Details of the payment for this order.")
+        }),
         ('Financials', {
             'fields': ('subtotal', 'shipping_cost', 'grand_total')
         }),
@@ -258,21 +269,88 @@ class OrderAdmin(admin.ModelAdmin):
         }),
     )
 
+    def display_shipping_address(self, obj):
+        try:
+            shipping_address = obj.shipping_address
+            return format_html(
+                "<strong>Full Name:</strong> {}<br>"
+                "<strong>Address Line 1:</strong> {}<br>"
+                "<strong>Address Line 2:</strong> {}<br>"
+                "<strong>City:</strong> {}<br>"
+                "<strong>State/Province:</strong> {}<br>"
+                "<strong>Postal Code:</strong> {}<br>"
+                "<strong>Country:</strong> {}<br>"
+                "<strong>Phone Number:</strong> {}",
+                shipping_address.full_name,
+                shipping_address.address_line1,
+                shipping_address.address_line2 if shipping_address.address_line2 else _("N/A"),
+                shipping_address.city,
+                shipping_address.state_province if shipping_address.state_province else _("N/A"),
+                shipping_address.postal_code if shipping_address.postal_code else _("N/A"),
+                shipping_address.country,
+                shipping_address.phone_number
+            )
+        except ShippingAddress.DoesNotExist:
+            return _("No shipping address associated with this order.")
+    display_shipping_address.short_description = _("Shipping Address")
 
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ['order', 'product_variant', 'quantity', 'price_at_purchase', 'get_total']
-    list_filter = ['order__status', 'product_variant__product__name']
-    search_fields = ['order__order_number', 'product_variant__product__name']
-    readonly_fields = ['get_total']
+    def display_payment_info(self, obj):
+        try:
+            payment = obj.payment
+            return format_html(
+                "<strong>Transaction ID:</strong> {}<br>"
+                "<strong>Payment Method:</strong> {}<br>"
+                "<strong>Amount:</strong> {}<br>"
+                "<strong>Success:</strong> {}<br>"
+                "<strong>Timestamp:</strong> {}",
+                payment.transaction_id,
+                payment.payment_method,
+                payment.amount,
+                _("Yes") if payment.is_success else _("No"),
+                payment.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            )
+        except Payment.DoesNotExist:
+            return _("No payment information associated with this order.")
+    display_payment_info.short_description = _("Payment Information")
 
-    def get_total(self, obj):
-        return obj.get_total_price()
+    def view_shipping_address(self, obj):
+        # Link to the shipping address detail page
+        try:
+            shipping_address = obj.shipping_address
+            url = reverse('admin:%s_%s_change' % (shipping_address._meta.app_label, shipping_address._meta.model_name),
+                          args=[shipping_address.pk])
+            return format_html('<a href="{}">{}</a>', url, _("View Shipping Address"))
+        except ShippingAddress.DoesNotExist:
+            return _("N/A")
+    view_shipping_address.short_description = _("Shipping Address Link")
+    view_shipping_address.allow_tags = True
 
-    get_total.short_description = 'Total'
+    def view_payment_info(self, obj):
+        # Link to the payment detail page
+        try:
+            payment = obj.payment
+            url = reverse('admin:%s_%s_change' % (payment._meta.app_label, payment._meta.model_name),
+                          args=[payment.pk])
+            return format_html('<a href="{}">{}</a>', url, _("View Payment Info"))
+        except Payment.DoesNotExist:
+            return _("N/A")
+    view_payment_info.short_description = _("Payment Info Link")
+    view_payment_info.allow_tags = True
 
+# --- RESTRICTING OTHER ADMINS ---
+# Remove or restrict these admin classes if you want them exclusively managed via Order.
+# Alternatively, you can make them read-only in their own lists and detail views.
 
+# @admin.register(OrderItem) # This is already an inline of Order, no need to register separately
+# class OrderItemAdmin(admin.ModelAdmin):
+#     list_display = ['order', 'product_variant', 'quantity', 'price_at_purchase', 'get_total']
+#     list_filter = ['order__status', 'product_variant__product__name']
+#     search_fields = ['order__order_number', 'product_variant__product__name']
+#     readonly_fields = ['get_total']
 
+#     def get_total(self, obj):
+#         return obj.get_total_price()
+#     get_total.short_description = 'Total'
 @admin.register(ShippingAddress)
 class ShippingAddressAdmin(admin.ModelAdmin):
     list_display = [
@@ -282,12 +360,21 @@ class ShippingAddressAdmin(admin.ModelAdmin):
     search_fields = [
         'user__username', 'full_name', 'address_line1', 'city', 'phone_number'
     ]
-    readonly_fields = ['user']
+    readonly_fields = [
+        'user', 'full_name', 'address_line1', 'address_line2', 'city',
+        # Removed 'state_province', 'postal_code', 'country'
+        'phone_number', 'is_default'
+    ]
+    def has_add_permission(self, request):
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def user_display(self, obj):
         return obj.user.username if obj.user else _("N/A")
     user_display.short_description = _("User")
-
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = [
@@ -296,11 +383,18 @@ class PaymentAdmin(admin.ModelAdmin):
     ]
     list_filter = ['payment_method', 'is_success', 'timestamp']
     search_fields = ['order__order_number', 'transaction_id']
-    readonly_fields = ['order', 'transaction_id', 'payment_method', 'amount', 'timestamp', 'payment_details']
+    readonly_fields = [ # Make all fields read-only
+        'order', 'transaction_id', 'payment_method', 'amount',
+        'is_success', 'timestamp', 'payment_details'
+    ]
+    # Optionally, you can remove the add/delete buttons for this model.
+    def has_add_permission(self, request):
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False # Prevent direct editing from this admin
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        # Make transaction_id, payment_method, amount, timestamp, payment_details read-only
-        # as these should ideally be set by the payment gateway integration.
-        # This is already covered by readonly_fields, but a reminder if you customize forms.
         return form

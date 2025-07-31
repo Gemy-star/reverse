@@ -193,6 +193,7 @@
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <input type="hidden" name="color_id" id="buy-now-color-id">
                 <input type="hidden" name="size_id" id="buy-now-size-id">
+                <input type="hidden" name="quantity" id="buy-now-quantity-input" value="1"> {# ADDED: Hidden input for quantity #}
                 <button type="submit" class="btn btn-outline-success rounded-pill px-3" title="{% trans 'Buy Now' %}">
                    <i class="fas fa-solid fa-bolt"></i> {% trans 'Buy Now' %}
                 </button>
@@ -355,6 +356,7 @@
     const buyNowForm = document.getElementById('buy-now-form');
     const buyNowColorInput = document.getElementById('buy-now-color-id');
     const buyNowSizeInput = document.getElementById('buy-now-size-id');
+    const buyNowQuantityInput = document.getElementById('buy-now-quantity-input'); // Get the new quantity input
 
 
     let isWishlisted = wishlistBtn.querySelector('i').classList.contains('fa-times');
@@ -364,6 +366,7 @@
     function updateDisplay(value) {
       quantityInput.value = value;
       quantityDisplay.textContent = value;
+      buyNowQuantityInput.value = value; // Update the buy now quantity input as well
     }
 
     increaseBtn?.addEventListener('click', () => {
@@ -517,6 +520,9 @@
         if (!selectedColorId || !selectedSizeId) {
             e.preventDefault(); // Prevent form submission
             showToast("{% trans 'Please select color and size first for Buy Now.' %}", 'error');
+        } else {
+            // Ensure the quantity input is set before submission
+            buyNowQuantityInput.value = quantityInput.value;
         }
     });
 
