@@ -1,176 +1,206 @@
 {% load i18n %}
 {% with nav_id="nav1" %}
+
 <style>
 .navbar-{{ nav_id }} {
-    background-color: #000 !important;
-    transition: background-color 0.3s ease;
-    z-index: 1030;
-    padding-top: 0.15rem;
+background-color: #000 !important;
+transition: background-color 0.3s ease;
+z-index: 1030;
+padding-top: 0.15rem;
 }
 .navbar-{{ nav_id }} .navbar-brand {
-    font-size: 2.8rem;
-    font-weight: 800;
-    letter-spacing: 4px;
-    color: white !important;
-    margin-right: auto;
-    padding: 0.2rem 0;
+font-size: 2.8rem;
+font-weight: 800;
+letter-spacing: 4px;
+color: white !important;
+margin-right: auto;
+padding: 0.2rem 0;
 }
 .navbar-{{ nav_id }} .nav-link,
 .navbar-{{ nav_id }} .nav-link i {
-    color: white !important;
-    font-size: 1rem;
-    padding-top: 0.3rem;
-    padding-bottom: 0.3rem;
-    position: relative;
+color: white !important;
+font-size: 1rem;
+padding-top: 0.3rem;
+padding-bottom: 0.3rem;
+position: relative;
 }
 
 .navbar-{{ nav_id }} .icon-wrapper {
-    position: relative;
-    display: inline-block;
+position: relative;
+display: inline-block;
 }
 
 .navbar-{{ nav_id }} .icon-wrapper .badge {
-    position: absolute;
-    top: -0.4rem;
-    right: -0.5rem;
-    background-color: #dc3545;
-    color: white;
-    font-size: 0.65rem;
-    font-weight: bold;
-    min-width: 1.2rem;
-    height: 1.2rem;
-    line-height: 1.2rem;
-    padding: 0;
-    border-radius: 50%;
-    text-align: center;
-    box-shadow: 0 0 0.3rem rgba(0, 0, 0, 0.3);
-    z-index: 10;
+position: absolute;
+top: -0.4rem;
+right: -0.5rem;
+background-color: #dc3545;
+color: white;
+font-size: 0.65rem;
+font-weight: bold;
+min-width: 1.2rem;
+height: 1.2rem;
+line-height: 1.2rem;
+padding: 0;
+border-radius: 50%;
+text-align: center;
+box-shadow: 0 0 0.3rem rgba(0, 0, 0, 0.3);
+z-index: 10;
 }
 
 .navbar-{{ nav_id }} .navbar-toggler {
-    padding: 0.2rem 0.4rem;
+padding: 0.2rem 0.4rem;
+}
+
+/* Language Dropdown specific styles */
+.navbar-{{ nav_id }} .language-form-link {
+display: block;
+padding: 0.25rem 1rem;
+clear: both;
+font-weight: 400;
+color: #212529;
+text-align: inherit;
+text-decoration: none;
+white-space: nowrap;
+background-color: transparent;
+border: 0;
+width: 100%;
+}
+
+.navbar-{{ nav_id }} .language-form-link:hover,
+.navbar-{{ nav_id }} .language-form-link:focus {
+color: #1e2125;
+background-color: #e9ecef;
 }
 
 @media (max-width: 767px) {
-    .navbar-{{ nav_id }} .dropdown-menu {
-        width: 100%;
-    }
-    .navbar-{{ nav_id }} .navbar-brand {
-        font-size: 2.1rem;
-    }
-    .navbar-{{ nav_id }} .nav-link {
-        padding: 0.5rem 1rem;
-    }
+.navbar-{{ nav_id }} .dropdown-menu {
+width: 100%;
+}
+.navbar-{{ nav_id }} .navbar-brand {
+font-size: 2.1rem;
+}
+.navbar-{{ nav_id }} .nav-link {
+padding: 0.5rem 1rem;
+}
 }
 </style>
+
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm navbar-{{ nav_id }}">
-    <div class="container d-flex align-items-center">
-        <div class="dropdown me-3">
-            <button class="btn text-white dropdown-toggle border-0 p-0" type="button"
-                    id="categoriesDropdown-{{ nav_id }}" data-bs-toggle="dropdown" aria-expanded="false"
-                    title="{% trans 'Categories' %}">
-                <i class="fas fa-bars fa-lg"></i>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown-{{ nav_id }}">
-                {% for cat in categories %}
-                    <li><a class="dropdown-item" href="{% url 'shop:category_detail' slug=cat.slug %}">{{ cat.name }}</a></li>
-                {% endfor %}
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{% url 'shop:home' %}">{% trans "All Products" %}</a></li>
-            </ul>
-        </div>
+<div class="container d-flex align-items-center">
+<div class="dropdown me-3">
+<button class="btn text-white dropdown-toggle border-0 p-0" type="button"
+id="categoriesDropdown-{{ nav_id }}" data-bs-toggle="dropdown" aria-expanded="false"
+title="{% trans 'Categories' %}">
+<i class="fas fa-bars fa-lg"></i>
+</button>
+<ul class="dropdown-menu" aria-labelledby="categoriesDropdown-{{ nav_id }}">
+{% for cat in categories %}
+<li><a class="dropdown-item" href="{% url 'shop:category_detail' slug=cat.slug %}">{{ cat.name }}</a></li>
+{% endfor %}
+<li><hr class="dropdown-divider"></li>
+<li><a class="dropdown-item" href="{% url 'shop:home' %}">{% trans "All Products" %}</a></li>
+</ul>
+</div>
 
-        <a class="navbar-brand" href="{% url 'shop:home' %}">REVƎRSE</a>
+    <a class="navbar-brand" href="{% url 'shop:home' %}">REVƎRSE</a>
 
-        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav-{{ nav_id }}" aria-controls="navbarNav-{{ nav_id }}"
-                aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav-{{ nav_id }}" aria-controls="navbarNav-{{ nav_id }}"
+            aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav-{{ nav_id }}">
-            <ul class="navbar-nav align-items-center">
-                <li class="nav-item d-none d-lg-block">
-                    <a class="nav-link active" href="{% url 'shop:home' %}" title="{% trans 'Home' %}">
-                        <i class="fas fa-home"></i>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'shop:cart_view' %}" title="{% trans 'Cart' %}">
-                        <span class="icon-wrapper">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="badge" id="cart-count-{{ nav_id }}">
-                                {{ request.session.cart_count|default:"0" }}
-                            </span>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav-{{ nav_id }}">
+        <ul class="navbar-nav align-items-center">
+            <li class="nav-item d-none d-lg-block">
+                <a class="nav-link active" href="{% url 'shop:home' %}" title="{% trans 'Home' %}">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'shop:cart_view' %}" title="{% trans 'Cart' %}">
+                    <span class="icon-wrapper">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge" id="cart-count-{{ nav_id }}">
+                            {{ request.session.cart_count|default:"0" }}
                         </span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'shop:wishlist_view' %}" title="{% trans 'Wishlist' %}">
-                        <span class="icon-wrapper">
-                            <i class="fas fa-heart"></i>
-                            <span class="badge" id="wishlist-count-{{ nav_id }}">
-                                {{ request.session.wishlist_count|default:"0" }}
-                            </span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'shop:wishlist_view' %}" title="{% trans 'Wishlist' %}">
+                    <span class="icon-wrapper">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge" id="wishlist-count-{{ nav_id }}">
+                            {{ request.session.wishlist_count|default:"0" }}
                         </span>
-                    </a>
-                </li>
-                {% if config.ENABLE_USER_LOG %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'shop:account' %}" title="{% trans 'Account' %}">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </li>
-                {% endif %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="languageDropdown-{{ nav_id }}"
-                       role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans 'Language' %}">
-                        <i class="fas fa-globe"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown-{{ nav_id }}">
-                        <li>
-                            <form action="{% url 'set_language' %}" method="post" class="px-3">
-                                {% csrf_token %}
-                                <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                                <select name="language" class="form-select form-select-sm" onchange="this.form.submit()">
-                                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-                                    <option value="ar" {% if LANGUAGE_CODE == 'ar' %}selected{% endif %}>العربية</option>
-                                </select>
-                            </form>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+                    </span>
+                </a>
+            </li>
+            {% if config.ENABLE_USER_LOG %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'shop:account' %}" title="{% trans 'Account' %}">
+                    <i class="fas fa-user"></i>
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="languageDropdown-{{ nav_id }}"
+                   role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans 'Language' %}">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown-{{ nav_id }}">
+                    <li>
+                        <form action="{% url 'set_language' %}" method="post" id="lang-form-en-{{ nav_id }}">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                            <input type="hidden" name="language" value="en">
+                            <a class="language-form-link" href="javascript:void(0);" onclick="document.getElementById('lang-form-en-{{ nav_id }}').submit();">English</a>
+                        </form>
+                    </li>
+                    <li>
+                        <form action="{% url 'set_language' %}" method="post" id="lang-form-ar-{{ nav_id }}">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                            <input type="hidden" name="language" value="ar">
+                            <a class="language-form-link" href="javascript:void(0);" onclick="document.getElementById('lang-form-ar-{{ nav_id }}').submit();">العربية</a>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </div>
+</div>
 </nav>
 
 <script>
 function updateGlobalCounts(nav_id = "nav1") {
-    fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
-        method: 'GET',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => res.json())
-    .then(data => {
-        const cartCountEl = document.getElementById(`cart-count-${nav_id}`);
-        const wishCountEl = document.getElementById(`wishlist-count-${nav_id}`);
-        if (cartCountEl && data.cart_count !== undefined) {
-            cartCountEl.textContent = data.cart_count;
-        }
-        if (wishCountEl && data.wishlist_count !== undefined) {
-            wishCountEl.textContent = data.wishlist_count;
-        }
-    })
-    .catch(error => {
-        console.error("Failed to fetch cart/wishlist counts:", error);
-    });
+fetch("{% url 'shop:get_cart_and_wishlist_counts' %}", {
+method: 'GET',
+headers: { 'X-Requested-With': 'XMLHttpRequest' }
+})
+.then(res => res.json())
+.then(data => {
+const cartCountEl = document.getElementById(cart-count-${nav_id});
+const wishCountEl = document.getElementById(wishlist-count-${nav_id});
+if (cartCountEl && data.cart_count !== undefined) {
+cartCountEl.textContent = data.cart_count;
+}
+if (wishCountEl && data.wishlist_count !== undefined) {
+wishCountEl.textContent = data.wishlist_count;
+}
+})
+.catch(error => {
+console.error("Failed to fetch cart/wishlist counts:", error);
+});
 }
 
 // Call once DOM is ready
 document.addEventListener('DOMContentLoaded', function () {
-    updateGlobalCounts("nav1");
+updateGlobalCounts("nav1");
 });
 
 </script>
+
 {% endwith %}
