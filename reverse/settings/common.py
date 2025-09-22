@@ -238,4 +238,24 @@ LOGIN_REDIRECT_URL = reverse_lazy('shop:home')
 # 100 MB = 100 * 1024 * 1024 bytes
 DATA_UPLOAD_MAX_MEMORY_SIZE = 200 * 1024 * 1024  # 200 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 200 * 1024 * 1024  # 200 MB
+# Session Configuration
+SESSION_COOKIE_AGE = 3600 * 8  # 8 hours
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+ADMIN_USER_TYPES = ['admin']
+VENDOR_USER_TYPES = ['vendor']
+CUSTOMER_USER_TYPES = ['customer', 'client']
+# Admin Configuration
+ADMIN_SITE_HEADER = "Reverse Shop Administration"
+ADMIN_SITE_TITLE = "Reverse Admin"
+ADMIN_INDEX_TITLE = "Welcome to Reverse-Eg Administration"
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+DEFAULT_FROM_EMAIL = "support@reverse-eg.com"
+ADMIN_EMAIL = "support@reverse-eg.com"
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
