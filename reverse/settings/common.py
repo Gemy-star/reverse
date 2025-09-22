@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'ckeditor',
     'django_countries',
-    # 'widget_tweaks',
+    'widget_tweaks',
 ]
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
@@ -189,7 +189,11 @@ CONSTANCE_CONFIG = {
     'ENABLE_ALL_FLAG': (True, 'Enable "All" flag display for products'),
      'ENABLE_USER_LOG': (False, 'Enable User System -- not completed yet --'),
     'SHIPPING_RATE_CAIRO': (60.00, 'Flat shipping rate for orders inside Cairo.', float),
-    'SHIPPING_RATE_OUTSIDE_CAIRO': (100.00, 'Flat shipping rate for orders outside Cairo.', float)
+    'SHIPPING_RATE_OUTSIDE_CAIRO': (100.00, 'Flat shipping rate for orders outside Cairo.', float),
+    'SITE_NAME': (None, 'Site name (managed by django.contrib.sites)', str),
+    'SITE_URL': (None, 'Site URL (managed by django.contrib.sites)', str),
+    'ADMIN_EMAIL': (os.getenv('ADMIN_EMAIL', 'support@mnory.com'), 'Admin Email used to receive emails', str),
+    'SENDGRID_API_KEY': (os.getenv('SENDGRID_API_KEY'), 'SendGrid API Key', str),
 }
 
 
@@ -198,7 +202,9 @@ CONSTANCE_CONFIG_FIELDSETS = {
         'COMPANY_NAME',
         'COMPANY_DESCRIPTION',
         'EMAIL_ADDRESS',
-        'WHATSAPP_NUMBER'
+        'WHATSAPP_NUMBER',
+        'SITE_NAME',
+        'SITE_URL'
     ),
     'Social Media Links': (
         'FACEBOOK_URL',
@@ -216,6 +222,10 @@ CONSTANCE_CONFIG_FIELDSETS = {
         'ENABLE_SALE_FLAG',
         'ENABLE_ALL_FLAG',
         'ENABLE_USER_LOG',
+    ),
+    'Email & API': (
+        'ADMIN_EMAIL',
+        'SENDGRID_API_KEY',
     ),
 }
 

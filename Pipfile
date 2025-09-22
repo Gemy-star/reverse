@@ -18,6 +18,8 @@ django-ckeditor = "*"
 django-countries = "*"
 django-crispy-forms = "*"
 crispy-bootstrap5 = "*"
+sendgrid-django = "*"
+django-widget-tweaks = "*"
 
 [dev-packages]
 django-silk = "*"

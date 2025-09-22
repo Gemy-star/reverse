@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد الطلب - #{{ order.order_number }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #000; background-color: #fff; direction: rtl; text-align: right; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #fff; border: 1px solid #e0e0e0; }
+        .header { background-color: #000; color: #fff; padding: 30px 20px; text-align: center; }
+        .header h1 { font-size: 28px; font-weight: bold; margin: 0; }
+        .header p { font-size: 14px; margin: 10px 0 0 0; opacity: 0.9; }
+        .content { padding: 40px 30px; background-color: #fff; }
+        .content h2 { color: #000; font-size: 24px; margin-bottom: 20px; font-weight: bold; }
+        .content p { color: #333; font-size: 16px; margin-bottom: 15px; }
+        .order-summary { background-color: #f8f8f8; border: 1px solid #e0e0e0; padding: 20px; margin: 20px 0; }
+        .order-item { border-bottom: 1px solid #e0e0e0; padding: 15px 0; }
+        .order-item:last-child { border-bottom: none; }
+        .item-name { font-weight: bold; color: #000; margin-bottom: 5px; }
+        .item-variant { font-size: 14px; color: #666; }
+        .order-total { background-color: #000; color: #fff; padding: 20px; margin: 20px 0; }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .address-box { background-color: #f8f8f8; border: 1px solid #e0e0e0; padding: 20px; margin: 20px 0; }
+        .footer { background-color: #f8f8f8; padding: 30px 20px; text-align: center; border-top: 1px solid #e0e0e0; }
+        .footer p { color: #666; font-size: 14px; margin-bottom: 10px; }
+        .button { display: inline-block; background-color: #000; color: #fff; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{{ site_name|default:"متجر منوري" }}</h1>
+            <p>تأكيد الطلب</p>
+        </div>
+
+        <div class="content">
+            <h2>شكرًا لطلبك!</h2>
+            <p>مرحبًا {{ customer_name }},</p>
+            <p>يسعدنا تأكيد استلام طلبك <strong>#{{ order_number }}</strong> وهو الآن قيد المعالجة.</p>
+
+            <div class="order-summary">
+                <h3>ملخص الطلب</h3>
+                <p><strong>رقم الطلب:</strong> #{{ order_number }}</p>
+                <p><strong>تاريخ الطلب:</strong> {{ order_date|date:"d F, Y" }}</p>
+                <p><strong>الحالة:</strong> {{ order.status|title }}</p>
+
+                {% for item in order_items %}
+                <div class="order-item">
+                    <div class="item-name">{{ item.product_variant.product.name }}</div>
+                    <div class="item-variant">
+                        اللون: {{ item.product_variant.color.name }} |
+                        المقاس: {{ item.product_variant.size.name }} |
+                        الكمية: {{ item.quantity }}
+                    </div>
+                    <div style="margin-top: 10px; font-weight: bold;">${{ item.get_total_price }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="order-total">
+                <div class="total-row">
+                    <span>المجموع الفرعي:</span>
+                    <span>${{ subtotal }}</span>
+                </div>
+                <div class="total-row">
+                    <span>الشحن:</span>
+                    <span>${{ shipping_cost }}</span>
+                </div>
+                <div class="total-row" style="border-top: 1px solid #fff; padding-top: 10px; font-weight: bold; font-size: 18px;">
+                    <span>الإجمالي:</span>
+                    <span>${{ grand_total }}</span>
+                </div>
+            </div>
+
+            {% if shipping_address %}
+            <div class="address-box">
+                <h4>عنوان الشحن</h4>
+                <p>{{ shipping_address.full_name }}</p>
+                <p>{{ shipping_address.address_line1 }}</p>
+                {% if shipping_address.address_line2 %}<p>{{ shipping_address.address_line2 }}</p>{% endif %}
+                <p>{{ shipping_address.city }}</p>
+                <p>{{ shipping_address.phone_number }}</p>
+            </div>
+            {% endif %}
+
+            <p>سنرسل لك بريدًا إلكترونيًا آخر عند شحن طلبك. إذا كان لديك أي استفسارات، يرجى التواصل مع فريق الدعم.</p>
+
+            <a href="{{ site_url }}/orders/{{ order_number }}/" class="button">تتبع طلبك</a>
+        </div>
+
+        <div class="footer">
+            <p>شكرًا لاختيارك {{ site_name|default:"متجر منوري" }}</p>
+            <p><a href="{{ site_url }}">زيارة المتجر</a> | <a href="mailto:{{ support_email }}">التواصل مع الدعم</a></p>
+        </div>
+    </div>
+</body>
+</html>

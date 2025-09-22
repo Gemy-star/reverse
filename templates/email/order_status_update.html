@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحديث الطلب - #{{ order_number }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #000; background-color: #fff; direction: rtl; text-align: right; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #fff; border: 1px solid #e0e0e0; }
+        .header { background-color: #000; color: #fff; padding: 30px 20px; text-align: center; }
+        .header h1 { font-size: 28px; font-weight: bold; margin: 0; }
+        .header p { font-size: 14px; margin: 10px 0 0 0; opacity: 0.9; }
+        .content { padding: 40px 30px; background-color: #fff; }
+        .content h2 { color: #000; font-size: 24px; margin-bottom: 20px; font-weight: bold; }
+        .content p { color: #333; font-size: 16px; margin-bottom: 15px; }
+        .status-box { background-color: #000; color: #fff; padding: 20px; margin: 20px 0; text-align: center; }
+        .status-box h3 { font-size: 20px; margin-bottom: 10px; }
+        .info-box { background-color: #f0f0f0; border-right: 4px solid #000; padding: 20px; margin: 20px 0; }
+        .button { display: inline-block; background-color: #000; color: #fff; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+        .footer { background-color: #f8f8f8; padding: 30px 20px; text-align: center; border-top: 1px solid #e0e0e0; }
+        .footer p { color: #666; font-size: 14px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{{ site_name|default:"متجر منوري" }}</h1>
+            <p>تحديث حالة الطلب</p>
+        </div>
+        
+        <div class="content">
+            <h2>تم تحديث طلبك!</h2>
+            <p>مرحبًا {{ customer_name }},</p>
+            <p>نود إبلاغك بأن حالة طلبك <strong>#{{ order_number }}</strong> قد تم تحديثها.</p>
+            
+            <div class="status-box">
+                <h3>الحالة الحالية: {{ status_display }}</h3>
+                <p>تم التحديث من: {{ old_status|title }} → {{ new_status|title }}</p>
+            </div>
+            
+            {% if new_status == 'shipped' %}
+            <div class="info-box">
+                <p><strong>طلبك في الطريق إليك!</strong></p>
+                <p>تم شحن طلبك وسيصل خلال ٣-٥ أيام عمل. ستصلك معلومات التتبع قريبًا.</p>
+            </div>
+            {% elif new_status == 'delivered' %}
+            <div class="info-box">
+                <p><strong>تم تسليم طلبك!</strong></p>
+                <p>نأمل أن ينال مشتراك إعجابك. إذا واجهت أي مشكلة، لا تتردد في التواصل معنا.</p>
+            </div>
+            {% elif new_status == 'processing' %}
+            <div class="info-box">
+                <p><strong>طلبك قيد المعالجة!</strong></p>
+                <p>نقوم حاليًا بتجهيز منتجاتك للشحن. ستصلك رسالة أخرى عند شحن الطلب.</p>
+            </div>
+            {% endif %}
+            
+            <p>إذا كانت لديك أي استفسارات حول طلبك، لا تتردد في التواصل مع فريق الدعم.</p>
+            
+            <a href="{{ site_url }}/orders/{{ order_number }}/" class="button">عرض تفاصيل الطلب</a>
+        </div>
+        
+        <div class="footer">
+            <p>شكرًا لاختيارك {{ site_name|default:"متجر منوري" }}</p>
+            <p><a href="{{ site_url }}">زيارة المتجر</a> | <a href="mailto:{{ support_email }}">التواصل مع الدعم</a></p>
+        </div>
+    </div>
+</body>
+</html>

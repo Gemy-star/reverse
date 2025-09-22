@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            color: #000;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+        }
+
+        .header {
+            background-color: #000;
+            color: #fff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .header p {
+            font-size: 14px;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+            background-color: #fff;
+        }
+
+        .content h2 {
+            color: #000;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .content h3 {
+            color: #000;
+            font-size: 18px;
+            margin: 25px 0 15px 0;
+            font-weight: bold;
+        }
+
+        .content p {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .button:hover {
+            background-color: #333;
+        }
+
+        .order-summary {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .order-summary h3 {
+            color: #000;
+            margin-top: 0;
+        }
+
+        .order-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .item-variant {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .order-total {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .total-row:last-child {
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 18px;
+            border-top: 1px solid #fff;
+            padding-top: 10px;
+        }
+
+        .info-box {
+            background-color: #f0f0f0;
+            border-right: 4px solid #000;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px 20px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #000;
+            font-size: 12px;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .address-box {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .address-box h4 {
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        .address-box p {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        /* Responsive design */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                border: none;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .item-price {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{{ site_name|default:"متجر منوري" }}</h1>
+            <p>{% block header_subtitle %}متجرك الموثوق عبر الإنترنت{% endblock %}</p>
+        </div>
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div class="footer">
+            <p>شكرًا لاختيارك {{ site_name|default:"متجر منوري" }}</p>
+            <p>
+                <a href="{{ site_url }}">زيارة المتجر</a> |
+                <a href="mailto:{{ support_email }}">التواصل مع الدعم</a>
+            </p>
+            <div class="social-links">
+                <a href="#">فيسبوك</a>
+                <a href="#">إنستغرام</a>
+                <a href="#">تويتر</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+                © {{ year|default:"2024" }} {{ site_name|default:"متجر منوري" }}. جميع الحقوق محفوظة.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحبًا بك في {{ site_name|default:"متجر Reverse-eg" }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.8; color: #000; background-color: #fff; direction: rtl; text-align: right; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #fff; border: 1px solid #e0e0e0; }
+        .header { background-color: #000; color: #fff; padding: 30px 20px; text-align: center; }
+        .header h1 { font-size: 28px; font-weight: bold; margin: 0; }
+        .header p { font-size: 14px; margin: 10px 0 0 0; opacity: 0.9; }
+        .content { padding: 40px 30px; background-color: #fff; }
+        .content h2 { color: #000; font-size: 24px; margin-bottom: 20px; font-weight: bold; }
+        .content p { color: #333; font-size: 16px; margin-bottom: 15px; }
+        .welcome-box { background-color: #f8f8f8; border: 1px solid #e0e0e0; padding: 20px; margin: 20px 0; text-align: center; }
+        .button { display: inline-block; background-color: #000; color: #fff; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+        .features { margin: 30px 0; }
+        .feature { margin-bottom: 15px; padding-right: 20px; }
+        .footer { background-color: #f8f8f8; padding: 30px 20px; text-align: center; border-top: 1px solid #e0e0e0; }
+        .footer p { color: #666; font-size: 14px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{{ site_name|default:"متجر Reverse-eg" }}</h1>
+            <p>مرحبًا بك في مجتمعنا!</p>
+        </div>
+        
+        <div class="content">
+            <h2>مرحبًا {{ customer_name }}!</h2>
+            <p>شكرًا لانضمامك إلى {{ site_name|default:"متجر Reverse-eg" }}. نحن سعداء جدًا بوجودك معنا!</p>
+            
+            <div class="welcome-box">
+                <h3>حسابك جاهز للاستخدام!</h3>
+                <p>ابدأ الآن في استكشاف مجموعتنا واكتشف منتجاتك المفضلة.</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature">• تصفح أحدث مجموعاتنا والمنتجات الجديدة</div>
+                <div class="feature">• أنشئ قائمة أمنياتك الخاصة</div>
+                <div class="feature">• استمتع بعملية دفع سريعة وآمنة</div>
+                <div class="feature">• تتبع طلباتك في الوقت الفعلي</div>
+                <div class="feature">• احصل على عروض حصرية للأعضاء</div>
+            </div>
+            
+            <p>هل أنت مستعد للتسوق؟ اطلع على أحدث منتجاتنا الآن!</p>
+            
+            <a href="{{ site_url }}/shop/" class="button">ابدأ التسوق</a>
+        </div>
+        
+        <div class="footer">
+            <p>مرحبًا بك في {{ site_name|default:"متجر Reverse-eg" }}</p>
+            <p><a href="{{ site_url }}">زيارة المتجر</a> | <a href="mailto:{{ support_email }}">تواصل مع الدعم</a></p>
+        </div>
+    </div>
+</body>
+</html>

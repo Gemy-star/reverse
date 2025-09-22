@@ -1,134 +1,206 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n widget_tweaks  %}
 
 {% block title %}{% trans "Checkout" %}{% endblock %}
 
 {% block content %}
 <section class="section pt-4">
   <div class="container my-5 pt-4">
-    <h2 class="fw-bold mb-4">{% trans "Checkout" %}</h2>
+    <h2 class="fw-bold mb-4 text-center text-md-start">{% trans "Checkout" %}</h2>
 
-    <div class="row">
-      <div class="col-md-6">
-        <h4>{% trans "Shipping Address" %}</h4>
-        <form method="post" action="{% url 'shop:checkout' %}" novalidate>
-          {% csrf_token %}
-          {% if user_shipping_addresses %}
-            <div class="mb-3">
-              <label for="selected_address" class="form-label">{% trans "Select Address" %}</label>
-              <select name="selected_address" id="selected_address" class="form-select">
-                <option value="new">{% trans "Add New Address" %}</option>
-                {% for address in user_shipping_addresses %}
-                <option value="{{ address.id }}">{{ address.full_name }}, {{ address.address_line1 }}, {{ address.city }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          {% else %}
-            <input type="hidden" name="selected_address" value="new">
-          {% endif %}
-
-          {{ shipping_form.non_field_errors }}
-          <div class="mb-3">
-            {{ shipping_form.full_name.label_tag }}
-            {{ shipping_form.full_name }}
-            {{ shipping_form.full_name.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.address_line1.label_tag }}
-            {{ shipping_form.address_line1 }}
-            {{ shipping_form.address_line1.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.address_line2.label_tag }}
-            {{ shipping_form.address_line2 }}
-            {{ shipping_form.address_line2.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.city.label_tag }}
-            {{ shipping_form.city }}
-            {{ shipping_form.city.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.state_province_region.label_tag }}
-            {{ shipping_form.state_province_region }}
-            {{ shipping_form.state_province_region.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.postal_code.label_tag }}
-            {{ shipping_form.postal_code }}
-            {{ shipping_form.postal_code.errors }}
-          </div>
-          <div class="mb-3">
-            {{ shipping_form.phone_number.label_tag }}
-            {{ shipping_form.phone_number }}
-            {{ shipping_form.phone_number.errors }}
-          </div>
-          {{ shipping_form.country }} {# Hidden field #}
-          <div class="form-check mb-3">
-            {{ shipping_form.save_as_default }}
-            {{ shipping_form.save_as_default.label_tag }}
-            {{ shipping_form.save_as_default.errors }}
-          </div>
-
-          <h4 class="mt-4">{% trans "Payment Details" %}</h4>
-          {{ payment_form.non_field_errors }}
-          <div class="mb-3">
-            {{ payment_form.payment_method.label_tag }}
-            {% for radio in payment_form.payment_method %}
-              <div class="form-check">
-                {{ radio.tag }} {{ radio.choice_label }}
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="card p-4 shadow-sm h-100">
+          <h4 class="card-title mb-4">{% trans "Shipping Address" %}</h4>
+          <form method="post" action="{% url 'shop:checkout' %}" novalidate>
+            {% csrf_token %}
+            {% if user_shipping_addresses %}
+              <div class="mb-3">
+                <label for="selected_address" class="form-label fw-bold">{% trans "Select Address" %}</label>
+                <select name="selected_address" id="selected_address" class="form-select form-select-lg">
+                  <option value="new">{% trans "Add New Address" %}</option>
+                  {% for address in user_shipping_addresses %}
+                  <option value="{{ address.id }}">{{ address.full_name }}, {{ address.address_line1 }}, {{ address.city }}</option>
+                  {% endfor %}
+                </select>
               </div>
-            {% endfor %}
-            {{ payment_form.payment_method.errors }}
-          </div>
+            {% else %}
+              <input type="hidden" name="selected_address" value="new">
+            {% endif %}
 
-          <button type="submit" class="btn btn-dark mt-3">{% trans "Place Order" %}</button>
-        </form>
+            {{ shipping_form.non_field_errors }}
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ shipping_form.full_name.label_tag }}
+                {{ shipping_form.full_name|add_class:"form-control form-control-lg" }}
+                {{ shipping_form.full_name.errors }}
+              </div>
+              <div class="col-md-6 mb-3">
+                {{ shipping_form.phone_number.label_tag }}
+                {{ shipping_form.phone_number|add_class:"form-control form-control-lg" }}
+                {{ shipping_form.phone_number.errors }}
+              </div>
+            </div>
+            <div class="mb-3">
+              {{ shipping_form.address_line1.label_tag }}
+              {{ shipping_form.address_line1|add_class:"form-control form-control-lg" }}
+              {{ shipping_form.address_line1.errors }}
+            </div>
+            <div class="mb-3">
+              {{ shipping_form.address_line2.label_tag }}
+              {{ shipping_form.address_line2|add_class:"form-control form-control-lg" }}
+              {{ shipping_form.address_line2.errors }}
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ shipping_form.city.label_tag }}
+                {{ shipping_form.city|add_class:"form-control form-control-lg" }}
+                {{ shipping_form.city.errors }}
+              </div>
+              <div class="col-md-6 mb-3">
+                {{ shipping_form.state_province_region.label_tag }}
+                {{ shipping_form.state_province_region|add_class:"form-control form-control-lg" }}
+                {{ shipping_form.state_province_region.errors }}
+              </div>
+            </div>
+            <div class="mb-3">
+              {{ shipping_form.postal_code.label_tag }}
+              {{ shipping_form.postal_code|add_class:"form-control form-control-lg" }}
+              {{ shipping_form.postal_code.errors }}
+            </div>
+
+            {{ shipping_form.country }}
+            <div class="form-check mb-4">
+              {{ shipping_form.save_as_default|add_class:"form-check-input" }}
+              {{ shipping_form.save_as_default.label_tag }}
+              {{ shipping_form.save_as_default.errors }}
+            </div>
+
+            <h4 class="card-title mb-4">{% trans "Payment Details" %}</h4>
+            <div class="card p-3 bg-light mb-4">
+              {{ payment_form.non_field_errors }}
+              {{ payment_form.payment_method.label_tag }}
+              {% for radio in payment_form.payment_method %}
+                <div class="form-check">
+                  {{ radio.tag }} <label class="form-check-label">{{ radio.choice_label }}</label>
+                </div>
+              {% endfor %}
+              {{ payment_form.payment_method.errors }}
+            </div>
+
+            <button type="submit" class="btn btn-dark btn-lg w-100">{% trans "Place Order" %}</button>
+          </form>
+        </div>
       </div>
 
-      <div class="col-md-6">
-        <h4>{% trans "Order Summary" %}</h4>
-        <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="card-title">{% trans "Items in your cart" %}</h5>
-            <ul class="list-group list-group-flush">
+      <div class="col-lg-5">
+        <div class="card p-4 shadow-sm h-100">
+          <h4 class="card-title mb-4">{% trans "Order Summary" %}</h4>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush mb-4">
               {% for item in cart.items.all %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>{{ item.product_variant.product.name }}</strong>
-                    {% if item.product_variant.color %}
-                      <br><small>{% trans "Color" %}: {{ item.product_variant.color.name }}</small>
-                    {% endif %}
-                    {% if item.product_variant.size %}
-                      <br><small>{% trans "Size" %}: {{ item.product_variant.size.name }}</small>
-                    {% endif %}
-                    <br><small>{% trans "Qty" %}: {{ item.quantity }} x {{ item.product_variant.price|floatformat:2 }} EGP</small>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="d-flex align-items-center me-3">
+                    <img src="{{ item.product_variant.product.get_first_image }}" class="rounded me-3 product-image-sm" alt="{{ item.product_variant.product.name }}">
+                    <div>
+                      <h6 class="my-0">{{ item.product_variant.product.name }}</h6>
+                      {% if item.product_variant.color %}
+                        <small class="text-muted d-block">{% trans "Color" %}: {{ item.product_variant.color.name }}</small>
+                      {% endif %}
+                      {% if item.product_variant.size %}
+                        <small class="text-muted d-block">{% trans "Size" %}: {{ item.product_variant.size.name }}</small>
+                      {% endif %}
+                      <small class="text-muted d-block">{% trans "Qty" %}: {{ item.quantity }}</small>
+                    </div>
                   </div>
-                  <span class="fw-bold">{{ cart.total_price_field|floatformat:2 }} EGP</span>
+                  <span class="fw-bold text-nowrap">{{ item.total_price|floatformat:2 }} EGP</span>
                 </li>
               {% empty %}
-                <li class="list-group-item text-muted">{% trans "Your cart is empty." %}</li>
+                <li class="list-group-item text-muted text-center">{% trans "Your cart is empty." %}</li>
               {% endfor %}
             </ul>
           </div>
+          <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">{% trans "Subtotal" %}</span>
+                  <span class="fw-bold">{{ cart.total_price_field|floatformat:2 }} EGP</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">{% trans "Shipping" %}</span>
+                  <span class="fw-bold">{{ shipping_fee|floatformat:2 }} EGP</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between h5 text-dark fw-bold">
+                  <span>{% trans "Total" %}</span>
+                  <span>{{ grand_total|floatformat:2 }} EGP</span>
+              </li>
+          </ul>
         </div>
-
-        <ul class="list-group mb-4">
-            <li class="list-group-item d-flex justify-content-between">
-                <span>{% trans "Subtotal" %}</span>
-                <span>{{ cart.total_price_field|floatformat:2 }} EGP</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-                <span>{% trans "Shipping" %}</span>
-                <span>{{ shipping_fee|floatformat:2 }} EGP</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between fw-bold">
-                <span>{% trans "Total" %}</span>
-                <span>{{ grand_total|floatformat:2 }} EGP</span>
-            </li>
-        </ul>
       </div>
     </div>
   </div>
 </section>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f8f9fa;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h2 {
+    font-weight: 700;
+  }
+
+  .section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .card {
+    border-radius: 1rem;
+    border: none;
+  }
+
+  .form-control, .form-select {
+    border-radius: 0.5rem;
+  }
+
+  .form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    border-color: #007bff;
+  }
+
+  .btn-dark {
+    border-radius: 50rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-dark:hover {
+    background-color: #000;
+    transform: translateY(-2px);
+  }
+
+  .list-group-item {
+    background-color: transparent;
+    border-color: #e9ecef;
+  }
+
+  .product-image-sm {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #dee2e6;
+  }
+
+  .card.p-4 {
+    padding: 2rem !important;
+  }
+
+  .card-title {
+    font-weight: 600;
+  }
+</style>
 {% endblock %}
