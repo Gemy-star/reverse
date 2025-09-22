@@ -8,1077 +8,1076 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-22 17:24+0300\n"
-"PO-Revision-Date: 2025-09-22 17:24+0300\n"
+"POT-Creation-Date: 2025-09-22 17:25+0300\n"
+"PO-Revision-Date: 2025-09-22 17:25+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: ar\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: .\reverse\settings\common.py:134
 msgid "English"
-msgstr "الإنجليزية"
+msgstr "English"
 
 #: .\reverse\settings\common.py:135
 msgid "Arabic"
-msgstr "العربية"
+msgstr "Arabic"
 
 #: .\shop\admin.py:257
 msgid "Details of the shipping address for this order."
-msgstr "تفاصيل عنوان الشحن لهذا الطلب."
+msgstr "Details of the shipping address for this order."
 
 #: .\shop\admin.py:262
 msgid "Details of the payment for this order."
-msgstr "تفاصيل الدفع لهذا الطلب."
+msgstr "Details of the payment for this order."
 
 #: .\shop\admin.py:286 .\shop\admin.py:288 .\shop\admin.py:289
 #: .\shop\admin.py:324 .\shop\admin.py:336 .\shop\admin.py:376
 #: .\shop\views.py:388 .\shop\views.py:390
 msgid "N/A"
-msgstr "غير متاح"
+msgstr "N/A"
 
 #: .\shop\admin.py:294
 msgid "No shipping address associated with this order."
-msgstr "لا يوجد عنوان شحن مرتبط بهذا الطلب."
+msgstr "No shipping address associated with this order."
 
 #: .\shop\admin.py:295 .\shop\models.py:644 .\templates\shop\checkout.html:14
 msgid "Shipping Address"
-msgstr "عنوان الشحن"
+msgstr "Shipping Address"
 
 #: .\shop\admin.py:309
 msgid "Yes"
-msgstr "نعم"
+msgstr "Yes"
 
 #: .\shop\admin.py:309
 msgid "No"
-msgstr "لا"
+msgstr "No"
 
 #: .\shop\admin.py:313
 msgid "No payment information associated with this order."
-msgstr "لا توجد معلومات دفع مرتبطة بهذا الطلب."
+msgstr "No payment information associated with this order."
 
 #: .\shop\admin.py:314
 msgid "Payment Information"
-msgstr "معلومات الدفع"
+msgstr "Payment Information"
 
 #: .\shop\admin.py:322
 msgid "View Shipping Address"
-msgstr "عرض عنوان الشحن"
+msgstr "View Shipping Address"
 
 #: .\shop\admin.py:325
 msgid "Shipping Address Link"
-msgstr "رابط عنوان الشحن"
+msgstr "Shipping Address Link"
 
 #: .\shop\admin.py:334
 msgid "View Payment Info"
-msgstr "عرض معلومات الدفع"
+msgstr "View Payment Info"
 
 #: .\shop\admin.py:337
 msgid "Payment Info Link"
-msgstr "رابط معلومات الدفع"
+msgstr "Payment Info Link"
 
 #: .\shop\admin.py:377 .\shop\models.py:633
 msgid "User"
-msgstr "المستخدم"
+msgstr "User"
 
 #: .\shop\extra_views.py:19
 msgid "Quantity must be a positive number."
-msgstr "يجب أن تكون الكمية رقمًا موجبًا."
+msgstr "Quantity must be a positive number."
 
 #: .\shop\extra_views.py:26
 msgid "Invalid quantity provided."
-msgstr "الكمية المقدمة غير صالحة."
+msgstr "Invalid quantity provided."
 
 #: .\shop\extra_views.py:34
 msgid "Please select a product, color, and size."
-msgstr "الرجاء اختيار المنتج، اللون، والمقاس."
+msgstr "Please select a product, color, and size."
 
 #: .\shop\extra_views.py:49
 msgid "The selected product variant does not exist."
-msgstr "النوع المحدد من المنتج غير موجود."
+msgstr "The selected product variant does not exist."
 
 #: .\shop\extra_views.py:83
 msgid "Invalid request for buy now."
-msgstr "طلب الشراء الفوري غير صالح."
+msgstr "Invalid request for buy now."
 
 #: .\shop\forms.py:62 .\shop\forms.py:72 .\shop\models.py:635
 msgid "Full Name"
-msgstr "الاسم الكامل"
+msgstr "Full Name"
 
 #: .\shop\forms.py:63 .\shop\forms.py:73 .\shop\models.py:637
 msgid "Address Line 1"
-msgstr "سطر العنوان 1"
+msgstr "Address Line 1"
 
 #: .\shop\forms.py:64
 msgid "Address Line 2 (Optional)"
-msgstr "سطر العنوان 2 (اختياري)"
+msgstr "Address Line 2 (Optional)"
 
 #: .\shop\forms.py:65
 msgid "Enter your City"
-msgstr "أدخل مدينتك"
+msgstr "Enter your City"
 
 #: .\shop\forms.py:66
 msgid "Enter your email"
-msgstr "أدخل بريدك الإلكتروني"
+msgstr "Enter your email"
 
 #: .\shop\forms.py:68 .\shop\forms.py:76 .\shop\models.py:640
 msgid "Phone Number"
-msgstr "رقم الهاتف"
+msgstr "Phone Number"
 
 #: .\shop\forms.py:74 .\shop\models.py:638
 msgid "Address Line 2"
-msgstr "سطر العنوان 2"
+msgstr "Address Line 2"
 
 #: .\shop\forms.py:77
 msgid "Set as default address"
-msgstr "تعيين كعنوان افتراضي"
+msgstr "Set as default address"
 
 #: .\shop\models.py:131
 msgid "Color Code"
-msgstr "رمز اللون"
+msgstr "Color Code"
 
 #: .\shop\models.py:493
 msgid "Slider Image"
-msgstr "صورة السلايدر"
+msgstr "Slider Image"
 
 #: .\shop\models.py:502
 msgid "Alt Text"
-msgstr "نص بديل"
+msgstr "Alt Text"
 
 #: .\shop\models.py:503
 msgid "Heading"
-msgstr "عنوان"
+msgstr "Heading"
 
 #: .\shop\models.py:504
 msgid "Subheading"
-msgstr "عنوان فرعي"
+msgstr "Subheading"
 
 #: .\shop\models.py:505
 msgid "Button Text"
-msgstr "نص الزر"
+msgstr "Button Text"
 
 #: .\shop\models.py:508
 msgid "URL Address"
-msgstr "عنوان URL"
+msgstr "URL Address"
 
 #: .\shop\models.py:509
 msgid "Enter the URL Address"
-msgstr "أدخل عنوان URL"
+msgstr "Enter the URL Address"
 
 #: .\shop\models.py:511
 msgid "Display Order"
-msgstr "ترتيب العرض"
+msgstr "Display Order"
 
 #: .\shop\models.py:512
 msgid "Active"
-msgstr "نشط"
+msgstr "Active"
 
 #: .\shop\models.py:516
 msgid "Home Slider"
-msgstr "سلايدر الصفحة الرئيسية"
+msgstr "Home Slider"
 
 #: .\shop\models.py:517
 msgid "Home Sliders"
-msgstr "سلايدرات الصفحة الرئيسية"
+msgstr "Home Sliders"
 
 #: .\shop\models.py:615
 msgid "Outside Cairo"
-msgstr "خارج القاهرة"
+msgstr "Outside Cairo"
 
 #: .\shop\models.py:616
 msgid "Inside Cairo"
-msgstr "داخل القاهرة"
+msgstr "Inside Cairo"
 
 #: .\shop\models.py:625
 msgid "Order"
-msgstr "طلب"
+msgstr "Order"
 
 #: .\shop\models.py:636
 msgid "Email"
-msgstr "البريد الإلكتروني"
+msgstr "Email"
 
 #: .\shop\models.py:639
 msgid "City"
-msgstr "المدينة"
+msgstr "City"
 
 #: .\shop\models.py:641
 msgid "Is Default Address"
-msgstr "هل هو العنوان الافتراضي"
+msgstr "Is Default Address"
 
 #: .\shop\models.py:645
 msgid "Shipping Addresses"
-msgstr "عناوين الشحن"
+msgstr "Shipping Addresses"
 
 #: .\shop\utils.py:32 .\shop\utils.py:40 .\shop\utils.py:65
 msgid "Free"
-msgstr "مجاني"
+msgstr "Free"
 
 #: .\shop\utils.py:59
 msgid "Shipping (Estimate)"
-msgstr "الشحن (تقديري)"
+msgstr "Shipping (Estimate)"
 
 #: .\shop\utils.py:69
 msgid "Free (Threshold Met)"
-msgstr "مجاني (تم تجاوز الحد الأدنى)"
+msgstr "Free (Threshold Met)"
 
 #: .\shop\utils.py:72
 msgid "Free (No Items)"
-msgstr "مجاني (لا توجد سلع)"
+msgstr "Free (No Items)"
 
 #: .\shop\views.py:144
 msgid "Invalid category selected."
-msgstr "الفئة المختارة غير صالحة."
+msgstr "Invalid category selected."
 
 #: .\shop\views.py:358
 msgid "Invalid product ID."
-msgstr "معرف المنتج غير صالح."
+msgstr "Invalid product ID."
 
 #: .\shop\views.py:374
 msgid "Invalid color ID."
-msgstr "معرف اللون غير صالح."
+msgstr "Invalid color ID."
 
 #: .\shop\views.py:381
 msgid "Invalid size ID."
-msgstr "معرف المقاس غير صالح."
+msgstr "Invalid size ID."
 
 #: .\shop\views.py:483
 msgid "An error occurred while merging your cart. Please check your cart."
-msgstr "حدث خطأ أثناء دمج سلة التسوق الخاصة بك. يرجى مراجعة سلتك."
+msgstr "An error occurred while merging your cart. Please check your cart."
 
 #: .\shop\views.py:487
 msgid "Invalid username or password."
-msgstr "اسم المستخدم أو كلمة المرور غير صالحة."
+msgstr "Invalid username or password."
 
 #: .\shop\views.py:489
 msgid "Please correct the errors in the login form."
-msgstr "الرجاء تصحيح الأخطاء في نموذج تسجيل الدخول."
+msgstr "Please correct the errors in the login form."
 
 #: .\shop\views.py:498
 msgid "Please correct the errors in the registration form."
-msgstr "الرجاء تصحيح الأخطاء في نموذج التسجيل."
+msgstr "Please correct the errors in the registration form."
 
 #: .\shop\views.py:510
 msgid "You have been logged out."
-msgstr "تم تسجيل خروجك."
+msgstr "You have been logged out."
 
 #: .\shop\views.py:938
 msgid "Your cart is empty. Please add items before checking out."
-msgstr "سلة التسوق الخاصة بك فارغة. يرجى إضافة سلع قبل إتمام الدفع."
+msgstr "Your cart is empty. Please add items before checking out."
 
 #: .\shop\views.py:943
 msgid "Your cart is empty after stock adjustments. Please add items before checking out."
-msgstr "سلة التسوق الخاصة بك فارغة بعد تعديلات المخزون. يرجى إضافة سلع قبل إتمام الدفع."
+msgstr "Your cart is empty after stock adjustments. Please add items before checking out."
 
 #: .\shop\views.py:975
 msgid "Please correct the errors in your shipping and/or payment details."
-msgstr "الرجاء تصحيح الأخطاء في تفاصيل الشحن و/أو الدفع."
+msgstr "Please correct the errors in your shipping and/or payment details."
 
 #: .\shop\views.py:979
 msgid "You must be logged in to use an existing address."
-msgstr "يجب أن تكون مسجلاً للدخول لاستخدام عنوان موجود."
+msgstr "You must be logged in to use an existing address."
 
 #: .\shop\views.py:984
 msgid "Selected shipping address not found or does not belong to you."
-msgstr "عنوان الشحن المحدد غير موجود أو لا يخصك."
+msgstr "Selected shipping address not found or does not belong to you."
 
 #: .\shop\views.py:990
 msgid "Please correct the errors in your payment details."
-msgstr "الرجاء تصحيح الأخطاء في تفاصيل الدفع."
+msgstr "Please correct the errors in your payment details."
 
 #: .\shop\views.py:1006
 msgid "Shipping information is required."
-msgstr "معلومات الشحن مطلوبة."
+msgstr "Shipping information is required."
 
 #: .\shop\views.py:1010
 msgid "Payment information is required."
-msgstr "معلومات الدفع مطلوبة."
+msgstr "Payment information is required."
 
 #: .\templates\partials\_footer.html:24
 msgid "LET’S CONNECT"
-msgstr "لنتواصل"
+msgstr "LET’S CONNECT"
 
 #: .\templates\partials\_footer.html:25
 msgid "Follow us on our Social Media Channels."
-msgstr "تابعنا على قنوات التواصل الاجتماعي."
+msgstr "Follow us on our social media channels."
 
 #: .\templates\partials\_footer.html:35
 msgid "Quick links"
-msgstr "روابط سريعة"
+msgstr "Quick links"
 
 #: .\templates\partials\_footer.html:37
 msgid "Terms & Conditions"
-msgstr "الشروط والأحكام"
+msgstr "Terms & Conditions"
 
 #: .\templates\partials\_footer.html:43
 msgid "Contact Us"
-msgstr "اتصل بنا"
+msgstr "Contact Us"
 
 #: .\templates\partials\_header.html:72
 #: .\templates\shop\category_detail.html:106
 #: .\templates\shop\subcategory_detail.html:28
 msgid "Categories"
-msgstr "التصنيفات"
+msgstr "Categories"
 
 #: .\templates\partials\_header.html:80 .\templates\shop\category_detail.html:5
 #: .\templates\shop\category_detail.html:109
 #: .\templates\shop\category_detail.html:234 .\templates\shop\home.html:64
 #: .\templates\shop\subcategory_detail.html:31
 msgid "All Products"
-msgstr "جميع المنتجات"
+msgstr "All Products"
 
 #: .\templates\partials\_header.html:90
 msgid "Toggle navigation"
-msgstr "تبديل التنقل"
+msgstr "Toggle navigation"
 
 #: .\templates\partials\_header.html:98
 msgid "Home"
-msgstr "الرئيسية"
+msgstr "Home"
 
 #: .\templates\partials\_header.html:103
 msgid "Cart"
-msgstr "عربة التسوق"
+msgstr "Cart"
 
 #: .\templates\partials\_header.html:113
 msgid "Wishlist"
-msgstr "المفضلة"
+msgstr "Wishlist"
 
 #: .\templates\partials\_header.html:124
 msgid "Account"
-msgstr "الحساب"
+msgstr "Account"
 
 #: .\templates\partials\_header.html:131
 msgid "Language"
-msgstr "اللغة"
+msgstr "Language"
 
 #: .\templates\partials\_product.html:209
 msgid "Sale"
-msgstr "تخفيض"
+msgstr "Sale"
 
 #: .\templates\partials\_product.html:223
 msgid "No Image"
-msgstr "لا توجد صورة"
+msgstr "No Image"
 
 #: .\templates\partials\_product.html:233
 #: .\templates\partials\_product.html:393
 #: .\templates\shop\product_detail.html:202
 #: .\templates\shop\product_detail.html:379
 msgid "Remove from Wishlist"
-msgstr "إزالة من المفضلة"
+msgstr "Remove from Wishlist"
 
 #: .\templates\partials\_product.html:233
 #: .\templates\partials\_product.html:399
 #: .\templates\shop\product_detail.html:202
 #: .\templates\shop\product_detail.html:384
 msgid "Add to Wishlist"
-msgstr "أضف إلى المفضلة"
+msgstr "Add to Wishlist"
 
 #: .\templates\partials\_product.html:245
 #: .\templates\partials\_product.html:530
 msgid "Remove from Cart"
-msgstr "إزالة من السلة"
+msgstr "Remove from Cart"
 
 #: .\templates\partials\_product.html:245
 #: .\templates\partials\_product.html:481
 #: .\templates\shop\product_detail.html:190
 msgid "Add to Cart"
-msgstr "أضف إلى السلة"
+msgstr "Add to Cart"
 
 #: .\templates\partials\_product.html:396
 #: .\templates\shop\product_detail.html:380
 msgid "Added to Wishlist!"
-msgstr "تمت الإضافة إلى المفضلة!"
+msgstr "Added to Wishlist!"
 
 #: .\templates\partials\_product.html:402
 #: .\templates\shop\product_detail.html:385
 msgid "Removed from Wishlist"
-msgstr "تمت الإزالة من المفضلة"
+msgstr "Removed from Wishlist"
 
 #: .\templates\partials\_product.html:407
 #: .\templates\shop\product_detail.html:388
 #: .\templates\shop\product_detail.html:480
 msgid "Action failed."
-msgstr "فشلت العملية."
+msgstr "Action failed."
 
 #: .\templates\partials\_product.html:412
 msgid "An unexpected error occurred: "
-msgstr "حدث خطأ غير متوقع:"
+msgstr "An unexpected error occurred: "
 
 #: .\templates\partials\_product.html:412
 #: .\templates\partials\_product.html:489
 #: .\templates\partials\_product.html:538
 msgid "Please try again."
-msgstr "الرجاء المحاولة مرة أخرى."
+msgstr "Please try again."
 
 #: .\templates\partials\_product.html:443
 msgid "Error: Item ID missing for removal."
-msgstr "خطأ: معرف السلعة مفقود للإزالة."
+msgstr "Error: Item ID missing for removal."
 
 #: .\templates\partials\_product.html:452
 msgid "Error: Invalid item ID format."
-msgstr "خطأ: تنسيق معرف السلعة غير صالح."
+msgstr "Error: Invalid item ID format."
 
 #: .\templates\partials\_product.html:477
 msgid "Removed from Cart!"
-msgstr "تمت الإزالة من السلة!"
+msgstr "Removed from Cart!"
 
 #: .\templates\partials\_product.html:484
 msgid "Failed to remove from cart."
-msgstr "فشل في الإزالة من السلة."
+msgstr "Failed to remove from cart."
 
 #: .\templates\partials\_product.html:489
 #: .\templates\partials\_product.html:538
 msgid "An unexpected error occurred:"
-msgstr "حدث خطأ غير متوقع:"
+msgstr "An unexpected error occurred:"
 
 #: .\templates\partials\_product.html:526
 msgid "Added to Cart!"
-msgstr "تمت الإضافة إلى السلة!"
+msgstr "Added to Cart!"
 
 #: .\templates\partials\_product.html:533
 #: .\templates\shop\product_detail.html:423
 msgid "Failed to add to cart."
-msgstr "فشل في الإضافة إلى السلة."
+msgstr "Failed to add to cart."
 
 #: .\templates\partials\_whatsapp.html:42
 msgid "Chat with us on WhatsApp"
-msgstr "تحدث معنا عبر واتساب"
+msgstr "Chat with us on WhatsApp"
 
 #: .\templates\shop\account.html:11
 msgid "Sign In"
-msgstr "تسجيل الدخول"
+msgstr "Sign In"
 
 #: .\templates\shop\account.html:14 .\templates\shop\account.html:33
 msgid "Register"
-msgstr "إنشاء حساب"
+msgstr "Register"
 
 #: .\templates\shop\account.html:24
 msgid "Login"
-msgstr "دخول"
+msgstr "Login"
 
 #: .\templates\shop\cart_view.html:4 .\templates\shop\cart_view.html:11
 msgid "Shopping Cart"
-msgstr "سلة التسوق"
+msgstr "Shopping Cart"
 
 #: .\templates\shop\cart_view.html:12
 msgid "Review the items in your cart before checkout."
-msgstr "راجع السلع في سلتك قبل إتمام الدفع."
+msgstr "Review the items in your cart before checkout."
 
 #: .\templates\shop\cart_view.html:27 .\templates\shop\category_detail.html:155
 #: .\templates\shop\checkout.html:108
 #: .\templates\shop\subcategory_detail.html:77
 msgid "Color"
-msgstr "اللون"
+msgstr "Color"
 
 #: .\templates\shop\cart_view.html:28 .\templates\shop\category_detail.html:169
 #: .\templates\shop\checkout.html:111 .\templates\shop\product_detail.html:112
 #: .\templates\shop\subcategory_detail.html:91
 msgid "Size"
-msgstr "المقاس"
+msgstr "Size"
 
 #: .\templates\shop\cart_view.html:29
 msgid "Quantity"
-msgstr "الكمية"
+msgstr "Quantity"
 
 #: .\templates\shop\cart_view.html:30 .\templates\shop\cart_view.html:61
 #: .\templates\shop\checkout.html:133
 #: .\templates\shop\order_confirmation.html:25
 #: .\templates\shop\order_detail.html:43
 msgid "Total"
-msgstr "الإجمالي"
+msgstr "Total"
 
 #: .\templates\shop\cart_view.html:34
 msgid "Remove from cart"
-msgstr "إزالة من السلة"
+msgstr "Remove from cart"
 
 #: .\templates\shop\cart_view.html:48 .\templates\shop\checkout.html:98
 msgid "Order Summary"
-msgstr "ملخص الطلب"
+msgstr "Order Summary"
 
 #: .\templates\shop\cart_view.html:53 .\templates\shop\checkout.html:125
 msgid "Subtotal"
-msgstr "المجموع الفرعي"
+msgstr "Subtotal"
 
 #: .\templates\shop\cart_view.html:57 .\templates\shop\checkout.html:129
 msgid "Shipping"
-msgstr "الشحن"
+msgstr "Shipping"
 
 #: .\templates\shop\cart_view.html:66
 msgid "Proceed to Checkout"
-msgstr "متابعة إلى الدفع"
+msgstr "Proceed to Checkout"
 
 #: .\templates\shop\cart_view.html:75 .\templates\shop\checkout.html:119
 msgid "Your cart is empty."
-msgstr "سلة التسوق الخاصة بك فارغة."
+msgstr "Your cart is empty."
 
 #: .\templates\shop\cart_view.html:77
 #: .\templates\shop\order_confirmation.html:30
 #: .\templates\shop\order_history.html:64
 msgid "Continue Shopping"
-msgstr "متابعة التسوق"
+msgstr "Continue Shopping"
 
 #: .\templates\shop\cart_view.html:115
 msgid "Confirm Deletion"
-msgstr "تأكيد الحذف"
+msgstr "Confirm Deletion"
 
 #: .\templates\shop\cart_view.html:116
 msgid "Are you sure you want to remove this item?"
-msgstr "هل أنت متأكد من أنك تريد إزالة هذه السلعة؟"
+msgstr "Are you sure you want to remove this item?"
 
 #: .\templates\shop\cart_view.html:130
 msgid "Item removed from cart."
-msgstr "تمت إزالة السلعة من السلة."
+msgstr "Item removed from cart."
 
 #: .\templates\shop\cart_view.html:152
 msgid "Failed to remove item."
-msgstr "فشل في إزالة السلعة."
+msgstr "Failed to remove item."
 
 #: .\templates\shop\cart_view.html:155
 msgid "An error occurred. Please try again."
-msgstr "حدث خطأ. الرجاء المحاولة مرة أخرى."
+msgstr "An error occurred. Please try again."
 
 #: .\templates\shop\cart_view.html:158
 msgid "Action cancelled"
-msgstr "تم إلغاء العملية"
+msgstr "Action cancelled"
 
 #: .\templates\shop\category_detail.html:5
 #: .\templates\shop\product_detail.html:5
 msgid "Reverse"
-msgstr "ريڤيرس"
+msgstr "Reverse"
 
 #: .\templates\shop\category_detail.html:98
 #: .\templates\shop\subcategory_detail.html:20
 msgid "Filters"
-msgstr "تصفية"
+msgstr "Filters"
 
 #: .\templates\shop\category_detail.html:133
 #: .\templates\shop\subcategory_detail.html:55
 msgid "Fit Type"
-msgstr "نوع المقاس"
+msgstr "Fit Type"
 
 #: .\templates\shop\category_detail.html:144
 #: .\templates\shop\subcategory_detail.html:66
 msgid "Brand"
-msgstr "العلامة التجارية"
+msgstr "Brand"
 
 #: .\templates\shop\category_detail.html:182
 #: .\templates\shop\subcategory_detail.html:104
 msgid "Price Range"
-msgstr "نطاق السعر"
+msgstr "Price Range"
 
 #: .\templates\shop\category_detail.html:184
 #: .\templates\shop\subcategory_detail.html:106
 msgid "Min"
-msgstr "الحد الأدنى"
+msgstr "Min"
 
 #: .\templates\shop\category_detail.html:185
 #: .\templates\shop\subcategory_detail.html:107
 msgid "Max"
-msgstr "الحد الأقصى"
+msgstr "Max"
 
 #: .\templates\shop\category_detail.html:187
 #: .\templates\shop\subcategory_detail.html:109
 msgid "Apply Price"
-msgstr "تطبيق السعر"
+msgstr "Apply Price"
 
 #: .\templates\shop\category_detail.html:192
 #: .\templates\shop\subcategory_detail.html:114
 msgid "Sort By"
-msgstr "ترتيب حسب"
+msgstr "Sort By"
 
 #: .\templates\shop\category_detail.html:194
 #: .\templates\shop\subcategory_detail.html:116
 msgid "Name (A-Z)"
-msgstr "الاسم (أ-ي)"
+msgstr "Name (A-Z)"
 
 #: .\templates\shop\category_detail.html:195
 #: .\templates\shop\subcategory_detail.html:117
 msgid "Price (Low to High)"
-msgstr "السعر (من الأقل إلى الأعلى)"
+msgstr "Price (Low to High)"
 
 #: .\templates\shop\category_detail.html:196
 #: .\templates\shop\subcategory_detail.html:118
 msgid "Price (High to Low)"
-msgstr "السعر (من الأعلى إلى الأقل)"
+msgstr "Price (High to Low)"
 
 #: .\templates\shop\category_detail.html:197
 #: .\templates\shop\subcategory_detail.html:119
 msgid "Newest"
-msgstr "الأحدث"
+msgstr "Newest"
 
 #: .\templates\shop\category_detail.html:198
 #: .\templates\shop\subcategory_detail.html:120
 msgid "Popular"
-msgstr "الأكثر شهرة"
+msgstr "Popular"
 
 #: .\templates\shop\category_detail.html:204
 #: .\templates\shop\subcategory_detail.html:126
 msgid "Flags"
-msgstr "العلامات"
+msgstr "Flags"
 
 #: .\templates\shop\category_detail.html:207
 #: .\templates\shop\partials\product_flags.html:7
 #: .\templates\shop\subcategory_detail.html:129
 msgid "Best Seller"
-msgstr "الأكثر مبيعاً"
+msgstr "Best Seller"
 
 #: .\templates\shop\category_detail.html:211
 #: .\templates\shop\partials\product_flags.html:10
 #: .\templates\shop\subcategory_detail.html:133
 msgid "New Arrival"
-msgstr "وصل حديثاً"
+msgstr "New Arrival"
 
 #: .\templates\shop\category_detail.html:215
 #: .\templates\shop\partials\product_flags.html:13
 #: .\templates\shop\subcategory_detail.html:137
 msgid "On Sale"
-msgstr "تخفيض"
+msgstr "On Sale"
 
 #: .\templates\shop\category_detail.html:230
 #: .\templates\shop\category_detail.html:232
 msgid "Products"
-msgstr "المنتجات"
+msgstr "Products"
 
 #: .\templates\shop\category_detail.html:246
 msgid "No products found in this category or with the selected filters."
-msgstr "لم يتم العثور على منتجات في هذه الفئة أو باستخدام الفلاتر المحددة."
+msgstr "No products found in this category or with the selected filters."
 
 #: .\templates\shop\category_detail.html:253
 msgid "Page navigation"
-msgstr "تصفح الصفحات"
+msgstr "Page navigation"
 
 #: .\templates\shop\category_detail.html:257
 #: .\templates\shop\category_detail.html:260
 #: .\templates\shop\order_history.html:31
 #: .\templates\shop\wishlist_view.html:24
 msgid "Previous"
-msgstr "السابق"
+msgstr "Previous"
 
 #: .\templates\shop\category_detail.html:275
 #: .\templates\shop\category_detail.html:278
 #: .\templates\shop\order_history.html:51
 #: .\templates\shop\wishlist_view.html:38
 msgid "Next"
-msgstr "التالي"
+msgstr "Next"
 
 #: .\templates\shop\category_detail.html:327
 #: .\templates\shop\product_detail.html:478
 msgid "Added to Wishlist"
-msgstr "تمت الإضافة إلى المفضلة"
+msgstr "Added to Wishlist"
 
 #: .\templates\shop\category_detail.html:329
 #: .\templates\shop\product_detail.html:500
 msgid "Please select a color and size from the product page."
-msgstr "الرجاء اختيار اللون والمقاس من صفحة المنتج."
+msgstr "Please select a color and size from the product page."
 
 #: .\templates\shop\checkout.html:4 .\templates\shop\checkout.html:9
 msgid "Checkout"
-msgstr "إتمام الدفع"
+msgstr "Checkout"
 
 #: .\templates\shop\checkout.html:19
 msgid "Select Address"
-msgstr "اختر العنوان"
+msgstr "Select Address"
 
 #: .\templates\shop\checkout.html:21
 msgid "Add New Address"
-msgstr "إضافة عنوان جديد"
+msgstr "Add New Address"
 
 #: .\templates\shop\checkout.html:79
 msgid "Payment Details"
-msgstr "تفاصيل الدفع"
+msgstr "Payment Details"
 
 #: .\templates\shop\checkout.html:91
 msgid "Place Order"
-msgstr "تأكيد الطلب"
+msgstr "Place Order"
 
 #: .\templates\shop\checkout.html:113
 msgid "Qty"
-msgstr "الكمية"
+msgstr "Qty"
 
 #: .\templates\shop\home.html:5
 msgid "Home - Reverse"
-msgstr "الرئيسية - ريڤيرس"
+msgstr "Home - Reverse"
 
 #: .\templates\shop\home.html:77 .\templates\shop\home.html:102
 #: .\templates\shop\home.html:127 .\templates\shop\home.html:152
 #: .\templates\shop\home.html:177 .\templates\shop\product_detail.html:227
 #: .\templates\shop\wishlist_view.html:19
 msgid "No products available."
-msgstr "لا توجد منتجات متاحة."
+msgstr "No products available."
 
 #: .\templates\shop\home.html:89
 msgid "New Arrivals"
-msgstr "وصل حديثاً"
+msgstr "New Arrivals"
 
 #: .\templates\shop\home.html:114
 msgid "Featured Products"
-msgstr "منتجات مميزة"
+msgstr "Featured Products"
 
 #: .\templates\shop\home.html:139
 msgid "Best Sellers"
-msgstr "الأكثر مبيعاً"
+msgstr "Best Sellers"
 
 #: .\templates\shop\home.html:164
 msgid "On Sale!"
-msgstr "تخفيضات!"
+msgstr "On Sale!"
 
 #: .\templates\shop\order_confirmation.html:4
 #: .\templates\shop\order_confirmation.html:9
 msgid "Order Confirmation"
-msgstr "تأكيد الطلب"
+msgstr "Order Confirmation"
 
 #: .\templates\shop\order_confirmation.html:11
 msgid "Thank you for your order!"
-msgstr "شكرًا لك على طلبك!"
+msgstr "Thank you for your order!"
 
 #: .\templates\shop\order_confirmation.html:12
 #: .\templates\shop\order_detail.html:12 .\templates\shop\order_history.html:16
 msgid "Order Number:"
-msgstr "رقم الطلب:"
+msgstr "Order Number:"
 
 #: .\templates\shop\order_confirmation.html:14
 #: .\templates\shop\order_detail.html:4 .\templates\shop\order_detail.html:9
 msgid "Order Details"
-msgstr "تفاصيل الطلب"
+msgstr "Order Details"
 
 #: .\templates\shop\order_detail.html:13
 msgid "Status:"
-msgstr "الحالة:"
+msgstr "Status:"
 
 #: .\templates\shop\order_detail.html:14
 msgid "Placed on:"
-msgstr "تم الطلب في:"
+msgstr "Placed on:"
 
 #: .\templates\shop\order_detail.html:15
 msgid "Shipping Address:"
-msgstr "عنوان الشحن:"
+msgstr "Shipping Address:"
 
 #: .\templates\shop\order_detail.html:26
 msgid "Items"
-msgstr "السلع"
+msgstr "Items"
 
 #: .\templates\shop\order_detail.html:48
 msgid "Back to Orders"
-msgstr "العودة إلى الطلبات"
+msgstr "Back to Orders"
 
 #: .\templates\shop\order_history.html:4
 msgid "Order History"
-msgstr "سجل الطلبات"
+msgstr "Order History"
 
 #: .\templates\shop\order_history.html:9
 msgid "Your Orders"
-msgstr "طلباتك"
+msgstr "Your Orders"
 
 #: .\templates\shop\order_history.html:17
 msgid "Placed on"
-msgstr "تاريخ الطلب"
+msgstr "Placed on"
 
 #: .\templates\shop\order_history.html:63
 msgid "You have no orders yet."
-msgstr "لم تقم بتقديم أي طلبات بعد."
+msgstr "You have no orders yet."
 
 #: .\templates\shop\order_not_found.html:4
 #: .\templates\shop\order_not_found.html:9
 msgid "Order Not Found"
-msgstr "لم يتم العثور على الطلب"
+msgstr "Order Not Found"
 
 #: .\templates\shop\order_not_found.html:11
 msgid "Sorry, we couldn't find the order you're looking for."
-msgstr "عذرًا، لم نتمكن من العثور على الطلب الذي تبحث عنه."
+msgstr "Sorry, we couldn't find the order you're looking for."
 
 #: .\templates\shop\order_not_found.html:12
 msgid "Please check your order number or contact support if the problem persists."
-msgstr "الرجاء التحقق من رقم طلبك أو الاتصال بالدعم الفني إذا استمرت المشكلة."
+msgstr "Please check your order number or contact support if the problem persists."
 
 #: .\templates\shop\order_not_found.html:14 .\templates\shop\policy.html:48
 #: .\templates\shop\terms.html:42
 msgid "Back to Home"
-msgstr "العودة إلى الصفحة الرئيسية"
+msgstr "Back to Home"
 
 #: .\templates\shop\partials\_categories.html:4
 msgid "Shop By Category"
-msgstr "تسوق حسب الفئة"
+msgstr "Shop By Category"
 
 #: .\templates\shop\partials\_categories.html:29
 msgid "View Products"
-msgstr "عرض المنتجات"
+msgstr "View Products"
 
 #: .\templates\shop\partials\_categories.html:36
 msgid "No categories available."
-msgstr "لا توجد فئات متاحة."
+msgstr "No categories available."
 
 #: .\templates\shop\partials\hero_slider.html:104
 msgid "Discover Your Style"
-msgstr "اكتشف أسلوبك"
+msgstr "Discover Your Style"
 
 #: .\templates\shop\partials\hero_slider.html:105
 msgid "Explore our latest collections and find the perfect products for you."
-msgstr "استكشف أحدث مجموعاتنا وابحث عن المنتجات المثالية لك."
+msgstr "Explore our latest collections and find the perfect products for you."
 
 #: .\templates\shop\partials\hero_slider.html:107
 msgid "Shop Now"
-msgstr "تسوق الآن"
+msgstr "Shop Now"
 
 #: .\templates\shop\partials\product_flags.html:4
 msgid "Featured"
-msgstr "مميز"
+msgstr "Featured"
 
 #: .\templates\shop\partials\product_flags.html:15
 msgid "Off"
-msgstr "خصم"
+msgstr "Off"
 
 #: .\templates\shop\policy.html:5 .\templates\shop\terms.html:5
 msgid "Terms & Privacy"
-msgstr "الشروط والخصوصية"
+msgstr "Terms & Privacy"
 
 #: .\templates\shop\policy.html:9
 msgid "Privacy Policy"
-msgstr "سياسة الخصوصية"
+msgstr "Privacy Policy"
 
 #: .\templates\shop\policy.html:12
 msgid "1. Information We Collect"
-msgstr "1. المعلومات التي نجمعها"
+msgstr "1. Information We Collect"
 
 #: .\templates\shop\policy.html:13
 msgid "We collect information you provide during registration, purchases, or customer service interactions, including your name, email, address, and payment details."
-msgstr "نقوم بجمع المعلومات التي تقدمها أثناء التسجيل أو الشراء أو التفاعل مع خدمة العملاء، بما في ذلك اسمك وبريدك الإلكتروني وعنوانك وتفاصيل الدفع الخاصة بك."
+msgstr "We collect information you provide during registration, purchases, or customer service interactions, including your name, email, address, and payment details."
 
 #: .\templates\shop\policy.html:17
 msgid "2. How We Use Information"
-msgstr "2. كيفية استخدام المعلومات"
+msgstr "2. How We Use Information"
 
 #: .\templates\shop\policy.html:18
 msgid "Your data is used to process orders, improve your shopping experience, send updates, and protect against fraud."
-msgstr "تُستخدم بياناتك لمعالجة الطلبات، وتحسين تجربة التسوق، وإرسال التحديثات، والحماية من الاحتيال."
+msgstr "Your data is used to process orders, improve your shopping experience, send updates, and protect against fraud."
 
 #: .\templates\shop\policy.html:22
 msgid "3. Data Security"
-msgstr "3. أمان البيانات"
+msgstr "3. Data Security"
 
 #: .\templates\shop\policy.html:23
 msgid "We implement appropriate technical and organizational measures to protect your personal data."
-msgstr "نقوم بتنفيذ تدابير تقنية وتنظيمية مناسبة لحماية بياناتك الشخصية."
+msgstr "We implement appropriate technical and organizational measures to protect your personal data."
 
 #: .\templates\shop\policy.html:27
 msgid "4. Third-Party Sharing"
-msgstr "4. مشاركة البيانات مع أطراف ثالثة"
+msgstr "4. Third-Party Sharing"
 
 #: .\templates\shop\policy.html:28
 msgid "We do not sell or rent your personal data. Some data may be shared with payment processors or shipping partners as necessary to complete your order."
-msgstr "لا نقوم ببيع أو تأجير بياناتك الشخصية. قد يتم مشاركة بعض البيانات مع مزودي خدمات الدفع أو شركاء الشحن حسب الحاجة لإتمام طلبك."
+msgstr "We do not sell or rent your personal data. Some data may be shared with payment processors or shipping partners as necessary to complete your order."
 
 #: .\templates\shop\policy.html:32
 msgid "5. Your Rights"
-msgstr "5. حقوقك"
+msgstr "5. Your Rights"
 
 #: .\templates\shop\policy.html:33
 msgid "You have the right to access, correct, or delete your personal data. Contact us at privacy@reverse.com for assistance."
-msgstr "لديك الحق في الوصول إلى بياناتك الشخصية أو تصحيحها أو حذفها. تواصل معنا عبر privacy@reverse.com للحصول على المساعدة."
+msgstr "You have the right to access, correct, or delete your personal data. Contact us at privacy@reverse.com for assistance."
 
 #: .\templates\shop\policy.html:37
 msgid "6. Cookies"
-msgstr "6. ملفات تعريف الارتباط (الكوكيز)"
+msgstr "6. Cookies"
 
 #: .\templates\shop\policy.html:38
 msgid "We use cookies to personalize content, analyze traffic, and improve our services. By using the site, you consent to our cookie policy."
-msgstr "نستخدم ملفات تعريف الارتباط لتخصيص المحتوى، وتحليل حركة المرور، وتحسين خدماتنا. باستخدامك للموقع، فإنك توافق على سياسة الكوكيز الخاصة بنا."
+msgstr "We use cookies to personalize content, analyze traffic, and improve our services. By using the site, you consent to our cookie policy."
 
 #: .\templates\shop\policy.html:42
 msgid "7. Contact Information"
-msgstr "7. معلومات التواصل"
+msgstr "7. Contact Information"
 
 #: .\templates\shop\policy.html:43
 msgid "For questions or concerns regarding these policies, email us at support@reverse.com."
-msgstr "لأي أسئلة أو استفسارات بخصوص هذه السياسات، يرجى مراسلتنا عبر البريد الإلكتروني: support@reverse.com."
+msgstr "For questions or concerns regarding these policies, email us at support@reverse.com."
 
 #: .\templates\shop\product_detail.html:19
 #: .\templates\shop\product_detail.html:40
 msgid "Image"
-msgstr "صورة"
+msgstr "Image"
 
 #: .\templates\shop\product_detail.html:25
 msgid "No image available"
-msgstr "لا توجد صورة متاحة"
+msgstr "No image available"
 
 #: .\templates\shop\product_detail.html:40
 msgid "Thumbnail of"
-msgstr "صورة مصغرة لـ"
+msgstr "Thumbnail of"
 
 #: .\templates\shop\product_detail.html:53
 msgid "EGP"
-msgstr "جنيه"
+msgstr "EGP"
 
 #: .\templates\shop\product_detail.html:60
 msgid "Available Colors:"
-msgstr "الألوان المتوفرة:"
+msgstr "Available Colors:"
 
 #: .\templates\shop\product_detail.html:77
 msgid "Select Size:"
-msgstr "اختر المقاس:"
+msgstr "Select Size:"
 
 #: .\templates\shop\product_detail.html:100
 msgid "Size Chart"
-msgstr "جدول المقاسات"
+msgstr "Size Chart"
 
 #: .\templates\shop\product_detail.html:113
 msgid "Chest/Bust (in)"
-msgstr "الصدر (بوصة)"
+msgstr "Chest/Bust (in)"
 
 #: .\templates\shop\product_detail.html:114
 msgid "Chest/Bust (cm)"
-msgstr "الصدر (سم)"
+msgstr "Chest/Bust (cm)"
 
 #: .\templates\shop\product_detail.html:115
 msgid "Waist (in)"
-msgstr "الخصر (بوصة)"
+msgstr "Waist (in)"
 
 #: .\templates\shop\product_detail.html:116
 msgid "Waist (cm)"
-msgstr "الخصر (سم)"
+msgstr "Waist (cm)"
 
 #: .\templates\shop\product_detail.html:117
 msgid "Hips (in)"
-msgstr "الأرداف (بوصة)"
+msgstr "Hips (in)"
 
 #: .\templates\shop\product_detail.html:118
 msgid "Hips (cm)"
-msgstr "الأرداف (سم)"
+msgstr "Hips (cm)"
 
 #: .\templates\shop\product_detail.html:140
 msgid "Delivery & Return"
-msgstr "التوصيل والإرجاع"
+msgstr "Delivery & Return"
 
 #: .\templates\shop\product_detail.html:148
 msgid "Delivery & Return Policy"
-msgstr "سياسة التوصيل والإرجاع"
+msgstr "Delivery & Return Policy"
 
 #: .\templates\shop\product_detail.html:155
 msgid "Our standard delivery usually takes 3-5 business days. Returns are accepted within 30 days of purchase, provided the item is unused and in its original packaging. For more details, please contact our customer service."
-msgstr "يستغرق التوصيل العادي من 3-5 أيام عمل. يتم قبول الإرجاع خلال 30 يومًا من الشراء، بشرط أن يكون المنتج غير مستخدم وفي عبوته الأصلية. لمزيد من التفاصيل، يرجى التواصل مع خدمة العملاء."
+msgstr "Our standard delivery usually takes 3-5 business days. Returns are accepted within 30 days of purchase, provided the item is unused and in its original packaging. For more details, please contact our customer service."
 
 #: .\templates\shop\product_detail.html:156
 msgid "Important Notes:"
-msgstr "ملاحظات هامة:"
+msgstr "Important Notes:"
 
 #: .\templates\shop\product_detail.html:158
 msgid "Items must be returned in their original condition."
-msgstr "يجب أن تُعاد السلع في حالتها الأصلية."
+msgstr "Items must be returned in their original condition."
 
 #: .\templates\shop\product_detail.html:159
 msgid "Refunds are processed within 7-10 business days after receiving the returned item."
-msgstr "تتم معالجة المبالغ المستردة في غضون 7-10 أيام عمل بعد استلام السلعة المرتجعة."
+msgstr "Refunds are processed within 7-10 business days after receiving the returned item."
 
 #: .\templates\shop\product_detail.html:160
 msgid "Customized or personalized items are generally not eligible for return unless defective."
-msgstr "السلع المخصصة أو التي تم تعديلها لا تكون مؤهلة للإرجاع بشكل عام ما لم تكن معيبة."
+msgstr "Customized or personalized items are generally not eligible for return unless defective."
 
 #: .\templates\shop\product_detail.html:162
 msgid "For further assistance, please contact our support team:"
-msgstr "للحصول على مساعدة إضافية، يرجى التواصل مع فريق الدعم لدينا:"
+msgstr "For further assistance, please contact our support team:"
 
 #: .\templates\shop\product_detail.html:164
 msgid "Phone:"
-msgstr "هاتف:"
+msgstr "Phone:"
 
 #: .\templates\shop\product_detail.html:169
 msgid "Close"
-msgstr "إغلاق"
+msgstr "Close"
 
 #: .\templates\shop\product_detail.html:176
 msgid "Quantity:"
-msgstr "الكمية:"
+msgstr "Quantity:"
 
 #: .\templates\shop\product_detail.html:198
 #: .\templates\shop\product_detail.html:199
 msgid "Buy Now"
-msgstr "اشترِ الآن"
+msgstr "Buy Now"
 
 #: .\templates\shop\product_detail.html:214
 msgid "Related Products"
-msgstr "منتجات ذات صلة"
+msgstr "Related Products"
 
 #: .\templates\shop\product_detail.html:392
 #: .\templates\shop\product_detail.html:427
 #: .\templates\shop\product_detail.html:484
 msgid "An unexpected error occurred. Please try again."
-msgstr "حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى."
+msgstr "An unexpected error occurred. Please try again."
 
 #: .\templates\shop\product_detail.html:401
 msgid "Please select color and size first."
-msgstr "الرجاء اختيار اللون والمقاس أولاً."
+msgstr "Please select color and size first."
 
 #: .\templates\shop\product_detail.html:421
 msgid "Added to cart."
-msgstr "تمت الإضافة إلى السلة."
+msgstr "Added to cart."
 
 #: .\templates\shop\product_detail.html:455
 msgid "Please select color and size first for Buy Now."
-msgstr "الرجاء اختيار اللون والمقاس أولاً للشراء الفوري."
+msgstr "Please select color and size first for Buy Now."
 
 #: .\templates\shop\terms.html:9
 msgid "Terms of Service"
-msgstr "شروط الخدمة"
+msgstr "Terms of Service"
 
 #: .\templates\shop\terms.html:12
 msgid "1. Introduction"
-msgstr "1. المقدمة"
+msgstr "1. Introduction"
 
 #: .\templates\shop\terms.html:13
 msgid "Welcome to Reverse. By using our platform, you agree to be bound by these Terms of Service. Please read them carefully."
-msgstr "مرحبًا بك في ريڤيرس. باستخدامك لمنصتنا، فإنك توافق على الالتزام بشروط الخدمة هذه. يرجى قراءتها بعناية."
+msgstr "Welcome to Reverse. By using our platform, you agree to be bound by these Terms of Service. Please read them carefully."
 
 #: .\templates\shop\terms.html:17
 msgid "2. Use of Platform"
-msgstr "2. استخدام المنصة"
+msgstr "2. Use of Platform"
 
 #: .\templates\shop\terms.html:18
 msgid "You agree to use Reverse only for lawful purposes and in accordance with these Terms. You must not misuse the platform or interfere with its normal operation."
-msgstr "توافق على استخدام ريڤيرس لأغراض قانونية فقط ووفقًا لهذه الشروط. لا يجوز لك إساءة استخدام المنصة أو التدخل في تشغيلها الطبيعي."
+msgstr "You agree to use Reverse only for lawful purposes and in accordance with these Terms. You must not misuse the platform or interfere with its normal operation."
 
 #: .\templates\shop\terms.html:22
 msgid "Accounts"
-msgstr "الحسابات"
+msgstr "Accounts"
 
 #: .\templates\shop\terms.html:23
 msgid "You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account."
-msgstr "أنت مسؤول عن الحفاظ على سرية معلومات حسابك وعن جميع الأنشطة التي تتم من خلاله."
+msgstr "You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account."
 
 #: .\templates\shop\terms.html:27
 msgid "4. Product Information"
-msgstr "4. معلومات المنتجات"
+msgstr "4. Product Information"
 
 #: .\templates\shop\terms.html:28
 msgid "While we strive for accuracy, product descriptions and pricing may contain errors. We reserve the right to correct any inaccuracies."
-msgstr "بينما نسعى للدقة، قد تحتوي أوصاف المنتجات والأسعار على أخطاء. نحتفظ بحقنا في تصحيح أي أخطاء."
+msgstr "While we strive for accuracy, product descriptions and pricing may contain errors. We reserve the right to correct any inaccuracies."
 
 #: .\templates\shop\terms.html:32
 msgid "5. Limitation of Liability"
-msgstr "5. تحديد المسؤولية"
+msgstr "5. Limitation of Liability"
 
 #: .\templates\shop\terms.html:33
 msgid "Reverse is not liable for any indirect, incidental, or consequential damages arising from your use of the platform."
-msgstr "ريڤيرس غير مسؤول عن أي أضرار غير مباشرة أو عرضية أو تبعية تنشأ عن استخدامك للمنصة."
+msgstr "Reverse is not liable for any indirect, incidental, or consequential damages arising from your use of the platform."
 
 #: .\templates\shop\terms.html:37
 msgid "6. Changes to Terms"
-msgstr "6. تغييرات الشروط"
+msgstr "6. Changes to Terms"
 
 #: .\templates\shop\terms.html:38
 msgid "We may update these Terms of Service from time to time. Continued use of the platform constitutes acceptance of the revised terms."
-msgstr "قد نقوم بتحديث شروط الخدمة من وقت لآخر. استمرارك في استخدام المنصة يعني قبولك بالشروط المعدلة."
+msgstr "We may update these Terms of Service from time to time. Continued use of the platform constitutes acceptance of the revised terms."
 
 #: .\templates\shop\wishlist_view.html:9
 msgid "My Wishlist"
-msgstr "قائمتي المفضلة"
+msgstr "My Wishlist"
 
 #: .\templates\shop\wishlist_view.html:23
 msgid "Previous page"
-msgstr "الصفحة السابقة"
+msgstr "Previous page"
 
 #: .\templates\shop\wishlist_view.html:37
 msgid "Next page"
-msgstr "الصفحة التالية"
+msgstr "Next page"
 
